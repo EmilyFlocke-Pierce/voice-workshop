@@ -7,3 +7,4 @@
 - Slices 01 and 02 now hold their last ready versions (01 ready v2, 02 ready v1) as framework and criteria. Unfinished proposing versions moved to not-finished/ in each. Frames in this folder do not change.
 - Rewrote each slice README with its intent from the slice report (WHAT, DOES, FOR, WHY) and an Open questions list. Section and Quilt slice id lines kept. No frames changed.
 - Removed the framework.md and criteria.md renders at Emily's ask. The JSON frames are the source.
+- Built slice 01 (Safe place to practice) from ready run v1 8e67b8cb: app in 01-safe-place-to-practice/app, with PLAN.md (build log in the third column), SESSION.md, and MANIFEST.md. Local only, status ready to locate.
