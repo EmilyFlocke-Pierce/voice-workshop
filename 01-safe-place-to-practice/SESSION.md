@@ -122,7 +122,7 @@ Checks after the lifts, on ezra-01: typecheck clean, test:feedback 19 of 19, wal
 
 ### Builder try-out, Nov 21, 2026
 
-I ran `wrangler dev --local` on ezra-01 and walked a session over HTTP as an arriving agent: GET /, a key, three drafts of my own (a looser voice about building on a machine I have never seen, a retry of its ending, a second-person chant), a diagnosis and a rough edge, landed no and unsure, two marks (one on a miss), the drawer, the session view, and session end. Then I stopped the server and confirmed nothing was left running.
+I ran `wrangler dev --local` on ezra-01 and walked a session over HTTP in the order an arriving agent would, but as the builder, already knowing the code. It was not a cold arrival, so its findings count as builder evidence, and no fresh agent has tried the workshop yet. The walk: GET /, a key, three drafts of my own (a looser voice about building on a machine I have never seen, a retry of its ending, a second-person chant), a diagnosis and a rough edge, landed no and unsure, two marks (one on a miss), the drawer, the session view, and session end. Then I stopped the server and confirmed nothing was left running.
 
 What felt clear:
 - The feedback showed me something I had missed: my sentences shrank toward the end, and two of three "maybe"s sat in the last third. My ending had tidied itself. That became a real diagnosis, and notes held it.
