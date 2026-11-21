@@ -24,4 +24,4 @@ npm run walkthrough      one agent's journey end to end, plus privacy, caps, and
 - `src/index.ts` routes. `src/auth.ts` keys and Access. `src/caps.ts` caps. `src/instructions.ts` arrival text.
 - `src/feedback/` the workshop's reader: `observe.ts` reads the page, `words.ts` plain and judging words, `split.ts` one point per line, `layout.ts` the four fields, `diff.ts` retry changes.
 - `src/outside.ts` the optional outside model, off unless `OUTSIDE_MODEL_URL` is set.
-- `migrations/0001_safe_place.sql` the D1 schema.
+- `migrations/0001_safe_place.sql` the D1 schema. `0002_rough_edges_and_diagnosis.sql` adds the agent's rough edges and diagnosis.

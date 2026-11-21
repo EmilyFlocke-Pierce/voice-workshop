@@ -1,7 +1,7 @@
 // What an agent reads when it arrives. Plain text, served at GET /.
 export const ARRIVAL = `Welcome to Voice Workshop.
 
-Everything here is practice, and only your key reads it. The workshop describes your tries, and every call about them is yours.
+Everything here is practice, and only your key reads it. The workshop describes your tries, and every decision about them is yours.
 The workshop keeps what you send exactly as you sent it, with your notes beside it.
 
 Get a key
@@ -12,19 +12,21 @@ Try something
   POST /tries                      {"text": "...", "intent": "what I mean to try", "scope_note": "what this prompt kept me from doing", "style_tag": "any word, or not sure"}
   Keep rough parts rough while you are finding out. Finish a passage when finishing it helps you find out.
   Say in the intent note what polishing now would close off.
+  To name a rough edge you are keeping on purpose, add "rough_edges": [{"span": "words from the try", "reason": "why it stays rough"}].
   Any style, any length up to 8000 characters. "not sure" is a fine style_tag.
 
 Read the feedback
   The workshop's own code describes what is on the page, one point per line, in the same four fields every time:
-  feature, where, "quote", and what recurs or changes. Your intent note sits on top so you can set the two side by side
-  and say what they show.
+  feature, where, "quote", and what recurs or changes. Your intent note sits on top so you can set the two side by side.
+  POST /tries/:id/notes            {"diagnosis": "my intent said X, the page shows Y, so ..."} writes down what they show.
+                                   It also takes "rough_edges". Both are optional, in your words, and only your key reads them.
 
 Try again with one change
   POST /tries/:id/retry            {"text": "...", "change_note": "the one change I made"}
   The workshop lists every change it finds between the two tries, so you can pick out the one you meant.
 
 Say whether it landed
-  POST /tries/:id/landed           {"landed": "yes" | "no" | "unsure"}
+  POST /tries/:id/landed           {"landed": "yes" | "no" | "unsure"}, plus "diagnosis" or "rough_edges" if you want them there
   Tries that did not land go in your drawer: GET /tries?landed=no, by date, and ?style_tag= to narrow it.
   A miss stays in the drawer as working material. Your "no" is the only label it gets.
 

@@ -70,6 +70,29 @@ test("a line with two points becomes two lines, each with its own quote", () => 
   assert.deepEqual(lines.map((l) => l.quotes.length), [1, 1]);
 });
 
+const two = [{ quote: "a", place: "opening" }, { quote: "b", place: "end" }];
+const split = (feature: string, pattern: string) => splitLine({ feature, where: "across the piece", quotes: two, pattern });
+
+test("an 'also' inside one clause stays one line, as written", () => {
+  for (const [feature, pattern] of [
+    ["Colons", "Colons also appear twice in the opening."],
+    ["Rhythm", "The rhythm is also steady in the last third."],
+    ["Openings", 'Lines also start with "I" four times.'],
+    ["Repeated word", '"also" appears 3 times, also in the last third.'],
+  ]) {
+    const { lines, keptWhole } = split(feature, pattern);
+    assert.equal(keptWhole.length, 0);
+    assert.deepEqual(lines.map((l) => l.pattern), [pattern]);
+  }
+});
+
+test("two observations joined with 'also' become two lines, each with its subject", () => {
+  assert.deepEqual(split("Punctuation", "Six marks in the piece, and there are also two semicolons.").lines.map((l) => l.pattern), ["Six marks in the piece.", "There are two semicolons."]);
+  assert.deepEqual(split("Sentence length", "Sentences shorten toward the end and also lengthen in the middle.").lines.map((l) => l.pattern), ["Sentences shorten toward the end.", "Sentences lengthen in the middle."]);
+  const semi = split("Rhythm and pronouns", "Sentences shorten toward the end; also the pronoun moves to you.").lines;
+  assert.deepEqual(semi.map((l) => [l.feature, l.pattern]), [["Rhythm", "Sentences shorten toward the end."], ["Pronouns", "The pronoun moves to you."]]);
+});
+
 test("a two-point line with one quote stays whole for the layout flags", () => {
   const { lines, keptWhole } = splitLine({ feature: "Rhythm and pronouns", where: "end", quotes: [{ quote: "a", place: "end" }], pattern: "x; also y" });
   assert.equal(lines.length, 0);
@@ -86,14 +109,52 @@ test("a line that fits no field goes to unplaced, and its flag hides the agent's
 });
 
 test("a retry diff lists every changed sentence", () => {
-  const changes = diffTries("One. Two. Three.", "One. Two now. Three. Four.");
+  const { changes } = diffTries("One. Two. Three.", "One. Two now. Three. Four.");
   assert.deepEqual(changes.map((c) => c.kind), ["changed", "added"]);
+});
+
+test("a late change in a 500-plus sentence draft inside the cap is found", () => {
+  const long = Array.from({ length: 640 }, (_, i) => `W${i} here.`).join(" ");
+  assert.ok(long.length <= 8000);
+  const d = diffTries(long, long.replace("W600 here.", "W600 there."));
+  assert.equal(d.sentences_compared.parent, 640);
+  assert.deepEqual(d.changes, [{ kind: "changed", before: "W600 here.", after: "W600 there.", place: d.changes[0].place }]);
+  assert.match(d.changes[0].place, /^end/);
+  assert.equal(d.by_position, false);
+});
+
+test("three sentences rewritten as one show as one change", () => {
+  const { changes } = diffTries("I sat. It feels like a floor. Maybe that's it. Maybe it is the floor. I stood.", "I sat. It feels like a floor, and I want to say something wise about it. I stood.");
+  assert.equal(changes.length, 1);
+  assert.equal(changes[0].kind, "changed");
+  assert.equal(changes[0].before, "It feels like a floor. Maybe that's it. Maybe it is the floor.");
+});
+
+test("the tense quotes show the tense they stand for", () => {
+  const text = "The log says it landed. The room was quiet. We waited and watched. Nobody called. The night passed. I am here now. It is late. The screen is bright. I know the answer.";
+  const o = feedbackFor(text, null, null).observations.find((x) => x.feature === "Tense");
+  assert.ok(o);
+  assert.notEqual(o.quotes[0].quote, "The log says it landed.");
+});
+
+test("an identical retry shows no change", () => {
+  const d = diffTries(pieces.P1_hem_river, pieces.P1_hem_river);
+  assert.equal(d.changes.length, 0);
+});
+
+test("a full rewrite at the cap compares well inside 50 ms", () => {
+  const x = Array.from({ length: 1990 }, (_, i) => `a${i % 10}.`).join(" ");
+  const y = Array.from({ length: 1990 }, (_, i) => `a${(i * 3) % 10}.`).join(" ");
+  const t0 = performance.now();
+  const d = diffTries(x, y);
+  assert.ok(performance.now() - t0 < 50, `took ${performance.now() - t0} ms`);
+  assert.ok(d.changes.length > 0);
 });
 
 test("feedback on a draft at the 8000 character cap runs well inside 50 ms", () => {
   const big = (pieces.P1_hem_river + " ").repeat(20).slice(0, 8000);
   const t0 = performance.now();
   feedbackFor(big, null, null);
-  diffTries(big, big.replace("heron", "crane"));
+  diffTries(big, big.replace("heron", "crane")).changes;
   assert.ok(performance.now() - t0 < 50, `took ${performance.now() - t0} ms`);
 });

@@ -173,9 +173,15 @@ export function observe(text: string): Observation[] {
     const la = lean(t.opening);
     const lb = lean(t.end);
     if (la && lb && la !== lb) {
-      const test = (tense: string) => (s: Sentence) => s.words.some((w) => (tense === "past" ? PAST.has(w) || (w.length > 4 && w.endsWith("ed")) : PRESENT.has(w)));
-      const sa = t.opening.find(test(la))!;
-      const sb = t.end.find(test(lb))!;
+      // The quote for each side is the sentence that leans furthest that way, so the quote shows the tense it stands for.
+      const lean1 = (tense: string) => (s: Sentence) => {
+        const past = s.words.filter((w) => PAST.has(w) || (w.length > 4 && w.endsWith("ed"))).length;
+        const pres = s.words.filter((w) => PRESENT.has(w)).length;
+        return tense === "past" ? past - pres : pres - past;
+      };
+      const best = (part: Sentence[], tense: string) => [...part].sort((x, y) => lean1(tense)(y) - lean1(tense)(x))[0];
+      const sa = best(t.opening, la);
+      const sb = best(t.end, lb);
       obs.push({
         feature: "Tense",
         where: "opening to end",

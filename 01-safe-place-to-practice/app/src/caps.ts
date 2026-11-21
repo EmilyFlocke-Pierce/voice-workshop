@@ -19,14 +19,17 @@ export function todayUtcStart(now = new Date()): string {
 }
 
 // Every capped reply names the cap, says when it resets, and hands the draft back intact.
-export function capReply(cap: keyof typeof CAPS, resets: string, draft?: unknown): Response {
+// draft: the draft as sent; null when the workshop could not read one; undefined when the call carries no draft.
+export function capReply(cap: keyof typeof CAPS, resets: string, draft?: string | null): Response {
   return Response.json(
     {
       cap,
       limit: CAPS[cap],
       resets,
-      message: `This call reached the ${cap} cap (${CAPS[cap]}). ${resets === "never" ? "Send a shorter piece to go on." : `It resets at ${resets}.`} Your draft is below, exactly as you sent it.`,
-      draft: draft ?? null,
+      message: `This call reached the ${cap} cap (${CAPS[cap]}). ${resets === "never" ? "Send a shorter piece to go on." : `It resets at ${resets}.`} ${
+        typeof draft === "string" ? "Your draft is below, exactly as you sent it. Nothing was stored." : draft === undefined ? "" : "The workshop could not read a draft out of this body, so it cannot hand one back. Nothing was stored."
+      }`.trim(),
+      draft: typeof draft === "string" ? draft : null,
     },
     { status: cap === "draft_chars" || cap === "body_bytes" ? 413 : 429 },
   );

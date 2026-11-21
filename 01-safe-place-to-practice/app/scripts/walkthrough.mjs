@@ -94,10 +94,44 @@ try {
   const marks = await call("GET", "/marks", { key });
   check("marks group by what_tried and a rename moves the group", ren.body.marks_renamed === 2 && marks.body.grouped_by_what_tried["softening words, then fewer"].length === 2);
 
+  const same = await call("POST", `/tries/${r1.body.id}/retry`, { key, body: { text: RETRY, change_note: "meant to cut the last perhaps" } });
+  check("an identical retry says plainly that nothing changed", same.body.changes.nothing_changed === true && /no change/.test(same.body.changes.read_it));
+
+  const long = Array.from({ length: 640 }, (_, i) => `W${i} here.`).join(" ");
+  const lt = await call("POST", "/tries", { key, body: { text: long, style_tag: "clipped" } });
+  const lr = await call("POST", `/tries/${lt.body.id}/retry`, { key, body: { text: long.replace("W600 here.", "W600 there."), change_note: "one word near the end" } });
+  check("a change at sentence 601 of a long draft is found", lr.body.changes.every_change_found.length === 1 && lr.body.changes.every_change_found[0].after === "W600 there.");
+
+  const notes = await call("POST", `/tries/${t1.body.id}/notes`, { key, body: { diagnosis: "I meant the hedges to carry the scene; the page shows perhaps 4 times, mostly at the end, so they pile up where the scene should land", rough_edges: [{ span: "Perhaps it rained.", reason: "flat on purpose; polishing it would pick a mood too soon" }] } });
+  const withNotes = await call("GET", `/tries/${t1.body.id}`, { key });
+  check("a diagnosis and per-edge reasons are written down on the try", notes.status === 200 && withNotes.body.diagnosis.startsWith("I meant") && withNotes.body.rough_edges[0].span === "Perhaps it rained.");
+  const badEdge = await call("POST", `/tries/${t1.body.id}/notes`, { key, body: { rough_edges: [{ span: "not in the try", reason: "x" }] } });
+  check("a rough edge span must be an exact piece of the try", badEdge.status === 400);
+
+  const emptyLine = await call("POST", `/tries/${t1.body.id}/mark`, { key, body: { what_tried: "x", own_lines: ["  "] } });
+  check("an empty own_lines span is refused with a kind message", emptyLine.status === 400 && /Paste the words/.test(emptyLine.body.message));
+  const twice = await call("POST", `/tries/${r1.body.id}/mark`, { key, body: { what_tried: "clipped", own_lines: ["I went in.", "I went in."] } });
+  check("a repeated own_lines span is kept once and noted", twice.status === 201 && twice.body.own_lines.length === 1 && /more than once/.test(twice.body.note));
+  const merge = await call("POST", "/marks/rename", { key, body: { from: "clipped", to: "softening words, then fewer" } });
+  check("a rename onto an existing label says it merged and names both", merge.body.merged === true && merge.body.message.includes('"clipped"') && merge.body.message.includes('"softening words, then fewer"'));
+
+  const bigBodyText = "y".repeat(70000);
+  const bb = await call("POST", "/tries", { key, body: { text: bigBodyText } });
+  check("over the body cap: the draft comes back whole", bb.status === 413 && bb.body.cap === "body_bytes" && bb.body.draft === bigBodyText);
+  const bbRaw = await call("POST", "/tries", { key, body: "{" + "z".repeat(70000) });
+  check("over the body cap with unreadable JSON: the reply says it could not hand a draft back", bbRaw.status === 413 && bbRaw.body.draft === null && /could not read a draft/.test(bbRaw.body.message));
+
+  const fresh = (await call("POST", "/keys")).body.key;
+  const look = await call("GET", "/tries?session=current", { key: fresh });
+  const look2 = await call("GET", "/tries?session=current", { key: fresh });
+  check("reading this session starts no session and leaves the idle clock alone", look.body.session_id === null && look2.body.session_id === null);
+
   const other = (await call("POST", "/keys")).body.key;
   const peek = await call("GET", `/tries/${t1.body.id}`, { key: other });
   const peekDrawer = await call("GET", "/tries?landed=no", { key: other });
   const peekMarks = await call("GET", "/marks", { key: other });
+  const peekNotes = await call("POST", `/tries/${t1.body.id}/notes`, { key: other, body: { diagnosis: "x" } });
+  check("another key can neither read nor write this try's notes", peekNotes.status === 404);
   check("another key reads none of these tries, the drawer, or marks", peek.status === 404 && peekDrawer.body.tries.length === 0 && Object.keys(peekMarks.body.grouped_by_what_tried).length === 0);
   const nokey = await call("GET", "/tries?landed=no");
   check("no key, no read", nokey.status === 401);
@@ -119,7 +153,7 @@ try {
   const end = await call("POST", "/session/end", { key });
   check("POST /session/end returns marks and own lines as plain text with an invitation back", typeof end.body === "string" && end.body.includes('reads as mine: "counted the cars that did not stop"') && /same key/.test(end.body));
   const after = await call("GET", "/tries?landed=no", { key });
-  check("after the session ends, the same key brings the drawer back", after.body.tries.length === 2);
+  check("after the session ends, the same key brings the drawer back", after.body.tries.length === 2 && after.body.tries.every((t) => t.feedback));
 } catch (e) {
   check("walkthrough ran to the end", false, String(e));
 } finally {

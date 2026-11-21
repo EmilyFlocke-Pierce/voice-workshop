@@ -8,3 +8,4 @@
 - Rewrote each slice README with its intent from the slice report (WHAT, DOES, FOR, WHY) and an Open questions list. Section and Quilt slice id lines kept. No frames changed.
 - Removed the framework.md and criteria.md renders at Emily's ask. The JSON frames are the source.
 - Built slice 01 (Safe place to practice) from ready run v1 8e67b8cb: app in 01-safe-place-to-practice/app, with PLAN.md (build log in the third column), SESSION.md, and MANIFEST.md. Local only, status ready to locate.
+- Slice 01 lifts after locate run 1: full-length retry diff (I.C.2), a split that keeps each line's subject (II.B.2), places for rough-edge reasons and a diagnosis, quirk fixes, and a builder try-out. Local only, status ready to locate, run 2.

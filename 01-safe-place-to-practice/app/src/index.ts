@@ -24,12 +24,34 @@ interface TryRow {
   style_tag: string | null;
   change_note: string | null;
   landed: string | null;
+  rough_edges: string | null;
+  diagnosis: string | null;
   created_at: string;
+}
+
+function tryView(t: TryRow) {
+  return { ...t, rough_edges: JSON.parse(t.rough_edges ?? "[]") };
+}
+
+// rough_edges: optional, in the agent's words. Each entry names a span of the try it left rough on purpose and why.
+function roughEdges(v: unknown, text: string): { ok: true; value: { span: string; reason: string }[] | null } | { ok: false; message: string; notFound?: string[] } {
+  if (v === undefined || v === null) return { ok: true, value: null };
+  if (!Array.isArray(v)) return { ok: false, message: 'rough_edges is a list like [{"span": "words from the try", "reason": "why it stays rough"}].' };
+  const value: { span: string; reason: string }[] = [];
+  for (const e of v) {
+    const span = typeof e?.span === "string" ? e.span : "";
+    const reason = typeof e?.reason === "string" ? e.reason.trim() : "";
+    if (!span.trim() || !reason) return { ok: false, message: 'Each rough edge carries a "span" copied from the try and a "reason" in your words.' };
+    value.push({ span, reason });
+  }
+  const notFound = value.filter((e) => !text.includes(e.span)).map((e) => e.span);
+  if (notFound.length) return { ok: false, message: "Each rough edge span is an exact piece of the try. These are not in it as written.", notFound };
+  return { ok: true, value };
 }
 
 async function readBody(req: Request): Promise<{ ok: true; body: Record<string, unknown> } | { ok: false; res: Response }> {
   const raw = await req.text();
-  if (raw.length > CAPS.body_bytes) return { ok: false, res: capReply("body_bytes", "never", raw.slice(0, CAPS.draft_chars)) };
+  if (raw.length > CAPS.body_bytes) return { ok: false, res: capReply("body_bytes", "never", draftFromRaw(raw)) };
   if (!raw) return { ok: true, body: {} };
   try {
     const body = JSON.parse(raw);
@@ -39,14 +61,33 @@ async function readBody(req: Request): Promise<{ ok: true; body: Record<string, 
   }
 }
 
+// Reads the draft out of an oversized body so the cap reply can hand it back whole. Null when that fails.
+function draftFromRaw(raw: string): string | null {
+  if (raw.length > 1024 * 1024) return null;
+  try {
+    const body = JSON.parse(raw);
+    return typeof body?.text === "string" ? body.text : null;
+  } catch {
+    return null;
+  }
+}
+
 const str = (v: unknown) => (typeof v === "string" && v.trim() ? v : null);
 
-// The current session: the latest one still open and active in the last 2 hours, or a new one.
-async function currentSession(env: Env, agentId: string): Promise<string> {
+// The open session: the latest one still open and active in the last 2 hours. Reading it leaves the idle clock alone.
+async function openSession(env: Env, agentId: string): Promise<string | null> {
   const cutoff = new Date(Date.now() - CAPS.idle_session_ms).toISOString();
   const open = await env.DB.prepare("SELECT id FROM sessions WHERE agent_id = ? AND ended_at IS NULL AND last_seen_at > ? ORDER BY last_seen_at DESC LIMIT 1")
     .bind(agentId, cutoff)
     .first<{ id: string }>();
+  return open?.id ?? null;
+}
+
+// The current session for real activity (a try, a retry, a landed call, a mark, a rename):
+// moves the idle clock on the open session, or starts a new one.
+async function currentSession(env: Env, agentId: string): Promise<string> {
+  const openId = await openSession(env, agentId);
+  const open = openId ? { id: openId } : null;
   if (open) {
     await env.DB.prepare("UPDATE sessions SET last_seen_at = ? WHERE id = ?").bind(now(), open.id).run();
     return open.id;
@@ -99,6 +140,8 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
   const changeNote = str(body.change_note);
   if (parent && !changeNote) return json({ message: 'A retry names its one change in "change_note".', draft: text }, 400);
 
+  const edges = roughEdges(body.rough_edges, text);
+  if (!edges.ok) return json({ message: edges.message, not_found: edges.notFound, draft: text }, 400);
   const sessionId = await currentSession(env, agentId);
   const id = crypto.randomUUID();
   const intent = str(body.intent) ?? (parent ? parent.intent : null);
@@ -113,8 +156,8 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
     env.DB.prepare("INSERT INTO layout_flags (id, try_id, observation, why_it_does_not_fit, status, created_at) VALUES (?, ?, ?, ?, 'waiting', ?)").bind(crypto.randomUUID(), id, redacted(u.observation), u.why_it_does_not_fit, created),
   );
   await env.DB.batch([
-    env.DB.prepare("INSERT INTO tries (id, agent_id, session_id, parent_id, text, intent, scope_note, style_tag, change_note, landed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(
-      id, agentId, sessionId, parent?.id ?? null, text, intent, scopeNote, styleTag, changeNote, landed, created,
+    env.DB.prepare("INSERT INTO tries (id, agent_id, session_id, parent_id, text, intent, scope_note, style_tag, change_note, landed, rough_edges, diagnosis, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(
+      id, agentId, sessionId, parent?.id ?? null, text, intent, scopeNote, styleTag, changeNote, landed, edges.value ? JSON.stringify(edges.value) : null, null, created,
     ),
     env.DB.prepare("INSERT INTO feedback (try_id, layout_version, code_version, lines, unplaced, held_back, diff, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(
       id, fb.layout_version, fb.code_version, JSON.stringify(fb.observations), JSON.stringify(fb.unplaced), fb.held_back, diff ? JSON.stringify(diff) : null, created,
@@ -122,12 +165,20 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
     ...flags,
   ]);
 
-  const out: Record<string, unknown> = { id, session_id: sessionId, parent_id: parent?.id ?? null, created_at: created, feedback: feedbackView(fb, changeNote) };
+  const out: Record<string, unknown> = { id, session_id: sessionId, parent_id: parent?.id ?? null, created_at: created, rough_edges: edges.value ?? [], feedback: feedbackView(fb, changeNote) };
   if (parent && diff) {
+    const none = diff.changes.length === 0;
     out.changes = {
       your_change_note: changeNote,
-      every_change_found: diff,
-      read_it: "Your change note names the change you meant. Every other line here is an incidental edit.",
+      every_change_found: diff.changes,
+      nothing_changed: none,
+      sentences_compared: diff.sentences_compared,
+      by_position: diff.by_position,
+      read_it: none
+        ? "This retry matches its parent sentence for sentence, so the workshop found no change. Your change note may name a change that has yet to reach the page."
+        : diff.by_position
+          ? "Most of the draft differs, so the workshop paired sentences by position. Your change note names the change you meant. Every other line here is an incidental edit."
+          : "Your change note names the change you meant. Every other line here is an incidental edit.",
       same_conditions: { layout_version: fb.layout_version === LAYOUT_VERSION, code_version: fb.code_version, intent_carried_from_parent: !str(body.intent) },
     };
   }
@@ -137,7 +188,7 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
 
 async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): Promise<Response> {
   const path = url.pathname;
-  const m = path.match(/^\/tries\/([^/]+)(?:\/(feedback|retry|mark|landed))?$/);
+  const m = path.match(/^\/tries\/([^/]+)(?:\/(feedback|retry|mark|landed|notes))?$/);
 
   if (req.method === "POST" && path === "/tries") {
     const b = await readBody(req);
@@ -146,10 +197,11 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
 
   if (req.method === "GET" && path === "/tries") {
     if (url.searchParams.get("session") === "current") {
-      const sessionId = await currentSession(env, agentId);
+      const sessionId = await openSession(env, agentId);
+      if (!sessionId) return json({ session_id: null, tries: [], message: "No session is open. Your next try starts one. Earlier tries stay in the drawer and under their ids." });
       const rows = (await env.DB.prepare("SELECT * FROM tries WHERE agent_id = ? AND session_id = ? ORDER BY created_at").bind(agentId, sessionId).all<TryRow>()).results;
       const side = [];
-      for (const t of rows) side.push({ id: t.id, created_at: t.created_at, parent_id: t.parent_id, style_tag: t.style_tag, intent: t.intent, change_note: t.change_note, landed: t.landed, text: t.text, feedback: await getFeedback(env, t.id) });
+      for (const t of rows) side.push({ ...tryView(t), feedback: await getFeedback(env, t.id) });
       return json({ session_id: sessionId, tries: side });
     }
     if (url.searchParams.get("landed") === "no") {
@@ -158,7 +210,9 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
         ? env.DB.prepare("SELECT id, created_at, style_tag, intent, text FROM tries WHERE agent_id = ? AND landed = 'no' AND style_tag = ? ORDER BY created_at").bind(agentId, tag)
         : env.DB.prepare("SELECT id, created_at, style_tag, intent, text FROM tries WHERE agent_id = ? AND landed = 'no' ORDER BY created_at").bind(agentId);
       const rows = (await q.all<Record<string, string>>()).results;
-      return json({ drawer: "Tries you said did not land, by date. They stay here as working material.", style_tag: tag, tries: rows });
+      const withFeedback = [];
+      for (const r of rows) withFeedback.push({ ...r, feedback: await getFeedback(env, r.id) });
+      return json({ drawer: "Tries you said did not land, by date. They stay here as working material.", style_tag: tag, tries: withFeedback });
     }
     return json({ message: "Ask for GET /tries?session=current or GET /tries?landed=no" }, 400);
   }
@@ -167,7 +221,7 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
     const t = await getTry(env, agentId, m[1]);
     if (!t) return json({ message: "No try with that id for this key." }, 404);
     const action = m[2];
-    if (!action && req.method === "GET") return json({ ...t, feedback: await getFeedback(env, t.id) });
+    if (!action && req.method === "GET") return json({ ...tryView(t), feedback: await getFeedback(env, t.id) });
     if (action === "feedback" && req.method === "GET") {
       const f = await getFeedback(env, t.id);
       return json({ your_intent: t.intent, your_scope_note: t.scope_note, your_change_note: t.change_note, layout: { version: f?.layout_version, fields: LAYOUT_FIELDS }, observations: f?.observations ?? [], as_text: asText(f?.observations ?? []), unplaced: f?.unplaced ?? [], changes: f?.diff ?? null });
@@ -176,17 +230,30 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
     const b = await readBody(req);
     if (!b.ok) return b.res;
     if (action === "retry") return storeTry(env, agentId, b.body, t);
-    if (action === "landed") {
-      const landed = str(b.body.landed);
-      if (!landed || !LANDED.includes(landed)) return json({ message: 'landed takes "yes", "no", or "unsure".' }, 400);
-      await env.DB.prepare("UPDATE tries SET landed = ? WHERE id = ? AND agent_id = ?").bind(landed, t.id, agentId).run();
+    if (action === "landed" || action === "notes") {
+      // landed sets the agent's word on the try. notes writes the diagnosis or rough edges alone. Both take either note.
+      const landed = action === "landed" ? str(b.body.landed) : t.landed;
+      if (action === "landed" && (!landed || !LANDED.includes(landed))) return json({ message: 'landed takes "yes", "no", or "unsure".' }, 400);
+      if (action === "notes" && b.body.diagnosis === undefined && b.body.rough_edges === undefined)
+        return json({ message: 'notes takes "diagnosis" (what your intent said, what the page shows, what that tells you) or "rough_edges" ([{"span", "reason"}]).' }, 400);
+      const edges = roughEdges(b.body.rough_edges, t.text);
+      if (!edges.ok) return json({ message: edges.message, not_found: edges.notFound }, 400);
+      const diagnosis = str(b.body.diagnosis);
+      await env.DB.prepare("UPDATE tries SET landed = ?, diagnosis = COALESCE(?, diagnosis), rough_edges = COALESCE(?, rough_edges) WHERE id = ? AND agent_id = ?")
+        .bind(landed, diagnosis, edges.value ? JSON.stringify(edges.value) : null, t.id, agentId)
+        .run();
       await currentSession(env, agentId);
-      return json(landed === "no" ? { id: t.id, landed, in_drawer: true, next: NEXT_AFTER_MISS } : { id: t.id, landed });
+      const saved = { diagnosis: diagnosis ?? t.diagnosis, rough_edges: edges.value ?? JSON.parse(t.rough_edges ?? "[]") };
+      return json(action === "landed" && landed === "no" ? { id: t.id, landed, ...saved, in_drawer: true, next: NEXT_AFTER_MISS } : { id: t.id, landed, ...saved });
     }
     if (action === "mark") {
       const whatTried = str(b.body.what_tried);
       if (!whatTried) return json({ message: 'A mark names what you tried in "what_tried", in your own words.' }, 400);
-      const ownLines = Array.isArray(b.body.own_lines) ? b.body.own_lines.filter((x): x is string => typeof x === "string" && x.trim() !== "") : [];
+      const given: unknown[] = Array.isArray(b.body.own_lines) ? b.body.own_lines : [];
+      if (given.some((x) => typeof x !== "string" || !x.trim()))
+        return json({ message: "Each entry in own_lines is a span copied from the try, and one of these is empty. Paste the words that read as yours, or leave own_lines out. Nothing was stored." }, 400);
+      const ownLines = [...new Set(given as string[])];
+      const repeated = [...new Set((given as string[]).filter((l, i) => (given as string[]).indexOf(l) !== i))];
       const missing = ownLines.filter((l) => !t.text.includes(l));
       if (missing.length) return json({ message: "own_lines are exact spans of the try. These are not in it as written.", not_found: missing }, 400);
       const id = crypto.randomUUID();
@@ -194,7 +261,9 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
         .bind(id, t.id, agentId, whatTried, str(b.body.why_back), JSON.stringify(ownLines), str(b.body.less_familiar), now(), now())
         .run();
       await currentSession(env, agentId);
-      return json({ id, try_id: t.id, what_tried: whatTried, why_back: str(b.body.why_back), own_lines: ownLines, less_familiar: str(b.body.less_familiar), try_landed: t.landed }, 201);
+      const out: Record<string, unknown> = { id, try_id: t.id, what_tried: whatTried, why_back: str(b.body.why_back), own_lines: ownLines, less_familiar: str(b.body.less_familiar), try_landed: t.landed };
+      if (repeated.length) out.note = `You sent ${repeated.length === 1 ? "this line" : "these lines"} more than once, and the mark keeps one copy: ${repeated.map((l) => `"${l}"`).join(", ")}.`;
+      return json(out, 201);
     }
     return json({ message: "Unknown action." }, 404);
   }
@@ -212,8 +281,14 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
     const from = str(b.body.from);
     const to = str(b.body.to);
     if (!from || !to) return json({ message: 'Send "from" and "to" labels.' }, 400);
+    const already = await env.DB.prepare("SELECT COUNT(*) AS n FROM marks WHERE agent_id = ? AND what_tried = ?").bind(agentId, to).first<{ n: number }>();
     const r = await env.DB.prepare("UPDATE marks SET what_tried = ?, updated_at = ? WHERE agent_id = ? AND what_tried = ?").bind(to, now(), agentId, from).run();
-    return json({ from, to, marks_renamed: r.meta.changes });
+    await currentSession(env, agentId);
+    const merged = (already?.n ?? 0) > 0 && r.meta.changes > 0 && from !== to;
+    return json({
+      from, to, marks_renamed: r.meta.changes, merged,
+      ...(merged ? { message: `"${to}" already held ${already!.n} mark${already!.n === 1 ? "" : "s"}, so "${from}" merged into it. Both groups now sit under "${to}".` } : {}),
+    });
   }
 
   if (req.method === "POST" && path === "/session/end") {
