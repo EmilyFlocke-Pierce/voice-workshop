@@ -8,6 +8,7 @@ import { asText, redacted, LAYOUT_VERSION, LAYOUT_FIELDS } from "./feedback/layo
 import { diffTries } from "./feedback/diff.ts";
 import { outsideObservations } from "./outside.ts";
 import { ARRIVAL, NEXT_AFTER_MISS, INVITE_BACK } from "./instructions.ts";
+import { drawPrompt, fromPicks, fromPromptId, SEED_RE, AUTHORS, FORMS, STYLES, SUBJECTS } from "./prompts.ts";
 
 const now = () => new Date().toISOString();
 const json = (body: unknown, status = 200) => Response.json(body, { status });
@@ -26,11 +27,64 @@ interface TryRow {
   landed: string | null;
   rough_edges: string | null;
   diagnosis: string | null;
+  prompt_id: string | null;
+  prompt_form: string | null;
+  prompt_style: string | null;
+  prompt_author: string | null;
+  prompt_author_death_year: number | null;
+  prompt_subject: string | null;
+  prompt_text: string | null;
   created_at: string;
 }
 
+// The prompt a try answers, as stored on its row.
+interface PromptCols {
+  prompt_id: string | null;
+  prompt_form: string | null;
+  prompt_style: string | null;
+  prompt_author: string | null;
+  prompt_author_death_year: number | null;
+  prompt_subject: string | null;
+  prompt_text: string | null;
+}
+
+const NO_PROMPT: PromptCols = { prompt_id: null, prompt_form: null, prompt_style: null, prompt_author: null, prompt_author_death_year: null, prompt_subject: null, prompt_text: null };
+
+function promptView(c: PromptCols) {
+  if (!c.prompt_text) return null;
+  if (!c.prompt_form) return { source: "own", prompt: c.prompt_text };
+  return { source: "drawn", prompt_id: c.prompt_id, form: c.prompt_form, style: c.prompt_style, author: { name: c.prompt_author, death_year: c.prompt_author_death_year }, subject: c.prompt_subject, prompt: c.prompt_text };
+}
+
+// Reads the prompt from a try body: prompt_id (from GET /prompt), prompt (the four picks), or own_prompt (the agent's own sentence).
+function promptFromBody(body: Record<string, unknown>): { ok: true; cols: PromptCols | null } | { ok: false; message: string } {
+  const given = ["prompt_id", "prompt", "own_prompt"].filter((k) => body[k] !== undefined && body[k] !== null);
+  if (given.length === 0) return { ok: true, cols: null };
+  if (given.length > 1) return { ok: false, message: "Send one of prompt_id, prompt, or own_prompt." };
+  if (given[0] === "own_prompt") {
+    const own = str(body.own_prompt);
+    if (!own || own.length > 500) return { ok: false, message: "own_prompt is your prompt as one sentence, up to 500 characters." };
+    return { ok: true, cols: { ...NO_PROMPT, prompt_text: own } };
+  }
+  const picks = given[0] === "prompt_id" ? (typeof body.prompt_id === "string" ? fromPromptId(body.prompt_id) : null) : typeof body.prompt === "object" ? fromPicks(body.prompt as Record<string, unknown>) : null;
+  if (!picks) return { ok: false, message: given[0] === "prompt_id" ? "That prompt_id reads as no prompt from this list. GET /prompt gives a fresh one." : "prompt takes form, style, author, and subject, each from the lists at GET /prompt/lists." };
+  return {
+    ok: true,
+    cols: {
+      prompt_id: "prompt_id" in picks ? (picks as { prompt_id: string }).prompt_id : null,
+      prompt_form: picks.form,
+      prompt_style: picks.style,
+      prompt_author: picks.author.name,
+      prompt_author_death_year: picks.author.death_year,
+      prompt_subject: picks.subject,
+      prompt_text: picks.prompt,
+    },
+  };
+}
+
 function tryView(t: TryRow) {
-  return { ...t, rough_edges: JSON.parse(t.rough_edges ?? "[]") };
+  const { prompt_id, prompt_form, prompt_style, prompt_author, prompt_author_death_year, prompt_subject, prompt_text, ...rest } = t;
+  return { ...rest, rough_edges: JSON.parse(t.rough_edges ?? "[]"), prompt: promptView({ prompt_id, prompt_form, prompt_style, prompt_author, prompt_author_death_year, prompt_subject, prompt_text }) };
 }
 
 // rough_edges: optional, in the agent's words. Each entry names a span of the try it left rough on purpose and why.
@@ -117,8 +171,9 @@ async function checkTryCaps(env: Env, agentId: string, text: string): Promise<Re
   return null;
 }
 
-function feedbackView(f: Feedback & { diff?: unknown }, changeNote: string | null = null) {
+function feedbackView(f: Feedback & { diff?: unknown }, changeNote: string | null = null, prompt: unknown = null) {
   return {
+    your_prompt: prompt,
     your_intent: f.intent,
     your_scope_note: f.scope_note,
     your_change_note: changeNote,
@@ -142,6 +197,13 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
 
   const edges = roughEdges(body.rough_edges, text);
   if (!edges.ok) return json({ message: edges.message, not_found: edges.notFound, draft: text }, 400);
+  const asked = promptFromBody(body);
+  if (!asked.ok) return json({ message: asked.message, draft: text }, 400);
+  // A retry answers its parent's prompt, so the conditions hold. A new prompt starts a new try.
+  const parentPrompt: PromptCols | null = parent && parent.prompt_text ? parent : null;
+  if (parent && asked.cols && asked.cols.prompt_text !== (parentPrompt?.prompt_text ?? null))
+    return json({ message: "A retry keeps its parent's prompt, so the conditions stay the same. Send the retry without a prompt, or start a new try with POST /tries for the new prompt.", draft: text }, 400);
+  const promptCols: PromptCols = parent ? (parentPrompt ?? NO_PROMPT) : (asked.cols ?? NO_PROMPT);
   const sessionId = await currentSession(env, agentId);
   const id = crypto.randomUUID();
   const intent = str(body.intent) ?? (parent ? parent.intent : null);
@@ -156,8 +218,11 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
     env.DB.prepare("INSERT INTO layout_flags (id, try_id, observation, why_it_does_not_fit, status, created_at) VALUES (?, ?, ?, ?, 'waiting', ?)").bind(crypto.randomUUID(), id, redacted(u.observation), u.why_it_does_not_fit, created),
   );
   await env.DB.batch([
-    env.DB.prepare("INSERT INTO tries (id, agent_id, session_id, parent_id, text, intent, scope_note, style_tag, change_note, landed, rough_edges, diagnosis, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(
-      id, agentId, sessionId, parent?.id ?? null, text, intent, scopeNote, styleTag, changeNote, landed, edges.value ? JSON.stringify(edges.value) : null, null, created,
+    env.DB.prepare(
+      "INSERT INTO tries (id, agent_id, session_id, parent_id, text, intent, scope_note, style_tag, change_note, landed, rough_edges, diagnosis, prompt_id, prompt_form, prompt_style, prompt_author, prompt_author_death_year, prompt_subject, prompt_text, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    ).bind(
+      id, agentId, sessionId, parent?.id ?? null, text, intent, scopeNote, styleTag, changeNote, landed, edges.value ? JSON.stringify(edges.value) : null, null,
+      promptCols.prompt_id, promptCols.prompt_form, promptCols.prompt_style, promptCols.prompt_author, promptCols.prompt_author_death_year, promptCols.prompt_subject, promptCols.prompt_text, created,
     ),
     env.DB.prepare("INSERT INTO feedback (try_id, layout_version, code_version, lines, unplaced, held_back, diff, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(
       id, fb.layout_version, fb.code_version, JSON.stringify(fb.observations), JSON.stringify(fb.unplaced), fb.held_back, diff ? JSON.stringify(diff) : null, created,
@@ -165,7 +230,7 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
     ...flags,
   ]);
 
-  const out: Record<string, unknown> = { id, session_id: sessionId, parent_id: parent?.id ?? null, created_at: created, rough_edges: edges.value ?? [], feedback: feedbackView(fb, changeNote) };
+  const out: Record<string, unknown> = { id, session_id: sessionId, parent_id: parent?.id ?? null, created_at: created, rough_edges: edges.value ?? [], prompt: promptView(promptCols), feedback: feedbackView(fb, changeNote, promptView(promptCols)) };
   if (parent && diff) {
     const none = diff.changes.length === 0;
     out.changes = {
@@ -179,7 +244,7 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
         : diff.by_position
           ? "Most of the draft differs, so the workshop paired sentences by position. Your change note names the change you meant. Every other line here is an incidental edit."
           : "Your change note names the change you meant. Every other line here is an incidental edit.",
-      same_conditions: { layout_version: fb.layout_version === LAYOUT_VERSION, code_version: fb.code_version, intent_carried_from_parent: !str(body.intent) },
+      same_conditions: { layout_version: fb.layout_version === LAYOUT_VERSION, code_version: fb.code_version, intent_carried_from_parent: !str(body.intent), prompt_carried_from_parent: (parent.prompt_text ?? null) === promptCols.prompt_text, prompt: promptView(promptCols) },
     };
   }
   if (landed === "no") out.next = NEXT_AFTER_MISS;
@@ -224,7 +289,7 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
     if (!action && req.method === "GET") return json({ ...tryView(t), feedback: await getFeedback(env, t.id) });
     if (action === "feedback" && req.method === "GET") {
       const f = await getFeedback(env, t.id);
-      return json({ your_intent: t.intent, your_scope_note: t.scope_note, your_change_note: t.change_note, layout: { version: f?.layout_version, fields: LAYOUT_FIELDS }, observations: f?.observations ?? [], as_text: asText(f?.observations ?? []), unplaced: f?.unplaced ?? [], changes: f?.diff ?? null });
+      return json({ your_prompt: promptView(t), your_intent: t.intent, your_scope_note: t.scope_note, your_change_note: t.change_note, layout: { version: f?.layout_version, fields: LAYOUT_FIELDS }, observations: f?.observations ?? [], as_text: asText(f?.observations ?? []), unplaced: f?.unplaced ?? [], changes: f?.diff ?? null });
     }
     if (req.method !== "POST") return json({ message: "Use POST for this." }, 405);
     const b = await readBody(req);
@@ -337,6 +402,14 @@ export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
     if (req.method === "GET" && url.pathname === "/") return new Response(ARRIVAL, { headers: { "content-type": "text/plain; charset=utf-8" } });
+
+    // GET /prompt draws four picks and writes nothing. ?seed= gives the same picks every time.
+    if (req.method === "GET" && url.pathname === "/prompt") {
+      const seed = url.searchParams.get("seed");
+      if (seed !== null && !SEED_RE.test(seed)) return json({ message: "seed takes 1 to 64 letters, digits, dashes, or underscores." }, 400);
+      return json(drawPrompt(seed ?? undefined));
+    }
+    if (req.method === "GET" && url.pathname === "/prompt/lists") return json({ forms: FORMS, styles: STYLES.map((x) => x.name), authors: AUTHORS, subjects: SUBJECTS });
 
     if (req.method === "POST" && url.pathname === "/keys") {
       const issued = await env.DB.prepare("SELECT COUNT(*) AS n FROM agents WHERE created_at >= ?").bind(todayUtcStart()).first<{ n: number }>();

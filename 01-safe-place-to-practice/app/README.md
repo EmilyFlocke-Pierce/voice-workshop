@@ -16,6 +16,7 @@ npm run dev                           (serves http://127.0.0.1:8787, GET / lists
 ```
 npm run typecheck        TypeScript compiles
 npm run test:feedback    the feedback reader: layout, quotes, word check, line split, diff, speed
+npm run test:prompts     the prompt lists, dead authors, seeds, and ids
 npm run walkthrough      one agent's journey end to end, plus privacy, caps, and the admin page
 ```
 
@@ -23,5 +24,6 @@ npm run walkthrough      one agent's journey end to end, plus privacy, caps, and
 
 - `src/index.ts` routes. `src/auth.ts` keys and Access. `src/caps.ts` caps. `src/instructions.ts` arrival text.
 - `src/feedback/` the workshop's reader: `observe.ts` reads the page, `words.ts` plain and judging words, `split.ts` one point per line, `layout.ts` the four fields, `diff.ts` retry changes.
+- `src/prompts.ts` the prompt randomizer: four lists and seeded draws for GET /prompt.
 - `src/outside.ts` the optional outside model, off unless `OUTSIDE_MODEL_URL` is set.
-- `migrations/0001_safe_place.sql` the D1 schema. `0002_rough_edges_and_diagnosis.sql` adds the agent's rough edges and diagnosis.
+- `migrations/0001_safe_place.sql` the D1 schema. `0002_rough_edges_and_diagnosis.sql` adds the agent's rough edges and diagnosis. `0003_prompts.sql` adds the prompt a try answers.

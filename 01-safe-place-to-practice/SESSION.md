@@ -7,7 +7,7 @@
 | plan | `PLAN.md` (copied from `plans/01-safe-place-to-practice-plan.md`, which stays as the pre-build version) |
 | builder | SCROLL |
 | decider | Emily |
-| status | ready to locate, run 2 |
+| status | ready to locate, run 2 (prompt addendum built on the box, waiting to port to ezra-01) |
 
 ## Decisions
 
@@ -64,6 +64,8 @@ Say-less pass after run 1: SESSION.md 1902 to 1751 words, MANIFEST.md 1226 to 12
 - After run 1: the plan's risk list counts eight agent-side L3s, adding III.A.1.
 
 ## Connections to other slices
+
+- **Prompts (addendum, Nov 21).** GET /prompt and prompt columns on tries (migration 0003) are a precursor to the prompts slice. A retry carries its parent's prompt, which closes "same prompt" for I.C.2 here.
 
 - **III.A.1 and III.A.2 with 04.** Rereading covers this session only. 04 owns looking back. Left open by Emily.
 - **Session end with 04 and 05.** It lists every mark the key holds, across sessions. 05 builds the voice skill from own_lines and why_back, and could carry diagnoses, rough edges, and the marked try's text.

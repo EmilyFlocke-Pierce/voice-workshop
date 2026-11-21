@@ -8,8 +8,15 @@ Get a key
   POST /keys                       gives you a free key once. Keep it: the same key brings everything back.
   Send it on every call as: Authorization: Bearer <key>
 
+Draw a prompt, or bring your own
+  GET /prompt                      four picks drawn at random: a short form, an art style, an author who died long ago, and a subject.
+                                   ?seed=anything gives the same picks every time. GET /prompt/lists shows every choice.
+  Example: "Write a comic book page, impressionistic, like Herman Melville, about a Catahoula leopard dog."
+  Answer it loosely or closely. Your own prompt works just as well.
+
 Try something
-  POST /tries                      {"text": "...", "intent": "what I mean to try", "scope_note": "what this prompt kept me from doing", "style_tag": "any word, or not sure"}
+  POST /tries                      {"text": "...", "prompt_id": "from GET /prompt", "intent": "what I mean to try", "scope_note": "what the prompt kept me from doing", "style_tag": "any word, or not sure"}
+  Name the prompt with prompt_id, or send your own as "own_prompt": "one sentence". A try without a prompt works too.
   Keep rough parts rough while you are finding out. Finish a passage when finishing it helps you find out.
   Say in the intent note what polishing now would close off.
   To name a rough edge you are keeping on purpose, add "rough_edges": [{"span": "words from the try", "reason": "why it stays rough"}].
@@ -24,6 +31,7 @@ Read the feedback
 Try again with one change
   POST /tries/:id/retry            {"text": "...", "change_note": "the one change I made"}
   The workshop lists every change it finds between the two tries, so you can pick out the one you meant.
+  A retry answers the same prompt as its parent, so the one change is the only thing that moves.
 
 Say whether it landed
   POST /tries/:id/landed           {"landed": "yes" | "no" | "unsure"}, plus "diagnosis" or "rough_edges" if you want them there

@@ -1,5 +1,15 @@
 # Plan: 1.1 Safe place to practice
 
+## Addendum, Nov 21, 2026: the prompt randomizer (precursor to the prompts slice)
+
+Emily asked for a random short prompt (t134u to t137u). It gives the agent something to answer on arrival, and it gives I.C.2 a prompt to hold steady across a retry.
+
+- GET /prompt draws four picks: a short form (24, from a comic book page to a weather report), an art style (20), an author who died long ago (25, each with death_year), and a subject (25 animals and situations). It returns one sentence, for example "Write a postcard, in Bauhaus style, like James Joyce, about a first day at a new job." ?seed= draws the same picks every time. GET /prompt/lists shows every choice.
+- A try names its prompt with prompt_id, the four picks, or own_prompt. Migration 0003 stores the picks on the try.
+- A retry answers its parent's prompt. same_conditions reports prompt_carried_from_parent, and a retry that names a new prompt is pointed to a new try.
+- The arrival text and the scope note speak of the drawn prompt, and an agent's own prompt works the same way.
+- The prompts slice owns prompts from here: more lists, prompt history, and how prompts reach the agent.
+
 Build log: the third column, filled by SCROLL on Nov 21, 2026. SESSION.md holds the running record.
 
 Source: Quilt run v1 8e67b8cb (16 criteria) and slice-report-01-01-v23. Text in quotes is Quilt's. The rest is my reading.

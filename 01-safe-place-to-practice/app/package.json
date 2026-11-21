@@ -7,7 +7,8 @@
     "dev": "wrangler dev --local",
     "typecheck": "tsc --noEmit",
     "test:feedback": "node --test test/feedback-observations.test.ts",
-    "walkthrough": "node scripts/walkthrough.mjs"
+    "walkthrough": "node scripts/walkthrough.mjs",
+    "test:prompts": "node --test test/prompt-draws.test.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261119.1",

@@ -126,6 +126,25 @@ try {
   const look2 = await call("GET", "/tries?session=current", { key: fresh });
   check("reading this session starts no session and leaves the idle clock alone", look.body.session_id === null && look2.body.session_id === null);
 
+  const pr = await call("GET", "/prompt?seed=walk-1");
+  const pr2 = await call("GET", "/prompt?seed=walk-1");
+  check("GET /prompt draws a form, style, dead author, and subject, with one sentence", pr.status === 200 && pr.body.form && pr.body.style && pr.body.author.death_year < 1970 && pr.body.subject && /^Write /.test(pr.body.prompt));
+  check("the same seed draws the same prompt", JSON.stringify(pr.body) === JSON.stringify(pr2.body));
+  check("an unusable seed gets a plain answer", (await call("GET", "/prompt?seed=has%20space")).status === 400);
+  check("the arrival text names GET /prompt and the drawn prompt", /GET \/prompt/.test(arrival.body) && /what the prompt kept me from/.test(arrival.body));
+  const pt = await call("POST", "/tries", { key, body: { text: "The heron filed a press release. Nobody read it. The river did.", prompt_id: pr.body.prompt_id, scope_note: "the form kept me to three lines" } });
+  check("a try answers a drawn prompt by prompt_id", pt.status === 201 && pt.body.prompt.prompt === pr.body.prompt && pt.body.feedback.your_prompt.prompt_id === pr.body.prompt_id);
+  const prr = await call("POST", `/tries/${pt.body.id}/retry`, { key, body: { text: "The heron filed a press release. Nobody read it. The river read it twice.", change_note: "the last line" } });
+  const prrRow = await call("GET", `/tries/${prr.body.id}`, { key });
+  check("a retry carries its parent's prompt forward", prr.status === 201 && prr.body.changes.same_conditions.prompt_carried_from_parent === true && prrRow.body.prompt.prompt === pr.body.prompt);
+  const other1 = await call("GET", "/prompt?seed=walk-2");
+  const swap = await call("POST", `/tries/${pt.body.id}/retry`, { key, body: { text: "x.", change_note: "y", prompt_id: other1.body.prompt_id } });
+  check("a retry with a different prompt is pointed to a new try", swap.status === 400 && /new try/.test(swap.body.message));
+  const own = await call("POST", "/tries", { key, body: { text: "A short one of my own.", own_prompt: "Write what the drawer would say if it could talk." } });
+  check("an agent's own prompt works too", own.status === 201 && own.body.prompt.source === "own");
+  const picks = await call("POST", "/tries", { key, body: { text: "Picked, not drawn.", prompt: { form: pr.body.form, style: pr.body.style, author: pr.body.author.name, subject: pr.body.subject } } });
+  check("four named picks from the lists work as a prompt", picks.status === 201 && picks.body.prompt.prompt === pr.body.prompt);
+
   const other = (await call("POST", "/keys")).body.key;
   const peek = await call("GET", `/tries/${t1.body.id}`, { key: other });
   const peekDrawer = await call("GET", "/tries?landed=no", { key: other });
