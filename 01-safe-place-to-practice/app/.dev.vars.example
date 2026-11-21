@@ -1,0 +1,3 @@
+# Copy to .dev.vars for local runs. local-dev trusts the Access email header so the admin page works without Cloudflare Access.
+ACCESS_MODE=local-dev
+ADMIN_EMAIL=emily@example.com

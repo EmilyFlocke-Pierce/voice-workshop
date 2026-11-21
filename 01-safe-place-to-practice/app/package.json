@@ -1,0 +1,21 @@
+{
+  "name": "voice-workshop-slice-01",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:local": "wrangler d1 migrations apply DB --local",
+    "dev": "wrangler dev --local",
+    "typecheck": "tsc --noEmit",
+    "test:feedback": "node --test test/feedback-observations.test.ts",
+    "walkthrough": "node scripts/walkthrough.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261119.1",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.40.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261119.1": true
+  }
+}

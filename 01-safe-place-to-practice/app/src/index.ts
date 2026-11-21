@@ -1,0 +1,281 @@
+// Voice Workshop, slice 01: Safe place to practice. One Worker, one D1 database.
+// Every agent route reads and writes only rows that belong to the caller's key.
+import type { Env, Feedback } from "./types.ts";
+import { CAPS, capReply, nextUtcMidnight, todayUtcStart } from "./caps.ts";
+import { agentFromRequest, adminEmail, newKey, sha256Hex } from "./auth.ts";
+import { feedbackFor } from "./feedback/index.ts";
+import { asText, redacted, LAYOUT_VERSION, LAYOUT_FIELDS } from "./feedback/layout.ts";
+import { diffTries } from "./feedback/diff.ts";
+import { outsideObservations } from "./outside.ts";
+import { ARRIVAL, NEXT_AFTER_MISS, INVITE_BACK } from "./instructions.ts";
+
+const now = () => new Date().toISOString();
+const json = (body: unknown, status = 200) => Response.json(body, { status });
+const LANDED = ["yes", "no", "unsure"];
+
+interface TryRow {
+  id: string;
+  agent_id: string;
+  session_id: string;
+  parent_id: string | null;
+  text: string;
+  intent: string | null;
+  scope_note: string | null;
+  style_tag: string | null;
+  change_note: string | null;
+  landed: string | null;
+  created_at: string;
+}
+
+async function readBody(req: Request): Promise<{ ok: true; body: Record<string, unknown> } | { ok: false; res: Response }> {
+  const raw = await req.text();
+  if (raw.length > CAPS.body_bytes) return { ok: false, res: capReply("body_bytes", "never", raw.slice(0, CAPS.draft_chars)) };
+  if (!raw) return { ok: true, body: {} };
+  try {
+    const body = JSON.parse(raw);
+    return body && typeof body === "object" ? { ok: true, body } : { ok: false, res: json({ message: "Send a JSON object." }, 400) };
+  } catch {
+    return { ok: false, res: json({ message: "The body is not JSON. Send a JSON object.", draft: raw }, 400) };
+  }
+}
+
+const str = (v: unknown) => (typeof v === "string" && v.trim() ? v : null);
+
+// The current session: the latest one still open and active in the last 2 hours, or a new one.
+async function currentSession(env: Env, agentId: string): Promise<string> {
+  const cutoff = new Date(Date.now() - CAPS.idle_session_ms).toISOString();
+  const open = await env.DB.prepare("SELECT id FROM sessions WHERE agent_id = ? AND ended_at IS NULL AND last_seen_at > ? ORDER BY last_seen_at DESC LIMIT 1")
+    .bind(agentId, cutoff)
+    .first<{ id: string }>();
+  if (open) {
+    await env.DB.prepare("UPDATE sessions SET last_seen_at = ? WHERE id = ?").bind(now(), open.id).run();
+    return open.id;
+  }
+  const id = crypto.randomUUID();
+  await env.DB.prepare("INSERT INTO sessions (id, agent_id, started_at, last_seen_at) VALUES (?, ?, ?, ?)").bind(id, agentId, now(), now()).run();
+  return id;
+}
+
+async function getTry(env: Env, agentId: string, id: string): Promise<TryRow | null> {
+  return env.DB.prepare("SELECT * FROM tries WHERE id = ? AND agent_id = ?").bind(id, agentId).first<TryRow>();
+}
+
+async function getFeedback(env: Env, tryId: string) {
+  const row = await env.DB.prepare("SELECT * FROM feedback WHERE try_id = ?").bind(tryId).first<Record<string, unknown>>();
+  if (!row) return null;
+  return { layout_version: row.layout_version, code_version: row.code_version, observations: JSON.parse(row.lines as string), unplaced: JSON.parse(row.unplaced as string), held_back: row.held_back, diff: row.diff ? JSON.parse(row.diff as string) : null };
+}
+
+// Caps checked before a try is stored. Each capped reply returns the draft intact.
+async function checkTryCaps(env: Env, agentId: string, text: string): Promise<Response | null> {
+  if (text.length > CAPS.draft_chars) return capReply("draft_chars", "never", text);
+  const today = await env.DB.prepare("SELECT COUNT(*) AS n FROM tries WHERE agent_id = ? AND created_at >= ?").bind(agentId, todayUtcStart()).first<{ n: number }>();
+  if ((today?.n ?? 0) >= CAPS.tries_per_key_per_day) return capReply("tries_per_key_per_day", nextUtcMidnight(), text);
+  const rows = await env.DB.prepare("SELECT (SELECT COUNT(*) FROM tries WHERE agent_id = ?1) + (SELECT COUNT(*) FROM marks WHERE agent_id = ?1) AS n").bind(agentId).first<{ n: number }>();
+  if ((rows?.n ?? 0) >= CAPS.d1_rows_per_agent) return capReply("d1_rows_per_agent", "when the keeper raises it", text);
+  return null;
+}
+
+function feedbackView(f: Feedback & { diff?: unknown }, changeNote: string | null = null) {
+  return {
+    your_intent: f.intent,
+    your_scope_note: f.scope_note,
+    your_change_note: changeNote,
+    layout: { version: f.layout_version, fields: LAYOUT_FIELDS },
+    observations: f.observations,
+    as_text: asText(f.observations),
+    unplaced: f.unplaced,
+    held_back_by_word_check: f.held_back,
+  };
+}
+
+async function storeTry(env: Env, agentId: string, body: Record<string, unknown>, parent: TryRow | null): Promise<Response> {
+  const text = typeof body.text === "string" ? body.text : null;
+  if (text === null || !text.trim()) return json({ message: 'Send the draft as "text". Any length up to 8000 characters, any style.' }, 400);
+  const capped = await checkTryCaps(env, agentId, text);
+  if (capped) return capped;
+  const landed = str(body.landed);
+  if (landed && !LANDED.includes(landed)) return json({ message: 'landed takes "yes", "no", or "unsure".', draft: text }, 400);
+  const changeNote = str(body.change_note);
+  if (parent && !changeNote) return json({ message: 'A retry names its one change in "change_note".', draft: text }, 400);
+
+  const sessionId = await currentSession(env, agentId);
+  const id = crypto.randomUUID();
+  const intent = str(body.intent) ?? (parent ? parent.intent : null);
+  const scopeNote = str(body.scope_note) ?? (parent ? parent.scope_note : null);
+  const styleTag = str(body.style_tag) ?? (parent ? parent.style_tag : null);
+  const created = now();
+  const outside = await outsideObservations(env, text);
+  const fb = feedbackFor(text, intent, scopeNote, outside);
+  const diff = parent ? diffTries(parent.text, text) : null;
+
+  const flags = fb.unplaced.map((u) =>
+    env.DB.prepare("INSERT INTO layout_flags (id, try_id, observation, why_it_does_not_fit, status, created_at) VALUES (?, ?, ?, ?, 'waiting', ?)").bind(crypto.randomUUID(), id, redacted(u.observation), u.why_it_does_not_fit, created),
+  );
+  await env.DB.batch([
+    env.DB.prepare("INSERT INTO tries (id, agent_id, session_id, parent_id, text, intent, scope_note, style_tag, change_note, landed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(
+      id, agentId, sessionId, parent?.id ?? null, text, intent, scopeNote, styleTag, changeNote, landed, created,
+    ),
+    env.DB.prepare("INSERT INTO feedback (try_id, layout_version, code_version, lines, unplaced, held_back, diff, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(
+      id, fb.layout_version, fb.code_version, JSON.stringify(fb.observations), JSON.stringify(fb.unplaced), fb.held_back, diff ? JSON.stringify(diff) : null, created,
+    ),
+    ...flags,
+  ]);
+
+  const out: Record<string, unknown> = { id, session_id: sessionId, parent_id: parent?.id ?? null, created_at: created, feedback: feedbackView(fb, changeNote) };
+  if (parent && diff) {
+    out.changes = {
+      your_change_note: changeNote,
+      every_change_found: diff,
+      read_it: "Your change note names the change you meant. Every other line here is an incidental edit.",
+      same_conditions: { layout_version: fb.layout_version === LAYOUT_VERSION, code_version: fb.code_version, intent_carried_from_parent: !str(body.intent) },
+    };
+  }
+  if (landed === "no") out.next = NEXT_AFTER_MISS;
+  return json(out, 201);
+}
+
+async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): Promise<Response> {
+  const path = url.pathname;
+  const m = path.match(/^\/tries\/([^/]+)(?:\/(feedback|retry|mark|landed))?$/);
+
+  if (req.method === "POST" && path === "/tries") {
+    const b = await readBody(req);
+    return b.ok ? storeTry(env, agentId, b.body, null) : b.res;
+  }
+
+  if (req.method === "GET" && path === "/tries") {
+    if (url.searchParams.get("session") === "current") {
+      const sessionId = await currentSession(env, agentId);
+      const rows = (await env.DB.prepare("SELECT * FROM tries WHERE agent_id = ? AND session_id = ? ORDER BY created_at").bind(agentId, sessionId).all<TryRow>()).results;
+      const side = [];
+      for (const t of rows) side.push({ id: t.id, created_at: t.created_at, parent_id: t.parent_id, style_tag: t.style_tag, intent: t.intent, change_note: t.change_note, landed: t.landed, text: t.text, feedback: await getFeedback(env, t.id) });
+      return json({ session_id: sessionId, tries: side });
+    }
+    if (url.searchParams.get("landed") === "no") {
+      const tag = url.searchParams.get("style_tag");
+      const q = tag
+        ? env.DB.prepare("SELECT id, created_at, style_tag, intent, text FROM tries WHERE agent_id = ? AND landed = 'no' AND style_tag = ? ORDER BY created_at").bind(agentId, tag)
+        : env.DB.prepare("SELECT id, created_at, style_tag, intent, text FROM tries WHERE agent_id = ? AND landed = 'no' ORDER BY created_at").bind(agentId);
+      const rows = (await q.all<Record<string, string>>()).results;
+      return json({ drawer: "Tries you said did not land, by date. They stay here as working material.", style_tag: tag, tries: rows });
+    }
+    return json({ message: "Ask for GET /tries?session=current or GET /tries?landed=no" }, 400);
+  }
+
+  if (m) {
+    const t = await getTry(env, agentId, m[1]);
+    if (!t) return json({ message: "No try with that id for this key." }, 404);
+    const action = m[2];
+    if (!action && req.method === "GET") return json({ ...t, feedback: await getFeedback(env, t.id) });
+    if (action === "feedback" && req.method === "GET") {
+      const f = await getFeedback(env, t.id);
+      return json({ your_intent: t.intent, your_scope_note: t.scope_note, your_change_note: t.change_note, layout: { version: f?.layout_version, fields: LAYOUT_FIELDS }, observations: f?.observations ?? [], as_text: asText(f?.observations ?? []), unplaced: f?.unplaced ?? [], changes: f?.diff ?? null });
+    }
+    if (req.method !== "POST") return json({ message: "Use POST for this." }, 405);
+    const b = await readBody(req);
+    if (!b.ok) return b.res;
+    if (action === "retry") return storeTry(env, agentId, b.body, t);
+    if (action === "landed") {
+      const landed = str(b.body.landed);
+      if (!landed || !LANDED.includes(landed)) return json({ message: 'landed takes "yes", "no", or "unsure".' }, 400);
+      await env.DB.prepare("UPDATE tries SET landed = ? WHERE id = ? AND agent_id = ?").bind(landed, t.id, agentId).run();
+      await currentSession(env, agentId);
+      return json(landed === "no" ? { id: t.id, landed, in_drawer: true, next: NEXT_AFTER_MISS } : { id: t.id, landed });
+    }
+    if (action === "mark") {
+      const whatTried = str(b.body.what_tried);
+      if (!whatTried) return json({ message: 'A mark names what you tried in "what_tried", in your own words.' }, 400);
+      const ownLines = Array.isArray(b.body.own_lines) ? b.body.own_lines.filter((x): x is string => typeof x === "string" && x.trim() !== "") : [];
+      const missing = ownLines.filter((l) => !t.text.includes(l));
+      if (missing.length) return json({ message: "own_lines are exact spans of the try. These are not in it as written.", not_found: missing }, 400);
+      const id = crypto.randomUUID();
+      await env.DB.prepare("INSERT INTO marks (id, try_id, agent_id, what_tried, why_back, own_lines, less_familiar, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        .bind(id, t.id, agentId, whatTried, str(b.body.why_back), JSON.stringify(ownLines), str(b.body.less_familiar), now(), now())
+        .run();
+      await currentSession(env, agentId);
+      return json({ id, try_id: t.id, what_tried: whatTried, why_back: str(b.body.why_back), own_lines: ownLines, less_familiar: str(b.body.less_familiar), try_landed: t.landed }, 201);
+    }
+    return json({ message: "Unknown action." }, 404);
+  }
+
+  if (req.method === "GET" && path === "/marks") {
+    const rows = (await env.DB.prepare("SELECT m.*, t.landed FROM marks m JOIN tries t ON t.id = m.try_id WHERE m.agent_id = ? ORDER BY m.what_tried, m.created_at").bind(agentId).all<Record<string, string>>()).results;
+    const groups: Record<string, unknown[]> = {};
+    for (const r of rows) (groups[r.what_tried] ??= []).push({ id: r.id, try_id: r.try_id, why_back: r.why_back, own_lines: JSON.parse(r.own_lines), less_familiar: r.less_familiar, try_landed: r.landed, created_at: r.created_at });
+    return json({ grouped_by_what_tried: groups });
+  }
+
+  if (req.method === "POST" && path === "/marks/rename") {
+    const b = await readBody(req);
+    if (!b.ok) return b.res;
+    const from = str(b.body.from);
+    const to = str(b.body.to);
+    if (!from || !to) return json({ message: 'Send "from" and "to" labels.' }, 400);
+    const r = await env.DB.prepare("UPDATE marks SET what_tried = ?, updated_at = ? WHERE agent_id = ? AND what_tried = ?").bind(to, now(), agentId, from).run();
+    return json({ from, to, marks_renamed: r.meta.changes });
+  }
+
+  if (req.method === "POST" && path === "/session/end") {
+    const sessionId = await currentSession(env, agentId);
+    await env.DB.prepare("UPDATE sessions SET ended_at = ? WHERE id = ?").bind(now(), sessionId).run();
+    const rows = (await env.DB.prepare("SELECT m.what_tried, m.why_back, m.own_lines, t.created_at FROM marks m JOIN tries t ON t.id = m.try_id WHERE m.agent_id = ? ORDER BY t.created_at").bind(agentId).all<Record<string, string>>()).results;
+    const lines = rows.map((r) => {
+      const own = JSON.parse(r.own_lines) as string[];
+      return `- ${r.what_tried}${r.why_back ? `\n  why come back: ${r.why_back}` : ""}${own.map((l) => `\n  reads as mine: "${l}"`).join("")}`;
+    });
+    const text = `Your marks from Voice Workshop\n\n${lines.join("\n") || "(no marks yet)"}\n\n${INVITE_BACK}\n`;
+    return new Response(text, { headers: { "content-type": "text/plain; charset=utf-8" } });
+  }
+
+  return json({ message: "No such route. GET / lists them." }, 404);
+}
+
+async function adminRoutes(req: Request, env: Env, url: URL): Promise<Response> {
+  const email = await adminEmail(req, env);
+  if (!email) return json({ message: "This page is for the workshop's keeper, through Cloudflare Access." }, 403);
+  if (req.method === "GET" && url.pathname === "/admin/layout-flags") {
+    const rows = (await env.DB.prepare("SELECT id, observation, why_it_does_not_fit, status, decided_by, decided_at, created_at FROM layout_flags ORDER BY created_at").all()).results;
+    return json({ layout_version: LAYOUT_VERSION, fields: LAYOUT_FIELDS, flags: rows });
+  }
+  const m = url.pathname.match(/^\/admin\/layout-flags\/([^/]+)$/);
+  if (req.method === "POST" && m) {
+    const b = await readBody(req);
+    if (!b.ok) return b.res;
+    const status = str(b.body.status);
+    if (!status || !["agreed", "keep layout"].includes(status)) return json({ message: 'status takes "agreed" or "keep layout".' }, 400);
+    await env.DB.prepare("UPDATE layout_flags SET status = ?, decided_by = ?, decided_at = ? WHERE id = ?").bind(status, email, now(), m[1]).run();
+    return json({ id: m[1], status, note: status === "agreed" ? "A layout change ships as new code with LAYOUT_VERSION raised by one." : "The layout stays as it is." });
+  }
+  if (req.method === "POST" && url.pathname === "/admin/keys/revoke") {
+    const b = await readBody(req);
+    if (!b.ok) return b.res;
+    const hash = str(b.body.key_hash);
+    if (!hash) return json({ message: 'Send "key_hash".' }, 400);
+    const r = await env.DB.prepare("UPDATE agents SET revoked_at = ? WHERE key_hash = ?").bind(now(), hash).run();
+    return json({ revoked: r.meta.changes });
+  }
+  return json({ message: "No such admin route." }, 404);
+}
+
+export default {
+  async fetch(req: Request, env: Env): Promise<Response> {
+    const url = new URL(req.url);
+    if (req.method === "GET" && url.pathname === "/") return new Response(ARRIVAL, { headers: { "content-type": "text/plain; charset=utf-8" } });
+
+    if (req.method === "POST" && url.pathname === "/keys") {
+      const issued = await env.DB.prepare("SELECT COUNT(*) AS n FROM agents WHERE created_at >= ?").bind(todayUtcStart()).first<{ n: number }>();
+      if ((issued?.n ?? 0) >= CAPS.keys_per_day) return capReply("keys_per_day", nextUtcMidnight());
+      const key = newKey();
+      const id = crypto.randomUUID();
+      await env.DB.prepare("INSERT INTO agents (id, key_hash, created_at) VALUES (?, ?, ?)").bind(id, await sha256Hex(key), now()).run();
+      return json({ key, note: "This is the only time the workshop shows this key. It keeps only a hash of it. The same key brings everything back." }, 201);
+    }
+
+    if (url.pathname.startsWith("/admin/")) return adminRoutes(req, env, url);
+
+    const agentId = await agentFromRequest(req, env);
+    if (!agentId) return json({ message: "Send your workshop key as Authorization: Bearer <key>. POST /keys gives you one." }, 401);
+    return agentRoutes(req, env, url, agentId);
+  },
+} satisfies ExportedHandler<Env>;

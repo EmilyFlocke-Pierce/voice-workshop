@@ -1,0 +1,17 @@
+// Voice Workshop, slice 01: Safe place to practice.
+// Local development only. Deploying needs Emily's approval and a real database_id.
+{
+  "name": "voice-workshop",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-10-01",
+  "d1_databases": [
+    { "binding": "DB", "database_name": "voice-workshop", "database_id": "local-only", "migrations_dir": "migrations" }
+  ],
+  "vars": {
+    "OUTSIDE_MODEL_URL": "",
+    "ADMIN_EMAIL": "",
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    "ACCESS_MODE": "jwt"
+  }
+}
