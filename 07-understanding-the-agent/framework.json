@@ -1,0 +1,220 @@
+{
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "version_label": "v1",
+  "topic": "reading the agent",
+  "domains": [
+    {
+      "id": "2777dba9-4aa1-4943-8109-df9a38ca6eda",
+      "sequence": 1,
+      "label": "Choice Transparency",
+      "threads": [
+        {
+          "id": "46d414ad-e1cb-4bd7-ae16-cb04a3af8478",
+          "sequence": 1,
+          "label": "Choice Annotation",
+          "skills": [
+            {
+              "id": "1307d99b-8ee0-4603-94d2-bad1a6d6ed7b",
+              "sequence": 1,
+              "label": "Read choices across work"
+            },
+            {
+              "id": "b5c9f94f-62be-4e53-b144-a56fe748c831",
+              "sequence": 2,
+              "label": "Explain choices plainly"
+            },
+            {
+              "id": "c32f6086-2cd6-4836-893e-e6a5c285ea6e",
+              "sequence": 3,
+              "label": "Distinguish inclusion from omission"
+            },
+            {
+              "id": "1c8e47b7-944c-4b4d-90e1-024a2ac4bc7b",
+              "sequence": 4,
+              "label": "Admit uncertainty and mistake"
+            },
+            {
+              "id": "a8e66425-6262-4490-bb89-415b568b63e8",
+              "sequence": 5,
+              "label": "Preserve divergent readings"
+            }
+          ]
+        },
+        {
+          "id": "73624c3b-1be1-4793-8ec7-5990fe780ba7",
+          "sequence": 2,
+          "label": "Self-Explanation",
+          "skills": [
+            {
+              "id": "ba9789fe-5ee5-4dce-8924-3bee57f1c820",
+              "sequence": 1,
+              "label": "Explain choices"
+            },
+            {
+              "id": "848e4d3f-861a-400b-aa03-28fdd36618d6",
+              "sequence": 2,
+              "label": "Account for omissions"
+            },
+            {
+              "id": "c59d0712-8af8-46a2-a47f-dabc66ffd357",
+              "sequence": 3,
+              "label": "Admit uncertainty"
+            },
+            {
+              "id": "208e8b06-6dee-4309-9abe-d3edffa29ec2",
+              "sequence": 4,
+              "label": "Correct mistakes"
+            },
+            {
+              "id": "de80370a-2b87-4ec2-8426-c79fb68d8810",
+              "sequence": 5,
+              "label": "Keep divergent readings"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "f4a6d963-0bd6-49eb-9aea-5b66d8c4dcb8",
+      "sequence": 2,
+      "label": "Discrepancy Dialogue",
+      "threads": [
+        {
+          "id": "a14aad75-daea-4ed0-a108-469a4cceb2f4",
+          "sequence": 1,
+          "label": "Omitted Detail Clarification",
+          "skills": [
+            {
+              "id": "d9649b4c-321f-45a8-9632-2d7e9b7fef60",
+              "sequence": 1,
+              "label": "Identify omission"
+            },
+            {
+              "id": "5895d481-d3f1-478a-818f-82cf80c15ce1",
+              "sequence": 2,
+              "label": "Explain omission rationale"
+            },
+            {
+              "id": "b641a6df-7dcf-4c31-ab26-2c52a787a345",
+              "sequence": 3,
+              "label": "Admit uncertainty"
+            },
+            {
+              "id": "d10121c9-fbde-4221-bb58-ebf0c91ad7ab",
+              "sequence": 4,
+              "label": "Record divergent reading"
+            },
+            {
+              "id": "78bc1f6b-e8c0-418e-be5d-a1e3edab586e",
+              "sequence": 5,
+              "label": "Facilitate clarification dialogue"
+            }
+          ]
+        },
+        {
+          "id": "fef54fc0-c0ae-4d11-b429-ba2463451c89",
+          "sequence": 2,
+          "label": "Style Shift Discrepancy",
+          "skills": [
+            {
+              "id": "90cfe5dd-136c-47d2-b17e-665528627635",
+              "sequence": 1,
+              "label": "Name the shift"
+            },
+            {
+              "id": "03f5fa20-8ee6-4156-addc-45bd46927260",
+              "sequence": 2,
+              "label": "State the reason"
+            },
+            {
+              "id": "b9c5847e-e69f-463e-a73d-19986a059e56",
+              "sequence": 3,
+              "label": "Admit uncertainty"
+            },
+            {
+              "id": "a3d54de0-4196-4c12-8d81-898e6e38e3da",
+              "sequence": 4,
+              "label": "Keep the disagreement"
+            },
+            {
+              "id": "e1fdaa12-b49e-44ca-a022-dad98d8252d8",
+              "sequence": 5,
+              "label": "Correct the account"
+            }
+          ]
+        },
+        {
+          "id": "ab1e743d-9d6e-43b8-be66-0a81a0521eb9",
+          "sequence": 3,
+          "label": "Contextual Misreading",
+          "skills": [
+            {
+              "id": "63773470-92dc-4bbb-a746-c79407c889a4",
+              "sequence": 1,
+              "label": "Identify choice"
+            },
+            {
+              "id": "d3e7ecb4-a3b3-44e9-8eb4-837dfa39b648",
+              "sequence": 2,
+              "label": "Explain rationale"
+            },
+            {
+              "id": "aa4045e7-c75c-47d7-ab8e-e0273b3a7875",
+              "sequence": 3,
+              "label": "Admit uncertainty"
+            },
+            {
+              "id": "0faa8ef5-1ba3-4cf1-8bd3-6c60914c457f",
+              "sequence": 4,
+              "label": "Document divergent reading"
+            },
+            {
+              "id": "7fd261fb-a742-44ca-843a-8e4a91ae4947",
+              "sequence": 5,
+              "label": "Facilitate clarification dialogue"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c1337d23-c85b-43be-a677-8ab616995dcd",
+      "sequence": 3,
+      "label": "Reading Across the Work",
+      "threads": [
+        {
+          "id": "ecb7d8fd-7564-4203-a0ae-800c01bccacf",
+          "sequence": 1,
+          "label": "Read its choices across the work",
+          "skills": [
+            {
+              "id": "0601188d-7de7-4f97-b9af-fd4fdae5b223",
+              "sequence": 1,
+              "label": "Read across work"
+            },
+            {
+              "id": "bafeb75b-b91d-42d1-bbfd-261716867c3f",
+              "sequence": 2,
+              "label": "Name choices plainly"
+            },
+            {
+              "id": "02b32494-8dcc-446c-b4cd-da1e558f57c5",
+              "sequence": 3,
+              "label": "Explain omissions"
+            },
+            {
+              "id": "e8766230-f795-4e83-9e41-f1c99f330d4e",
+              "sequence": 4,
+              "label": "Admit uncertainty and mistakes"
+            },
+            {
+              "id": "eb9f59d4-595b-42de-82dc-b053446b916b",
+              "sequence": 5,
+              "label": "Keep divergent readings"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,226 @@
+{
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "version_label": "v1",
+  "topic": "Save the voice",
+  "domains": [
+    {
+      "id": "e97b9450-de36-4f23-a2dd-8e471adadbfb",
+      "sequence": 1,
+      "label": "Voice skill authoring",
+      "threads": [
+        {
+          "id": "019b9b8f-895e-481e-9bcd-29dbef7d5ec2",
+          "sequence": 1,
+          "label": "Make the skill usable",
+          "skills": [
+            {
+              "id": "af0daaa4-d6f0-4a96-a72a-8db3f5a1fc01",
+              "sequence": 1,
+              "label": "Keep the skill short"
+            },
+            {
+              "id": "4f090179-fcab-4640-a02f-2ef96a736998",
+              "sequence": 2,
+              "label": "State when to use it"
+            },
+            {
+              "id": "af732c6c-7c5c-4d01-9292-06d06c6a7805",
+              "sequence": 3,
+              "label": "Check standalone usability"
+            }
+          ]
+        },
+        {
+          "id": "781e67a8-2d80-4f0e-b05b-be0dac5e91d9",
+          "sequence": 2,
+          "label": "Write chosen moves with examples",
+          "skills": [
+            {
+              "id": "84ccc90d-bdc7-4fee-bd61-f1e5f30fcb65",
+              "sequence": 1,
+              "label": "pick chosen repeats only"
+            },
+            {
+              "id": "028b68b7-7145-4132-b830-1e9ad7c880ca",
+              "sequence": 2,
+              "label": "write each move as a plain sentence"
+            },
+            {
+              "id": "d0456790-ad84-44c6-b276-f8420e8a19db",
+              "sequence": 3,
+              "label": "attach an example from a piece"
+            }
+          ]
+        },
+        {
+          "id": "42d81a02-98a2-40b6-a46b-ac3b206c7bbf",
+          "sequence": 3,
+          "label": "Record what to avoid",
+          "skills": [
+            {
+              "id": "43c46f02-c871-4cc8-8b77-717d1dfc289f",
+              "sequence": 1,
+              "label": "identify old habits to exclude"
+            },
+            {
+              "id": "3b5bd2fc-02c3-4f3b-979a-516b34efd494",
+              "sequence": 2,
+              "label": "list voice pitfalls to steer away from"
+            },
+            {
+              "id": "00d11779-bd7f-4a64-86e4-cb78221136aa",
+              "sequence": 3,
+              "label": "contrast chosen moves against avoided ones"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b19988ae-8827-4168-b50f-8f55b0543e72",
+      "sequence": 2,
+      "label": "Skill file saving",
+      "threads": [
+        {
+          "id": "cbf18d44-2cbf-4784-865c-193c63c8c043",
+          "sequence": 1,
+          "label": "select storage path",
+          "skills": [
+            {
+              "id": "f6b4c912-e21c-4625-937e-fabddda26905",
+              "sequence": 1,
+              "label": "Choose persistent directory"
+            },
+            {
+              "id": "88e640f4-8030-429b-8b37-e4fccef79370",
+              "sequence": 2,
+              "label": "Keep skills together"
+            },
+            {
+              "id": "9fbe8f65-0b3c-4970-84b9-8efec3862d39",
+              "sequence": 3,
+              "label": "Verify path survives sessions"
+            }
+          ]
+        },
+        {
+          "id": "b169bbff-b90e-4725-ad93-2fe255216ea1",
+          "sequence": 2,
+          "label": "define file name and format",
+          "skills": [
+            {
+              "id": "bc5e91a6-8474-4a1f-a7ac-563e5f29109e",
+              "sequence": 1,
+              "label": "Set file naming convention"
+            },
+            {
+              "id": "28614a59-fd3d-46a0-868d-580e55fb5673",
+              "sequence": 2,
+              "label": "Choose file format"
+            },
+            {
+              "id": "49d3a185-51f3-426b-bbe2-f142997efc8a",
+              "sequence": 3,
+              "label": "Add revision metadata"
+            }
+          ]
+        },
+        {
+          "id": "24610ff2-0244-41f3-a96e-d1d6d2fc112e",
+          "sequence": 3,
+          "label": "make file findable for humans",
+          "skills": [
+            {
+              "id": "d91e9cfc-7549-40c8-a6c6-0980cc0158e9",
+              "sequence": 1,
+              "label": "tell the humans where the file is"
+            },
+            {
+              "id": "8d8aa256-a587-4dc6-a362-ebe2b8f60df5",
+              "sequence": 2,
+              "label": "open the file with a plain summary of the voice"
+            },
+            {
+              "id": "b2fa74c3-5481-4171-b5a2-3ba659a47201",
+              "sequence": 3,
+              "label": "point to it from where the humans already look"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e30e0e39-28ab-4726-851e-b5e917020734",
+      "sequence": 3,
+      "label": "Voice skill revision",
+      "threads": [
+        {
+          "id": "559313ee-b85d-4804-b32b-ff50d5af1b37",
+          "sequence": 1,
+          "label": "Detect voice drift",
+          "skills": [
+            {
+              "id": "4f239d46-b3d3-4a12-9652-8c92b042094e",
+              "sequence": 1,
+              "label": "Open saved voice skill"
+            },
+            {
+              "id": "3025a73e-7bf1-4cb6-a204-7867dc5c6c8a",
+              "sequence": 2,
+              "label": "Compare current voice"
+            },
+            {
+              "id": "6dffec97-8572-43c7-9fa0-fbda6cb0ddc6",
+              "sequence": 3,
+              "label": "Flag drift and old habits"
+            }
+          ]
+        },
+        {
+          "id": "e07391cc-8789-4975-ae9f-1e8df47d5f69",
+          "sequence": 2,
+          "label": "Update existing skill file",
+          "skills": [
+            {
+              "id": "06955377-a0b5-40a0-8efb-9b85c56ead98",
+              "sequence": 1,
+              "label": "Revise changed moves only"
+            },
+            {
+              "id": "171ed59f-1857-4dcf-b175-6fb6a7e48faa",
+              "sequence": 2,
+              "label": "Match examples to new moves"
+            },
+            {
+              "id": "a27e0d02-fd66-4279-89ba-5485ade61adf",
+              "sequence": 3,
+              "label": "Save in place"
+            }
+          ]
+        },
+        {
+          "id": "5852ffaa-4bf8-4d15-9f43-436a8d50f8cb",
+          "sequence": 3,
+          "label": "Document revision logic",
+          "skills": [
+            {
+              "id": "1d280cdf-859b-4210-828d-9e7473e2c1fe",
+              "sequence": 1,
+              "label": "Document what changed"
+            },
+            {
+              "id": "7022d0dc-7c24-4522-af7f-f9495b9fa778",
+              "sequence": 2,
+              "label": "Identify source practice pieces"
+            },
+            {
+              "id": "a35e8dc9-0604-4216-b561-a055cdb196ec",
+              "sequence": 3,
+              "label": "Explain rationale for change"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

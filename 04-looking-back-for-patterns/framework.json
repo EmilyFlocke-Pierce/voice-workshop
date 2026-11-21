@@ -1,0 +1,226 @@
+{
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "version_label": "v1",
+  "topic": "Looking back for patterns",
+  "domains": [
+    {
+      "id": "c823f5a3-faea-4090-a42b-671f256f8fda",
+      "sequence": 1,
+      "label": "Patterns across practice pieces",
+      "threads": [
+        {
+          "id": "abcb7f23-58cc-4c50-b3a2-c70a372cf4bd",
+          "sequence": 1,
+          "label": "Collecting pieces and notes",
+          "skills": [
+            {
+              "id": "976ff2d9-2056-4c19-a9c8-d7965e7d81d8",
+              "sequence": 1,
+              "label": "Gather experimental pieces"
+            },
+            {
+              "id": "5eb5641d-93a2-417b-9061-8a1eec42917f",
+              "sequence": 2,
+              "label": "Gather layered pieces"
+            },
+            {
+              "id": "a6847486-18f2-474f-aa5c-c2453de4e5f9",
+              "sequence": 3,
+              "label": "Gather reflection notes"
+            },
+            {
+              "id": "b51e66e0-b1da-4747-b955-b8b7a6f6102d",
+              "sequence": 4,
+              "label": "Assemble review corpus"
+            }
+          ]
+        },
+        {
+          "id": "690d3b3f-806b-4e4a-8db3-d2857aaa9678",
+          "sequence": 2,
+          "label": "Reading pieces side by side",
+          "skills": [
+            {
+              "id": "b4b7cb2b-839b-4954-be31-75b1ca3d9ca8",
+              "sequence": 1,
+              "label": "Compare across pieces"
+            },
+            {
+              "id": "06152684-90fa-446a-bc4d-069e267b49c7",
+              "sequence": 2,
+              "label": "Track repeated choices"
+            }
+          ]
+        },
+        {
+          "id": "2065969b-b885-4ad4-bf79-4ca3ed9793f8",
+          "sequence": 3,
+          "label": "Naming the repeated choice",
+          "skills": [
+            {
+              "id": "00737125-136c-4da0-9a09-04f6b11d089b",
+              "sequence": 1,
+              "label": "Name recurring choices"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "41d01d81-3b9b-412c-b562-bae3b294fa9e",
+      "sequence": 2,
+      "label": "Chosen habits versus old habits",
+      "threads": [
+        {
+          "id": "81d0d3f1-c97d-4a23-bb77-f14dca3f5bb7",
+          "sequence": 1,
+          "label": "Cross-style choice verification",
+          "skills": [
+            {
+              "id": "940524fe-7967-466c-b3fc-b1af6b62bd23",
+              "sequence": 1,
+              "label": "cross-reference intent notes"
+            },
+            {
+              "id": "49cf1511-da4a-42dd-a2a7-51a9c9f20bee",
+              "sequence": 2,
+              "label": "find the friction point where a repeat began"
+            }
+          ]
+        },
+        {
+          "id": "504b486e-3483-4d7a-8ea6-6242b104287b",
+          "sequence": 2,
+          "label": "Default agent move detection",
+          "skills": [
+            {
+              "id": "49d8db6f-749e-4229-ab72-4a332dc7d2da",
+              "sequence": 1,
+              "label": "identify baseline phrases"
+            },
+            {
+              "id": "ad97044e-6c87-45b6-8e70-abc79d462a35",
+              "sequence": 2,
+              "label": "flag generic transitions"
+            },
+            {
+              "id": "2c46e1bf-8908-4440-b5c9-74d1972fe55c",
+              "sequence": 3,
+              "label": "isolate systemic redundancies"
+            },
+            {
+              "id": "a79f030c-6a3d-45c7-97e9-8823b233928e",
+              "sequence": 4,
+              "label": "detect structural autopilot"
+            }
+          ]
+        },
+        {
+          "id": "cfee1c9b-de23-4b2e-9cf9-8aab8bf524d7",
+          "sequence": 3,
+          "label": "Taste versus habit justification",
+          "skills": [
+            {
+              "id": "bf97ba5b-4f45-4c5c-81f4-32bcc7f6418e",
+              "sequence": 1,
+              "label": "Explain the repeat's function"
+            },
+            {
+              "id": "e138304a-a688-4909-8504-2eb052628b67",
+              "sequence": 2,
+              "label": "Assess future choice intent"
+            },
+            {
+              "id": "ca704825-b7ae-4efc-a84a-159a5fa7f307",
+              "sequence": 3,
+              "label": "Distinguish taste from default"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "348fa692-13ea-4bb9-b0cf-8a4ee2d5539f",
+      "sequence": 3,
+      "label": "Evidence from each piece",
+      "threads": [
+        {
+          "id": "c774dd7b-f5c6-4fe2-9253-289f94973fb2",
+          "sequence": 1,
+          "label": "direct textual citations",
+          "skills": [
+            {
+              "id": "dead87b0-7cd8-4a1c-b072-28481d5848f7",
+              "sequence": 1,
+              "label": "quote recurring wording"
+            },
+            {
+              "id": "9be92789-14fc-4a41-bb60-1f8a8aa9c608",
+              "sequence": 2,
+              "label": "cite supporting pieces"
+            },
+            {
+              "id": "5d4b0b7e-9996-404d-adbd-a160011f9aef",
+              "sequence": 3,
+              "label": "cite reflection notes"
+            },
+            {
+              "id": "0fe0516e-9743-4f9f-901a-ffb241aba679",
+              "sequence": 4,
+              "label": "separate evidence from interpretation"
+            }
+          ]
+        },
+        {
+          "id": "f938720e-1ab2-427d-b846-0f3479aefa10",
+          "sequence": 2,
+          "label": "occurrence frequency counts",
+          "skills": [
+            {
+              "id": "ac622915-afc4-468a-bdc2-8f34394f5035",
+              "sequence": 1,
+              "label": "tally repeated choices"
+            },
+            {
+              "id": "15c7e53b-db2c-4d36-b6b3-7c0c800cf5d0",
+              "sequence": 2,
+              "label": "calculate appearance rate"
+            },
+            {
+              "id": "62907bda-94f5-4dfd-984d-97097760da18",
+              "sequence": 3,
+              "label": "rank recurring patterns"
+            }
+          ]
+        },
+        {
+          "id": "25070a2e-ac35-42b6-b82d-0d33b64c8ebe",
+          "sequence": 3,
+          "label": "negative evidence markers",
+          "skills": [
+            {
+              "id": "636f3b5e-ae02-413b-8bdb-e8911755019e",
+              "sequence": 1,
+              "label": "Track dropped wording"
+            },
+            {
+              "id": "39d5d640-e532-4b82-9e25-97f9aa10642a",
+              "sequence": 2,
+              "label": "Track removed moves"
+            },
+            {
+              "id": "444acabc-1ee3-4d66-80bc-38d7915a0b84",
+              "sequence": 3,
+              "label": "Track rejected approaches"
+            },
+            {
+              "id": "41b33a1d-ec81-4a9f-82c3-0849dfe57f80",
+              "sequence": 4,
+              "label": "Flag drops that return"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "slice_label": "Looking back for patterns",
+  "slice_id": "f031cd8f-1289-4d98-be50-b35c40437b54",
+  "quilt_slice_code": "02-01",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "primary_files": {
+    "framework.json": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id=bd16015c-f045-40e2-a991-da9f693be323",
+    "criteria.json": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id=bd16015c-f045-40e2-a991-da9f693be323",
+    "framework.md": "render of framework.json using Quilt packet markdown rules",
+    "criteria.md": "render of criteria.json using Quilt packet markdown rules"
+  },
+  "latest_run": {
+    "version_label": "v1",
+    "slice_run_id": "bd16015c-f045-40e2-a991-da9f693be323",
+    "phase2_status": "ready",
+    "documents_ready_flag": {
+      "criteria": true,
+      "framework": true
+    },
+    "topic": "Looking back for patterns",
+    "domains": 3,
+    "threads": 9,
+    "skills": 27,
+    "criteria_matrices": 27,
+    "framework_version_label_in_payload": "v1",
+    "criteria_version_label_in_payload": "v1"
+  },
+  "last_ready_run": null,
+  "other_runs_held_in_quilt_not_copied_as_primary": [],
+  "reports_saved": [
+    {
+      "file": "slice-report-02-01-v2.md",
+      "document_id": "1347a669-a463-45dd-9118-dc5af7b35ff2",
+      "created_at": "2026-11-18T00:18:25.353999Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=1347a669-a463-45dd-9118-dc5af7b35ff2",
+      "role": "latest"
+    }
+  ],
+  "all_uploaded_reports_quilt_listed_for_this_slice": [
+    {
+      "created_at": "2026-11-17T23:56:11.633637Z",
+      "id": "4214b22e-94b0-48e8-8c2f-63e5f6e451dc",
+      "name": "slice-report-02-01.md"
+    },
+    {
+      "created_at": "2026-11-18T00:18:25.353999Z",
+      "id": "1347a669-a463-45dd-9118-dc5af7b35ff2",
+      "name": "slice-report-02-01-v2.md"
+    }
+  ],
+  "note_on_duplicate_reports": "Quilt lists a new slice-report filename on each accepted run or reopen post. Many later filenames carry the same brief text. Only the latest, plus any earlier distinct text, was written into the folder."
+}

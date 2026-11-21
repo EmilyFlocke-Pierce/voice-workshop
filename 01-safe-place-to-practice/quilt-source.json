@@ -1,0 +1,184 @@
+{
+  "slice_label": "Safe place to practice",
+  "slice_id": "96cb0081-96cd-41ad-9374-e69fbc3e062e",
+  "quilt_slice_code": "01-01",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "primary_files": {
+    "framework.json": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id=3d33e6c7-a6a9-40b6-b324-61b44171bf36",
+    "criteria.json": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id=3d33e6c7-a6a9-40b6-b324-61b44171bf36",
+    "framework.md": "render of framework.json using Quilt packet markdown rules",
+    "criteria.md": "render of criteria.json using Quilt packet markdown rules"
+  },
+  "latest_run": {
+    "version_label": "v3",
+    "slice_run_id": "3d33e6c7-a6a9-40b6-b324-61b44171bf36",
+    "phase2_status": "proposing",
+    "documents_ready_flag": {
+      "criteria": false,
+      "framework": false
+    },
+    "topic": "Safe Practice",
+    "domains": 3,
+    "threads": 9,
+    "skills": 33,
+    "criteria_matrices": 33,
+    "framework_version_label_in_payload": "v3",
+    "criteria_version_label_in_payload": "v3"
+  },
+  "last_ready_run": {
+    "version": 2,
+    "slice_run_id": "3a066cd9-5f0b-4354-a99f-4590a371d832",
+    "phase2_status": "ready",
+    "documents_ready_flag": {
+      "criteria": true,
+      "framework": true
+    },
+    "domains": 3,
+    "threads": 9,
+    "skills": 33,
+    "matrices": 33,
+    "why_included": "The latest run is still proposing, so the last ready packet is saved beside it."
+  },
+  "other_runs_held_in_quilt_not_copied_as_primary": [
+    {
+      "version": 1,
+      "run": "8e67b8cb-daf4-4e3c-9eab-aca666bd3c45",
+      "status": "ready"
+    }
+  ],
+  "reports_saved": [
+    {
+      "file": "slice-report-01-01-v23.md",
+      "document_id": "7a735d29-3845-4ba5-9c05-191b59b0619d",
+      "created_at": "2026-11-21T10:48:22.796611Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=7a735d29-3845-4ba5-9c05-191b59b0619d",
+      "role": "latest"
+    },
+    {
+      "file": "earlier-reports/slice-report-01-01.md",
+      "document_id": "cfeb5a19-285b-43d7-a4e8-4ae4d899b2c4",
+      "created_at": "2026-11-17T10:31:44.373218Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=cfeb5a19-285b-43d7-a4e8-4ae4d899b2c4",
+      "role": "earlier distinct text",
+      "note": "earlier shorter brief; same text also used for v2-v13 and v22"
+    }
+  ],
+  "all_uploaded_reports_quilt_listed_for_this_slice": [
+    {
+      "created_at": "2026-11-17T10:31:44.373218Z",
+      "id": "cfeb5a19-285b-43d7-a4e8-4ae4d899b2c4",
+      "name": "slice-report-01-01.md"
+    },
+    {
+      "created_at": "2026-11-17T10:36:15.674095Z",
+      "id": "589c77e6-8e92-4450-a857-2cfd9e0944a9",
+      "name": "slice-report-01-01-v2.md"
+    },
+    {
+      "created_at": "2026-11-17T10:37:06.039993Z",
+      "id": "b68d69a0-9120-4e92-aef0-a2f95b0b8c49",
+      "name": "slice-report-01-01-v3.md"
+    },
+    {
+      "created_at": "2026-11-17T10:43:58.469699Z",
+      "id": "5f8ee3f2-c6af-432e-96e1-2dc9036c09af",
+      "name": "slice-report-01-01-v4.md"
+    },
+    {
+      "created_at": "2026-11-17T10:50:53.308883Z",
+      "id": "680df50a-661a-4b14-9a13-e53ec1ed1368",
+      "name": "slice-report-01-01-v5.md"
+    },
+    {
+      "created_at": "2026-11-17T10:58:39.559914Z",
+      "id": "e4287b70-93b6-43b1-a3a5-6dae8ae1efe9",
+      "name": "slice-report-01-01-v6.md"
+    },
+    {
+      "created_at": "2026-11-17T11:06:22.503097Z",
+      "id": "a1591183-a42f-4eb2-a076-05203ae6e6bc",
+      "name": "slice-report-01-01-v7.md"
+    },
+    {
+      "created_at": "2026-11-17T11:14:01.838663Z",
+      "id": "6114a4f6-2e86-4b6f-9943-f6f6aef21775",
+      "name": "slice-report-01-01-v8.md"
+    },
+    {
+      "created_at": "2026-11-17T11:21:47.729066Z",
+      "id": "67a692cb-6911-4c32-9611-5fb20b79a8cb",
+      "name": "slice-report-01-01-v9.md"
+    },
+    {
+      "created_at": "2026-11-17T14:47:57.239952Z",
+      "id": "a720f7c6-c001-4e83-b45c-8f8a322c7840",
+      "name": "slice-report-01-01-v10.md"
+    },
+    {
+      "created_at": "2026-11-17T16:52:59.461819Z",
+      "id": "1e379897-5061-40a3-bc54-d8eed6f20420",
+      "name": "slice-report-01-01-v11.md"
+    },
+    {
+      "created_at": "2026-11-17T17:41:40.386976Z",
+      "id": "bbaaab19-df0d-464c-8937-0c33852d9150",
+      "name": "slice-report-01-01-v12.md"
+    },
+    {
+      "created_at": "2026-11-19T08:31:32.864122Z",
+      "id": "9dd338bd-a7a8-4afc-b328-5d3cf24e4d92",
+      "name": "slice-report-01-01-v13.md"
+    },
+    {
+      "created_at": "2026-11-19T12:23:40.709276Z",
+      "id": "6799fccf-8f45-413f-9980-28843ba6f450",
+      "name": "slice-report-01-01-v14.md"
+    },
+    {
+      "created_at": "2026-11-19T18:12:24.53869Z",
+      "id": "b4b06a84-2d65-4fa2-b1e0-d642b3c1f0d6",
+      "name": "slice-report-01-01-v15.md"
+    },
+    {
+      "created_at": "2026-11-19T19:34:32.81681Z",
+      "id": "4f2a5e85-24a3-4060-a762-06c7135f98f8",
+      "name": "slice-report-01-01-v16.md"
+    },
+    {
+      "created_at": "2026-11-19T21:27:45.511609Z",
+      "id": "2c19ee20-f928-46b0-bff3-6dda20322d49",
+      "name": "slice-report-01-01-v17.md"
+    },
+    {
+      "created_at": "2026-11-20T02:17:37.718231Z",
+      "id": "d664f7ca-5c5d-4550-84f7-db1f094a2875",
+      "name": "slice-report-01-01-v18.md"
+    },
+    {
+      "created_at": "2026-11-20T05:01:50.392835Z",
+      "id": "b0a75837-45b9-45d0-b0d2-4c682839f98b",
+      "name": "slice-report-01-01-v19.md"
+    },
+    {
+      "created_at": "2026-11-20T05:04:44.800928Z",
+      "id": "72585030-9649-439f-b3b4-c5937217fc60",
+      "name": "slice-report-01-01-v20.md"
+    },
+    {
+      "created_at": "2026-11-20T05:24:58.008818Z",
+      "id": "1e3922b1-c6b5-4192-b562-638d2edd737a",
+      "name": "slice-report-01-01-v21.md"
+    },
+    {
+      "created_at": "2026-11-20T21:14:38.307424Z",
+      "id": "9c782fe4-4b67-471c-b836-97a77fca0f76",
+      "name": "slice-report-01-01-v22.md"
+    },
+    {
+      "created_at": "2026-11-21T10:48:22.796611Z",
+      "id": "7a735d29-3845-4ba5-9c05-191b59b0619d",
+      "name": "slice-report-01-01-v23.md"
+    }
+  ],
+  "note_on_duplicate_reports": "Quilt lists a new slice-report filename on each accepted run or reopen post. Many later filenames carry the same brief text. Only the latest, plus any earlier distinct text, was written into the folder."
+}

@@ -1,0 +1,154 @@
+{
+  "pulled_at_utc": "Sat, 21 Nov 2026 12:02:06 GMT",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "project_id": "ac746528-beed-4549-9a67-56ac2a043521",
+  "session_name": "redo",
+  "base": "https://quilt-system.dev",
+  "routes": {
+    "session": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336",
+    "cut": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/cut",
+    "framework": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id={slice_run_id}",
+    "criteria": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id={slice_run_id}",
+    "reports_list": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336",
+    "report_text": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id={document_id}"
+  },
+  "note": "framework.md and criteria.md are renders of the JSON using Quilt phase2 packet markdown rules. Level text is copied, not rewritten. Build hash was not returned by GET /health; I do not know the live build from these routes.",
+  "slices": [
+    {
+      "folder": "01-safe-place-to-practice",
+      "files": [
+        "framework.json",
+        "framework.md",
+        "criteria.json",
+        "criteria.md",
+        "framework-ready-v2.json",
+        "framework-ready-v2.md",
+        "criteria-ready-v2.json",
+        "criteria-ready-v2.md",
+        "slice-report-01-01-v23.md",
+        "earlier-reports/slice-report-01-01.md",
+        "quilt-source.json"
+      ],
+      "latest_version": "v3",
+      "phase2_status": "proposing",
+      "slice_run_id": "3d33e6c7-a6a9-40b6-b324-61b44171bf36",
+      "report": "slice-report-01-01-v23.md"
+    },
+    {
+      "folder": "02-experimenting-with-styles",
+      "files": [
+        "framework.json",
+        "framework.md",
+        "criteria.json",
+        "criteria.md",
+        "framework-ready-v1.json",
+        "framework-ready-v1.md",
+        "criteria-ready-v1.json",
+        "criteria-ready-v1.md",
+        "slice-report-01-02-v4.md",
+        "quilt-source.json"
+      ],
+      "latest_version": "v2",
+      "phase2_status": "proposing",
+      "slice_run_id": "58c9104f-7c86-46c9-bed9-2089a1d65d41",
+      "report": "slice-report-01-02-v4.md"
+    },
+    {
+      "folder": "03-layering-and-combining",
+      "files": [
+        "framework.json",
+        "framework.md",
+        "criteria.json",
+        "criteria.md",
+        "slice-report-01-03-v5.md",
+        "quilt-source.json"
+      ],
+      "latest_version": "v1",
+      "phase2_status": "ready",
+      "slice_run_id": "86400ee1-bb16-4106-877d-2ed5c3aaf803",
+      "report": "slice-report-01-03-v5.md"
+    },
+    {
+      "folder": "04-looking-back-for-patterns",
+      "files": [
+        "framework.json",
+        "framework.md",
+        "criteria.json",
+        "criteria.md",
+        "slice-report-02-01-v2.md",
+        "quilt-source.json"
+      ],
+      "latest_version": "v1",
+      "phase2_status": "ready",
+      "slice_run_id": "bd16015c-f045-40e2-a991-da9f693be323",
+      "report": "slice-report-02-01-v2.md"
+    },
+    {
+      "folder": "05-saving-voice-skill",
+      "files": [
+        "framework.json",
+        "framework.md",
+        "criteria.json",
+        "criteria.md",
+        "slice-report-02-02-v8.md",
+        "quilt-source.json"
+      ],
+      "latest_version": "v1",
+      "phase2_status": "ready",
+      "slice_run_id": "15bb1e71-0ed2-443e-80a3-356b940c3a65",
+      "report": "slice-report-02-02-v8.md"
+    },
+    {
+      "folder": "06-humans-take-part",
+      "files": [
+        "framework.json",
+        "framework.md",
+        "criteria.json",
+        "criteria.md",
+        "slice-report-03-01-v2.md",
+        "quilt-source.json"
+      ],
+      "latest_version": "v1",
+      "phase2_status": "ready",
+      "slice_run_id": "ab2530d5-80ab-49e1-9789-aee2dcbf5db0",
+      "report": "slice-report-03-01-v2.md"
+    },
+    {
+      "folder": "07-understanding-the-agent",
+      "files": [
+        "framework.json",
+        "framework.md",
+        "criteria.json",
+        "criteria.md",
+        "slice-report-03-02-v2.md",
+        "quilt-source.json"
+      ],
+      "latest_version": "v1",
+      "phase2_status": "ready",
+      "slice_run_id": "9c4c02cd-6ac2-406e-9883-1257291cc1a2",
+      "report": "slice-report-03-02-v2.md"
+    },
+    {
+      "folder": "08-colleague-whose-style-they-know",
+      "files": [
+        "framework.json",
+        "framework.md",
+        "criteria.json",
+        "criteria.md",
+        "slice-report-03-03-v2.md",
+        "quilt-source.json"
+      ],
+      "latest_version": "v1",
+      "phase2_status": "ready",
+      "slice_run_id": "91cd6f32-3b69-4f04-9943-cb2b7b23f471",
+      "report": "slice-report-03-03-v2.md"
+    }
+  ],
+  "project_report": {
+    "file": "project-report-voice-workshop.md",
+    "document_id": "494741ef-4a97-4d2f-b536-014a6fce92cd",
+    "created_at": "2026-11-17T10:18:24.292283Z",
+    "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=494741ef-4a97-4d2f-b536-014a6fce92cd",
+    "chars": 2054
+  }
+}

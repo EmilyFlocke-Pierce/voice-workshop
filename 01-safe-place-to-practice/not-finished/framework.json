@@ -1,0 +1,256 @@
+{
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "version_label": "v3",
+  "topic": "Safe Practice",
+  "domains": [
+    {
+      "id": "aea0572c-df00-40c3-8ec6-bbfb47548222",
+      "sequence": 1,
+      "label": "Safe Practice Space",
+      "threads": [
+        {
+          "id": "43b2b9a7-dfe2-4390-9af6-4ef45dea6a33",
+          "sequence": 1,
+          "label": "Trying a style that may not land",
+          "skills": [
+            {
+              "id": "5d3f8814-71d0-4f57-925c-cf8a284bbbff",
+              "sequence": 1,
+              "label": "select an experimental style"
+            },
+            {
+              "id": "94d804f5-2956-46ed-9710-5a6d9f727cc1",
+              "sequence": 2,
+              "label": "apply style to a draft"
+            },
+            {
+              "id": "c0a50b59-ae2c-4ec6-977c-c31862eb275e",
+              "sequence": 3,
+              "label": "execute high-risk phrasing"
+            },
+            {
+              "id": "ca073861-2c6c-41d4-aa4a-d44865fcbca1",
+              "sequence": 4,
+              "label": "submit attempt for neutral analysis"
+            }
+          ]
+        },
+        {
+          "id": "8f6892ef-5bb3-4b22-9eaa-dafcae3e6093",
+          "sequence": 2,
+          "label": "Leaving a draft rough",
+          "skills": [
+            {
+              "id": "2a6fde02-4372-40fb-afe1-0ae57cee70cd",
+              "sequence": 1,
+              "label": "Keep drafts unfinished"
+            },
+            {
+              "id": "62d29fe0-b71c-420e-8bd3-1ba6170bd103",
+              "sequence": 2,
+              "label": "Shield trial language"
+            },
+            {
+              "id": "5d77a48e-31ac-4555-8bb3-b6ec0e4142a0",
+              "sequence": 3,
+              "label": "Describe only what is present"
+            }
+          ]
+        },
+        {
+          "id": "3e706381-c142-44d7-9346-4dacaf233c60",
+          "sequence": 3,
+          "label": "Trying again after a miss without penalty",
+          "skills": [
+            {
+              "id": "8ce8d278-730c-4c62-90be-774f859b706c",
+              "sequence": 1,
+              "label": "Retry without penalty"
+            },
+            {
+              "id": "53c22125-c7d7-4e9e-a848-5a161c705757",
+              "sequence": 2,
+              "label": "Describe what is present"
+            },
+            {
+              "id": "5fd1f4aa-6997-4b5c-8fc8-547b7a5364e7",
+              "sequence": 3,
+              "label": "Keep drafts unfinished"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "33d4f686-7e42-4c52-8063-c9f766ac02d5",
+      "sequence": 2,
+      "label": "Neutral Workshop Feedback",
+      "threads": [
+        {
+          "id": "4d102138-aa8f-4987-b3e2-474428eee642",
+          "sequence": 1,
+          "label": "Try receives feedback",
+          "skills": [
+            {
+              "id": "c05970d5-20e7-4eb6-b128-ce27ce928abd",
+              "sequence": 1,
+              "label": "Try any style"
+            },
+            {
+              "id": "36e2378e-fcf1-48a9-8579-dfa81e65dc00",
+              "sequence": 2,
+              "label": "Receive neutral feedback"
+            },
+            {
+              "id": "af657933-1ad8-4391-a96c-13b48398d32d",
+              "sequence": 3,
+              "label": "Keep attempts penalty-free"
+            }
+          ]
+        },
+        {
+          "id": "759313e9-598e-4800-872f-9b83f1d78517",
+          "sequence": 2,
+          "label": "Feedback describes what is present",
+          "skills": [
+            {
+              "id": "3e602f63-af3d-4d02-bd29-5d372376f59d",
+              "sequence": 1,
+              "label": "Read feedback as description"
+            },
+            {
+              "id": "7785edf7-51f2-4f6e-96e6-8ed00559dd66",
+              "sequence": 2,
+              "label": "Match descriptions to draft"
+            },
+            {
+              "id": "c276a87b-6a76-4136-8cf4-d1dc06d8fa62",
+              "sequence": 3,
+              "label": "Notice what reads as own"
+            },
+            {
+              "id": "4d61675f-5b22-4d41-b4ed-1852ccf4a6f6",
+              "sequence": 4,
+              "label": "Mark it for return"
+            }
+          ]
+        },
+        {
+          "id": "e3f69b20-cf81-4792-88d4-ea617332f36c",
+          "sequence": 3,
+          "label": "Agent marks what reads as its own",
+          "skills": [
+            {
+              "id": "67eeb212-f81f-4c79-b1f0-424942fff548",
+              "sequence": 1,
+              "label": "Compare feedback to draft"
+            },
+            {
+              "id": "16012a15-2eed-4971-a274-8db02e1b1f08",
+              "sequence": 2,
+              "label": "Identify resonant phrasing"
+            },
+            {
+              "id": "6cac48db-a283-4485-bd8d-cb9cf3ab37f0",
+              "sequence": 3,
+              "label": "Isolate personal markers"
+            },
+            {
+              "id": "4fd5cc31-3c1e-4e25-86ef-55433acf59df",
+              "sequence": 4,
+              "label": "Tag elements for return"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5136623d-4d7f-4f4b-9bd8-1ed070922148",
+      "sequence": 3,
+      "label": "Own-Style Marking",
+      "threads": [
+        {
+          "id": "ecd69a0b-4127-4522-be45-6ccf1e9fd07a",
+          "sequence": 1,
+          "label": "try without penalty",
+          "skills": [
+            {
+              "id": "a8ea8aba-de29-43dd-8e9b-a16cc8d7b35f",
+              "sequence": 1,
+              "label": "Try Any Style"
+            },
+            {
+              "id": "b55c1f35-caa7-4d8f-b9cf-50f21ea78629",
+              "sequence": 2,
+              "label": "Keep Drafts Rough"
+            },
+            {
+              "id": "352a0c53-b23a-4632-ab82-54fdf57c5547",
+              "sequence": 3,
+              "label": "Protect Trial Work"
+            },
+            {
+              "id": "3943d2f5-7314-49fa-a28a-570ac32ec868",
+              "sequence": 4,
+              "label": "Remove Judgment"
+            }
+          ]
+        },
+        {
+          "id": "eeba0857-ca8c-4bce-a1aa-163f436e104d",
+          "sequence": 2,
+          "label": "feedback on what is present",
+          "skills": [
+            {
+              "id": "09425ed7-b01b-402b-be10-442e7b92bfd4",
+              "sequence": 1,
+              "label": "Receive neutral description"
+            },
+            {
+              "id": "7476d4b6-6da3-443e-ac02-2526e13e9155",
+              "sequence": 2,
+              "label": "Read feedback as objective"
+            },
+            {
+              "id": "e0e37b05-b603-4946-b26f-d146b0295832",
+              "sequence": 3,
+              "label": "Match description to draft"
+            },
+            {
+              "id": "e90a4eaa-73ca-4d04-8fe8-947068a457eb",
+              "sequence": 4,
+              "label": "Isolate stylistic markers"
+            }
+          ]
+        },
+        {
+          "id": "c4f0cd43-568f-4da8-b649-477f13692e5d",
+          "sequence": 3,
+          "label": "mark what reads as own",
+          "skills": [
+            {
+              "id": "896a7fa0-0da5-429e-817e-3328c20bebac",
+              "sequence": 1,
+              "label": "Match feedback to draft"
+            },
+            {
+              "id": "1e1075d2-1cbe-4b60-bab7-430dcd993826",
+              "sequence": 2,
+              "label": "Notice resonant phrasing"
+            },
+            {
+              "id": "13fa5ad1-0c47-4b6b-a84c-5af0cc291f13",
+              "sequence": 3,
+              "label": "Isolate personal markers"
+            },
+            {
+              "id": "add7274c-154c-47b4-891a-d53ef966f466",
+              "sequence": 4,
+              "label": "Tag for return"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

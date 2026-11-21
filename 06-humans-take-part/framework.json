@@ -1,0 +1,256 @@
+{
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "version_label": "v1",
+  "topic": "human feedback",
+  "domains": [
+    {
+      "id": "7d242a49-c349-4216-a377-2f9c93040135",
+      "sequence": 1,
+      "label": "Presentation of Practice",
+      "threads": [
+        {
+          "id": "18deabfb-1ab3-4824-820f-7892aefc34bb",
+          "sequence": 1,
+          "label": "Share practice artifacts",
+          "skills": [
+            {
+              "id": "a893c145-2718-44f4-a3e1-e038b755e52b",
+              "sequence": 1,
+              "label": "share selected practice pieces"
+            },
+            {
+              "id": "e82ff684-2f20-4942-873f-1313b2e636bb",
+              "sequence": 2,
+              "label": "show the saved voice skill"
+            },
+            {
+              "id": "f03d3158-905f-4b18-b84c-f1e69f34d331",
+              "sequence": 3,
+              "label": "explain what was tried and kept"
+            },
+            {
+              "id": "b9e73478-59ac-4282-a10d-5422800f9362",
+              "sequence": 4,
+              "label": "name what was left out"
+            }
+          ]
+        },
+        {
+          "id": "df1f2735-d14b-463d-82a5-0e62a5250be3",
+          "sequence": 2,
+          "label": "Preserve sharing agency",
+          "skills": [
+            {
+              "id": "5f1f9821-f8e0-441b-b9c7-2d653dd4fbed",
+              "sequence": 1,
+              "label": "Curate what gets shared"
+            },
+            {
+              "id": "40803e08-b504-4ce4-bd05-665a89dd893a",
+              "sequence": 2,
+              "label": "Keep curation after feedback"
+            }
+          ]
+        },
+        {
+          "id": "6acc683b-ae60-4a36-89b0-e298bbcdffdb",
+          "sequence": 3,
+          "label": "Expose voice skill evolution",
+          "skills": [
+            {
+              "id": "5c9a344f-00ff-4cf4-a962-8f7eb95e9023",
+              "sequence": 1,
+              "label": "Contrast current skill with previous versions"
+            },
+            {
+              "id": "a40f1373-5383-4542-bb6c-e558fff3bd72",
+              "sequence": 2,
+              "label": "Highlight specific skill additions"
+            },
+            {
+              "id": "0d7ea9f9-579e-4c37-9d6f-c7f09f008021",
+              "sequence": 3,
+              "label": "Explain why certain skill traits were dropped"
+            },
+            {
+              "id": "3acba619-c495-4f72-8f43-d68eb0a4ef11",
+              "sequence": 4,
+              "label": "Map skill changes to specific practice outcomes"
+            },
+            {
+              "id": "4c347524-db0f-496b-90e6-a67414300cc6",
+              "sequence": 5,
+              "label": "Trace the evolution of a voice trait"
+            }
+          ]
+        },
+        {
+          "id": "24075f10-03c1-408d-b7e3-ed0e95abeeaf",
+          "sequence": 4,
+          "label": "Curate open studio set",
+          "skills": [
+            {
+              "id": "0d468ea4-6bfb-45ff-bf5f-c5f04b828353",
+              "sequence": 1,
+              "label": "Select pieces for the set"
+            },
+            {
+              "id": "35edd976-1b6a-40b6-ab7c-6bfe880116bb",
+              "sequence": 2,
+              "label": "Sequence the practice pieces"
+            },
+            {
+              "id": "0c5317d4-1220-4c36-9752-e5d3759e629e",
+              "sequence": 3,
+              "label": "Group related experiments"
+            },
+            {
+              "id": "b06b4889-49e9-40f9-b6d0-fb5718c9d34b",
+              "sequence": 4,
+              "label": "Pair artifacts with the voice skill"
+            },
+            {
+              "id": "66fc30eb-d98f-45b1-853a-360d7e415d23",
+              "sequence": 5,
+              "label": "Prepare the human response path"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6eec22e5-da41-4dfa-b726-2d01831d8857",
+      "sequence": 2,
+      "label": "Human Response",
+      "threads": [
+        {
+          "id": "6a0edaec-2352-483d-b980-dec1fd037b36",
+          "sequence": 1,
+          "label": "Curate Response Session",
+          "skills": [
+            {
+              "id": "7ca6d626-061c-4a15-abb1-28f1fe44a488",
+              "sequence": 1,
+              "label": "Confirm Response Audience"
+            },
+            {
+              "id": "89591e28-b33f-4d5c-9739-48cb3041b464",
+              "sequence": 2,
+              "label": "Set Rough-Draft Safeguards"
+            },
+            {
+              "id": "4b972514-a9f5-46d9-bdaa-4a188d0a27ac",
+              "sequence": 3,
+              "label": "Choose Response Format"
+            },
+            {
+              "id": "9d2cc2f2-b3ea-4d27-a0be-b4d24dc49a2c",
+              "sequence": 4,
+              "label": "Schedule the Session"
+            },
+            {
+              "id": "4097be4c-52e6-4229-ae49-393de3a7632a",
+              "sequence": 5,
+              "label": "Prepare the Response Channel"
+            }
+          ]
+        },
+        {
+          "id": "00d30d4d-6dde-417f-840e-83cd058d27d0",
+          "sequence": 2,
+          "label": "Facilitate Plain Feedback",
+          "skills": [
+            {
+              "id": "de719f07-6255-4380-ad0a-462477a285e7",
+              "sequence": 1,
+              "label": "Solicit plain reactions"
+            },
+            {
+              "id": "13b8b343-199d-48e2-aa37-6847ce88486e",
+              "sequence": 2,
+              "label": "Capture human responses"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8e7401d3-005d-4275-b6a2-ef145c539a75",
+      "sequence": 3,
+      "label": "Iterative Refinement",
+      "threads": [
+        {
+          "id": "ef79e06f-9462-491c-a0ea-33e1658c58ae",
+          "sequence": 1,
+          "label": "Blend feedback",
+          "skills": [
+            {
+              "id": "875382b0-7865-440c-9b61-9d7a1e6cfc27",
+              "sequence": 1,
+              "label": "Weigh the reactions"
+            },
+            {
+              "id": "2a24e511-b768-4f4d-a4c8-b7dcc61a0b89",
+              "sequence": 2,
+              "label": "Blend feedback into practice"
+            },
+            {
+              "id": "7d33f5ae-cac7-4e85-9470-b077bd5f3c0b",
+              "sequence": 3,
+              "label": "Choose a useful shift"
+            },
+            {
+              "id": "438f2fad-f42e-4247-9cdc-c76b7f1f94c3",
+              "sequence": 4,
+              "label": "Try it in the next attempt"
+            },
+            {
+              "id": "1bf15221-3326-4726-96c7-86ca6266bdef",
+              "sequence": 5,
+              "label": "Keep what improves the voice"
+            }
+          ]
+        },
+        {
+          "id": "b5527e85-0a8a-4d94-9374-98586b91dead",
+          "sequence": 2,
+          "label": "Log adjustments",
+          "skills": [
+            {
+              "id": "bfe09c82-62ad-47d3-a000-48810a40f7fe",
+              "sequence": 1,
+              "label": "Attribute each adjustment to its human source"
+            },
+            {
+              "id": "1cb46a8d-5014-4fce-9244-c3e297ccf8a7",
+              "sequence": 2,
+              "label": "Record what was kept, changed, or left out"
+            },
+            {
+              "id": "2ebd4e5f-91da-40f5-bf32-dc091969fc02",
+              "sequence": 3,
+              "label": "Link each adjustment to its source practice and skill version"
+            }
+          ]
+        },
+        {
+          "id": "f2904193-e037-4530-8845-d5d0b7b3fd8c",
+          "sequence": 3,
+          "label": "Iterate voice",
+          "skills": [
+            {
+              "id": "7d61c4fa-17b4-4332-89b8-b9606b2b8386",
+              "sequence": 1,
+              "label": "Try what lands"
+            },
+            {
+              "id": "97391f73-ec7c-46de-9b7f-8c40646f203a",
+              "sequence": 2,
+              "label": "Notice the change"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

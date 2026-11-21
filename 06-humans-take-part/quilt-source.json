@@ -1,0 +1,52 @@
+{
+  "slice_label": "Humans take part",
+  "slice_id": "4bea36e7-28b1-43a8-bf35-0182e4ffc70c",
+  "quilt_slice_code": "03-01",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "primary_files": {
+    "framework.json": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id=ab2530d5-80ab-49e1-9789-aee2dcbf5db0",
+    "criteria.json": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id=ab2530d5-80ab-49e1-9789-aee2dcbf5db0",
+    "framework.md": "render of framework.json using Quilt packet markdown rules",
+    "criteria.md": "render of criteria.json using Quilt packet markdown rules"
+  },
+  "latest_run": {
+    "version_label": "v1",
+    "slice_run_id": "ab2530d5-80ab-49e1-9789-aee2dcbf5db0",
+    "phase2_status": "ready",
+    "documents_ready_flag": {
+      "criteria": true,
+      "framework": true
+    },
+    "topic": "human feedback",
+    "domains": 3,
+    "threads": 9,
+    "skills": 33,
+    "criteria_matrices": 33,
+    "framework_version_label_in_payload": "v1",
+    "criteria_version_label_in_payload": "v1"
+  },
+  "last_ready_run": null,
+  "other_runs_held_in_quilt_not_copied_as_primary": [],
+  "reports_saved": [
+    {
+      "file": "slice-report-03-01-v2.md",
+      "document_id": "331dd302-8520-4a31-891a-d2a0dbc596bb",
+      "created_at": "2026-11-18T11:21:34.482289Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=331dd302-8520-4a31-891a-d2a0dbc596bb",
+      "role": "latest"
+    }
+  ],
+  "all_uploaded_reports_quilt_listed_for_this_slice": [
+    {
+      "created_at": "2026-11-18T10:28:11.417964Z",
+      "id": "5e0d8266-2d2c-4721-836c-2aa2337c9780",
+      "name": "slice-report-03-01.md"
+    },
+    {
+      "created_at": "2026-11-18T11:21:34.482289Z",
+      "id": "331dd302-8520-4a31-891a-d2a0dbc596bb",
+      "name": "slice-report-03-01-v2.md"
+    }
+  ],
+  "note_on_duplicate_reports": "Quilt lists a new slice-report filename on each accepted run or reopen post. Many later filenames carry the same brief text. Only the latest, plus any earlier distinct text, was written into the folder."
+}

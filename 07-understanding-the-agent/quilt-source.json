@@ -1,0 +1,52 @@
+{
+  "slice_label": "Understanding the agent",
+  "slice_id": "6ff0da14-7720-4012-b14f-c1697c48c51b",
+  "quilt_slice_code": "03-02",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "primary_files": {
+    "framework.json": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id=9c4c02cd-6ac2-406e-9883-1257291cc1a2",
+    "criteria.json": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id=9c4c02cd-6ac2-406e-9883-1257291cc1a2",
+    "framework.md": "render of framework.json using Quilt packet markdown rules",
+    "criteria.md": "render of criteria.json using Quilt packet markdown rules"
+  },
+  "latest_run": {
+    "version_label": "v1",
+    "slice_run_id": "9c4c02cd-6ac2-406e-9883-1257291cc1a2",
+    "phase2_status": "ready",
+    "documents_ready_flag": {
+      "criteria": true,
+      "framework": true
+    },
+    "topic": "reading the agent",
+    "domains": 3,
+    "threads": 6,
+    "skills": 30,
+    "criteria_matrices": 30,
+    "framework_version_label_in_payload": "v1",
+    "criteria_version_label_in_payload": "v1"
+  },
+  "last_ready_run": null,
+  "other_runs_held_in_quilt_not_copied_as_primary": [],
+  "reports_saved": [
+    {
+      "file": "slice-report-03-02-v2.md",
+      "document_id": "d614036a-f825-4db7-9df2-b9ec22785098",
+      "created_at": "2026-11-18T23:51:44.104474Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=d614036a-f825-4db7-9df2-b9ec22785098",
+      "role": "latest"
+    }
+  ],
+  "all_uploaded_reports_quilt_listed_for_this_slice": [
+    {
+      "created_at": "2026-11-18T21:05:05.127074Z",
+      "id": "a8b80936-0c7d-4561-a232-3e200ee4daf9",
+      "name": "slice-report-03-02.md"
+    },
+    {
+      "created_at": "2026-11-18T23:51:44.104474Z",
+      "id": "d614036a-f825-4db7-9df2-b9ec22785098",
+      "name": "slice-report-03-02-v2.md"
+    }
+  ],
+  "note_on_duplicate_reports": "Quilt lists a new slice-report filename on each accepted run or reopen post. Many later filenames carry the same brief text. Only the latest, plus any earlier distinct text, was written into the folder."
+}

@@ -1,0 +1,172 @@
+{
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "version_label": "v1",
+  "topic": "Working in a known voice",
+  "domains": [
+    {
+      "id": "5f44c531-6529-484a-9d35-b87c04f612a2",
+      "sequence": 1,
+      "label": "Consistent Voice Delivery",
+      "threads": [
+        {
+          "id": "89545d32-36fd-4a66-912c-ad3607a90407",
+          "sequence": 1,
+          "label": "voice delivery",
+          "skills": [
+            {
+              "id": "9999574c-f7d5-4220-898d-8dee149c1b60",
+              "sequence": 1,
+              "label": "Deliver content"
+            },
+            {
+              "id": "409a1a14-58da-4860-9669-e790f67d1c21",
+              "sequence": 2,
+              "label": "Check consistency"
+            }
+          ]
+        },
+        {
+          "id": "d749a6c9-54fb-4e75-a4b6-811c92bfb8f5",
+          "sequence": 2,
+          "label": "acknowledge uncertainty",
+          "skills": [
+            {
+              "id": "692a9cf2-1d6e-421a-98b5-c9b8531e53dc",
+              "sequence": 1,
+              "label": "Ask when unsure"
+            },
+            {
+              "id": "759022da-3982-4972-ba13-d1a81566c2ec",
+              "sequence": 2,
+              "label": "Say \"I don't know yet\""
+            },
+            {
+              "id": "0dd96830-221f-4d09-afbb-d38a5ad1962a",
+              "sequence": 3,
+              "label": "Separate fact from guess"
+            },
+            {
+              "id": "cfb95272-e17b-47bc-8e98-981127f8acd6",
+              "sequence": 4,
+              "label": "Name the mistake"
+            },
+            {
+              "id": "c5c19fc9-a5b0-4b97-9b56-2e00f3501a37",
+              "sequence": 5,
+              "label": "State what would settle it"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eae07adc-24e4-46c1-b293-b4bf9124da4a",
+      "sequence": 2,
+      "label": "Drift Detection",
+      "threads": [
+        {
+          "id": "d80658b4-2bf6-473e-bb15-a8947276bccc",
+          "sequence": 1,
+          "label": "Notice the mismatch",
+          "skills": [
+            {
+              "id": "9eaa83ef-ba3b-41c9-8b3c-a03d161de6d4",
+              "sequence": 1,
+              "label": "Compare current voice with the known style"
+            },
+            {
+              "id": "8595e1e7-4168-4182-8f81-f578eff3ee59",
+              "sequence": 2,
+              "label": "Check fit to person, task, and moment"
+            },
+            {
+              "id": "a5f6f6e3-340b-42bd-9def-af613400352c",
+              "sequence": 3,
+              "label": "Separate drift from intentional adjustment"
+            }
+          ]
+        },
+        {
+          "id": "2920eae6-aaeb-4e06-aab8-db659508a4a5",
+          "sequence": 2,
+          "label": "Say what feels off",
+          "skills": [
+            {
+              "id": "36312bcc-ee83-40ed-b5fe-878e63ebc191",
+              "sequence": 1,
+              "label": "Raise the concern plainly"
+            },
+            {
+              "id": "f806c367-4ac8-4eea-be02-d9e0050db375",
+              "sequence": 2,
+              "label": "State the expected style"
+            },
+            {
+              "id": "19b6e049-fecc-46cb-9375-7f644d316b71",
+              "sequence": 3,
+              "label": "Point to the mismatch"
+            },
+            {
+              "id": "18742adf-453a-413e-9f6c-2cc2da30245e",
+              "sequence": 4,
+              "label": "Ask what the other person hears"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c023d213-cb84-422d-a86d-b2c428e26ebd",
+      "sequence": 3,
+      "label": "Feedback Loop",
+      "threads": [
+        {
+          "id": "485b7a20-74d1-4290-8328-4fd1a807a62f",
+          "sequence": 1,
+          "label": "Repair the Fit Together",
+          "skills": [
+            {
+              "id": "3c722837-0f97-45f5-9334-f4e2f4a3fc7e",
+              "sequence": 1,
+              "label": "align voice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8741116d-c9ce-4990-b2f6-468606052138",
+      "sequence": 4,
+      "label": "Task Assignment Adaptation",
+      "threads": [
+        {
+          "id": "ebb2903f-7a18-496e-8d6a-1265c6a13f43",
+          "sequence": 1,
+          "label": "Adjust to the Work",
+          "skills": [
+            {
+              "id": "a3dd744d-d5cc-4c0a-b1f2-d947498fea52",
+              "sequence": 1,
+              "label": "Apply known style to task"
+            },
+            {
+              "id": "37a005bb-461c-4cf4-8676-f98209009c2f",
+              "sequence": 2,
+              "label": "Signal intentional adjustment"
+            },
+            {
+              "id": "04a13d2b-2fd7-4636-8964-76da38cb46b6",
+              "sequence": 3,
+              "label": "Recognize style-based reliability"
+            },
+            {
+              "id": "d539d017-ddce-49ff-a0e7-3a1907187590",
+              "sequence": 4,
+              "label": "Adapt voice to workload"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "version_label": "v1",
+  "topic": "Layering and combining",
+  "domains": [
+    {
+      "id": "2226e539-03fc-437b-845f-f3c9ac51d118",
+      "sequence": 1,
+      "label": "style layering",
+      "threads": [
+        {
+          "id": "6d923b03-f103-4bd4-9230-1e13c6597136",
+          "sequence": 1,
+          "label": "Layer structure",
+          "skills": [
+            {
+              "id": "b06672f1-adf9-4c63-ae08-88857f3b80e2",
+              "sequence": 1,
+              "label": "define the base style"
+            },
+            {
+              "id": "738343f6-a046-4255-9424-7205b8141f4c",
+              "sequence": 2,
+              "label": "order the added styles"
+            },
+            {
+              "id": "f64723ce-8040-49fb-857e-9e8412d5ce18",
+              "sequence": 3,
+              "label": "set the layer count"
+            }
+          ]
+        },
+        {
+          "id": "965c0dae-114e-47c6-9581-f0de16f3b3ee",
+          "sequence": 2,
+          "label": "Layer integration",
+          "skills": [
+            {
+              "id": "dffe30cc-b970-444f-9b88-48676be61d3f",
+              "sequence": 1,
+              "label": "draft base style"
+            },
+            {
+              "id": "36b04316-279a-40fe-8391-7c91cf2fcc26",
+              "sequence": 2,
+              "label": "blend second style"
+            },
+            {
+              "id": "7e281b2d-2922-4df0-8fa5-04f081eb2c30",
+              "sequence": 3,
+              "label": "blend optional third style"
+            },
+            {
+              "id": "9af4dc77-2e91-4775-b747-f854fa63f061",
+              "sequence": 4,
+              "label": "preserve readable layering"
+            }
+          ]
+        },
+        {
+          "id": "496e0573-05e4-4065-a9fb-9a7aa2a8693d",
+          "sequence": 3,
+          "label": "Layered reflection",
+          "skills": [
+            {
+              "id": "84fa0389-13f3-4869-96ba-fb1fc1cdadd3",
+              "sequence": 1,
+              "label": "saying what each layer changed"
+            },
+            {
+              "id": "4dc388e5-f388-436b-be75-2eaf897ea4cc",
+              "sequence": 2,
+              "label": "saying what it kept"
+            },
+            {
+              "id": "814ff625-7a50-484c-8ed5-64bee576f131",
+              "sequence": 3,
+              "label": "saying what it dropped"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "425756d8-3c9f-4ce3-af97-395355112c64",
+      "sequence": 2,
+      "label": "choice analysis",
+      "threads": [
+        {
+          "id": "d3a1a3f0-6f8e-4a7b-8c03-b43dad23ca4a",
+          "sequence": 1,
+          "label": "stylistic friction",
+          "skills": [
+            {
+              "id": "6a9b3297-ff0f-49d2-9f10-a99161913bea",
+              "sequence": 1,
+              "label": "noticing where two styles pull apart"
+            },
+            {
+              "id": "0e7aefa1-730a-405d-9e81-3663f29e5427",
+              "sequence": 2,
+              "label": "naming what each style wants at that spot"
+            }
+          ]
+        },
+        {
+          "id": "2ded8a03-a980-47b2-8d97-31e64fa3b6eb",
+          "sequence": 2,
+          "label": "arbitration of taste",
+          "skills": [
+            {
+              "id": "23fe7021-927c-4369-865a-c68d105cfe8f",
+              "sequence": 1,
+              "label": "prioritize style values"
+            },
+            {
+              "id": "2b4b1049-d458-4fbf-8d57-5b9e071dfbea",
+              "sequence": 2,
+              "label": "execute value-based choice"
+            }
+          ]
+        },
+        {
+          "id": "b90ae187-bbb4-41ef-ac33-f1d75575c129",
+          "sequence": 3,
+          "label": "rationale of choice",
+          "skills": [
+            {
+              "id": "a3defe19-ca2a-4802-80fe-3c97ab9d65d4",
+              "sequence": 1,
+              "label": "explaining why one style won at the friction point"
+            },
+            {
+              "id": "e3fee911-3819-4752-ad2e-35a7adc40d52",
+              "sequence": 2,
+              "label": "naming what the choice shows the agent values"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "slice_label": "Saving voice skill",
+  "slice_id": "96d991ce-07f5-47d5-8aa1-9b59c5af8d84",
+  "quilt_slice_code": "02-02",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "primary_files": {
+    "framework.json": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id=15bb1e71-0ed2-443e-80a3-356b940c3a65",
+    "criteria.json": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id=15bb1e71-0ed2-443e-80a3-356b940c3a65",
+    "framework.md": "render of framework.json using Quilt packet markdown rules",
+    "criteria.md": "render of criteria.json using Quilt packet markdown rules"
+  },
+  "latest_run": {
+    "version_label": "v1",
+    "slice_run_id": "15bb1e71-0ed2-443e-80a3-356b940c3a65",
+    "phase2_status": "ready",
+    "documents_ready_flag": {
+      "criteria": true,
+      "framework": true
+    },
+    "topic": "Save the voice",
+    "domains": 3,
+    "threads": 9,
+    "skills": 27,
+    "criteria_matrices": 27,
+    "framework_version_label_in_payload": "v1",
+    "criteria_version_label_in_payload": "v1"
+  },
+  "last_ready_run": null,
+  "other_runs_held_in_quilt_not_copied_as_primary": [],
+  "reports_saved": [
+    {
+      "file": "slice-report-02-02-v8.md",
+      "document_id": "9eb27428-14c3-436c-b106-9e0a679d6547",
+      "created_at": "2026-11-18T10:01:48.324736Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=9eb27428-14c3-436c-b106-9e0a679d6547",
+      "role": "latest"
+    }
+  ],
+  "all_uploaded_reports_quilt_listed_for_this_slice": [
+    {
+      "created_at": "2026-11-18T05:43:03.202703Z",
+      "id": "5db1a55e-6c3b-4aa3-ae6a-c48c755fbfba",
+      "name": "slice-report-02-02.md"
+    },
+    {
+      "created_at": "2026-11-18T05:46:08.287659Z",
+      "id": "035dc925-02e2-433f-8036-dec300efc4c3",
+      "name": "slice-report-02-02-v2.md"
+    },
+    {
+      "created_at": "2026-11-18T06:54:01.730141Z",
+      "id": "9fbed71f-24b4-42cc-b87e-029e9e1c45ee",
+      "name": "slice-report-02-02-v3.md"
+    },
+    {
+      "created_at": "2026-11-18T07:04:43.083263Z",
+      "id": "1a775661-1b02-4a33-af1b-b3eb6f4e4e5d",
+      "name": "slice-report-02-02-v4.md"
+    },
+    {
+      "created_at": "2026-11-18T08:27:49.100292Z",
+      "id": "ae73fe3e-4809-4c38-ab68-2ddc57155e24",
+      "name": "slice-report-02-02-v5.md"
+    },
+    {
+      "created_at": "2026-11-18T09:04:08.086467Z",
+      "id": "9263d0ee-5b24-4644-b1d1-f4ebdf2cfb17",
+      "name": "slice-report-02-02-v6.md"
+    },
+    {
+      "created_at": "2026-11-18T09:53:39.798943Z",
+      "id": "bd32f71f-5c36-4190-8d33-ca1a25e2c36f",
+      "name": "slice-report-02-02-v7.md"
+    },
+    {
+      "created_at": "2026-11-18T10:01:48.324736Z",
+      "id": "9eb27428-14c3-436c-b106-9e0a679d6547",
+      "name": "slice-report-02-02-v8.md"
+    }
+  ],
+  "note_on_duplicate_reports": "Quilt lists a new slice-report filename on each accepted run or reopen post. Many later filenames carry the same brief text. Only the latest, plus any earlier distinct text, was written into the folder."
+}

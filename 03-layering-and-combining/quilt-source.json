@@ -1,0 +1,67 @@
+{
+  "slice_label": "Layering and combining",
+  "slice_id": "eb98af16-5159-4f75-890f-acfb2030b24a",
+  "quilt_slice_code": "01-03",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "primary_files": {
+    "framework.json": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id=86400ee1-bb16-4106-877d-2ed5c3aaf803",
+    "criteria.json": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id=86400ee1-bb16-4106-877d-2ed5c3aaf803",
+    "framework.md": "render of framework.json using Quilt packet markdown rules",
+    "criteria.md": "render of criteria.json using Quilt packet markdown rules"
+  },
+  "latest_run": {
+    "version_label": "v1",
+    "slice_run_id": "86400ee1-bb16-4106-877d-2ed5c3aaf803",
+    "phase2_status": "ready",
+    "documents_ready_flag": {
+      "criteria": true,
+      "framework": true
+    },
+    "topic": "Layering and combining",
+    "domains": 2,
+    "threads": 6,
+    "skills": 16,
+    "criteria_matrices": 16,
+    "framework_version_label_in_payload": "v1",
+    "criteria_version_label_in_payload": "v1"
+  },
+  "last_ready_run": null,
+  "other_runs_held_in_quilt_not_copied_as_primary": [],
+  "reports_saved": [
+    {
+      "file": "slice-report-01-03-v5.md",
+      "document_id": "14f4c2dd-df6c-4b9a-b19c-bfdaa46f29aa",
+      "created_at": "2026-11-20T21:40:33.278174Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=14f4c2dd-df6c-4b9a-b19c-bfdaa46f29aa",
+      "role": "latest"
+    }
+  ],
+  "all_uploaded_reports_quilt_listed_for_this_slice": [
+    {
+      "created_at": "2026-11-17T20:27:11.46057Z",
+      "id": "4d0ecdb5-e503-4568-b0bb-a4ffdcd051ab",
+      "name": "slice-report-01-03.md"
+    },
+    {
+      "created_at": "2026-11-17T22:00:36.117445Z",
+      "id": "f81c1b6b-2bcf-45ef-8608-aa53d5f94968",
+      "name": "slice-report-01-03-v2.md"
+    },
+    {
+      "created_at": "2026-11-17T23:01:29.301884Z",
+      "id": "9ae88199-bed4-459d-97a4-8d9d8f3f61d5",
+      "name": "slice-report-01-03-v3.md"
+    },
+    {
+      "created_at": "2026-11-17T23:30:31.842437Z",
+      "id": "599f8f4f-97f5-435a-9236-0d8b40804ec7",
+      "name": "slice-report-01-03-v4.md"
+    },
+    {
+      "created_at": "2026-11-20T21:40:33.278174Z",
+      "id": "14f4c2dd-df6c-4b9a-b19c-bfdaa46f29aa",
+      "name": "slice-report-01-03-v5.md"
+    }
+  ],
+  "note_on_duplicate_reports": "Quilt lists a new slice-report filename on each accepted run or reopen post. Many later filenames carry the same brief text. Only the latest, plus any earlier distinct text, was written into the folder."
+}

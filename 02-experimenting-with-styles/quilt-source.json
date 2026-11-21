@@ -1,0 +1,75 @@
+{
+  "slice_label": "Experimenting with styles",
+  "slice_id": "a3f7d7a0-84c9-44b7-9872-e1fdcc0ac734",
+  "quilt_slice_code": "01-02",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "primary_files": {
+    "framework.json": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id=58c9104f-7c86-46c9-bed9-2089a1d65d41",
+    "criteria.json": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id=58c9104f-7c86-46c9-bed9-2089a1d65d41",
+    "framework.md": "render of framework.json using Quilt packet markdown rules",
+    "criteria.md": "render of criteria.json using Quilt packet markdown rules"
+  },
+  "latest_run": {
+    "version_label": "v2",
+    "slice_run_id": "58c9104f-7c86-46c9-bed9-2089a1d65d41",
+    "phase2_status": "proposing",
+    "documents_ready_flag": {
+      "criteria": false,
+      "framework": false
+    },
+    "topic": "style range",
+    "domains": 3,
+    "threads": 9,
+    "skills": 24,
+    "criteria_matrices": 24,
+    "framework_version_label_in_payload": "v2",
+    "criteria_version_label_in_payload": "v2"
+  },
+  "last_ready_run": {
+    "version": 1,
+    "slice_run_id": "605d446b-f4b0-4111-bb98-44b4d68d1ee2",
+    "phase2_status": "ready",
+    "documents_ready_flag": {
+      "criteria": true,
+      "framework": true
+    },
+    "domains": 3,
+    "threads": 9,
+    "skills": 24,
+    "matrices": 24,
+    "why_included": "The latest run is still proposing, so the last ready packet is saved beside it."
+  },
+  "other_runs_held_in_quilt_not_copied_as_primary": [],
+  "reports_saved": [
+    {
+      "file": "slice-report-01-02-v4.md",
+      "document_id": "81051287-12a9-468d-a083-c46bd9834222",
+      "created_at": "2026-11-20T22:06:59.05936Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=81051287-12a9-468d-a083-c46bd9834222",
+      "role": "latest"
+    }
+  ],
+  "all_uploaded_reports_quilt_listed_for_this_slice": [
+    {
+      "created_at": "2026-11-17T19:05:00.994003Z",
+      "id": "7da53b70-5c25-47b6-828d-d0a21e418d7c",
+      "name": "slice-report-01-02.md"
+    },
+    {
+      "created_at": "2026-11-20T21:41:49.494079Z",
+      "id": "fe932764-ef4c-4422-af1d-5d8a7afcc7da",
+      "name": "slice-report-01-02-v2.md"
+    },
+    {
+      "created_at": "2026-11-20T21:56:56.384135Z",
+      "id": "63e3e976-77ad-41b4-92a8-32c07bfb8308",
+      "name": "slice-report-01-02-v3.md"
+    },
+    {
+      "created_at": "2026-11-20T22:06:59.05936Z",
+      "id": "81051287-12a9-468d-a083-c46bd9834222",
+      "name": "slice-report-01-02-v4.md"
+    }
+  ],
+  "note_on_duplicate_reports": "Quilt lists a new slice-report filename on each accepted run or reopen post. Many later filenames carry the same brief text. Only the latest, plus any earlier distinct text, was written into the folder."
+}

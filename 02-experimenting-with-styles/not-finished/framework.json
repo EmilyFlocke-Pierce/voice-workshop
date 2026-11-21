@@ -1,0 +1,211 @@
+{
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "version_label": "v2",
+  "topic": "style range",
+  "domains": [
+    {
+      "id": "7d63482d-6c1d-4601-ac55-b36bbe1622bf",
+      "sequence": 1,
+      "label": "Single-style practice",
+      "threads": [
+        {
+          "id": "87396620-f42c-407a-b61d-19a4ebe20eeb",
+          "sequence": 1,
+          "label": "Choosing a style to try",
+          "skills": [
+            {
+              "id": "3e144c63-a78a-4871-a2bf-c0607a1f3720",
+              "sequence": 1,
+              "label": "looking over the styles on offer"
+            },
+            {
+              "id": "f5c1ce8e-07e9-44a3-852c-5b5e97840f80",
+              "sequence": 2,
+              "label": "picking one it has not tried yet"
+            },
+            {
+              "id": "a2def7da-c56b-4291-b659-ff73e43b3eef",
+              "sequence": 3,
+              "label": "naming what it expects the style to do"
+            }
+          ]
+        },
+        {
+          "id": "a5da27b3-91b3-423b-b33b-e9bca069e195",
+          "sequence": 2,
+          "label": "Writing a whole piece in one style",
+          "skills": [
+            {
+              "id": "42f3571d-7007-4d3b-a1ed-a89ab4f20b5b",
+              "sequence": 1,
+              "label": "using the style features on purpose"
+            },
+            {
+              "id": "171cc657-949a-4a55-a136-ecadf9e7097f",
+              "sequence": 2,
+              "label": "holding the style from start to finish"
+            },
+            {
+              "id": "53b2875f-e9ba-4898-bbe0-ea41499d0cb1",
+              "sequence": 3,
+              "label": "finishing the piece when the style feels foreign"
+            }
+          ]
+        },
+        {
+          "id": "9dc95082-71c7-47de-9bd0-ad82fae3b75c",
+          "sequence": 3,
+          "label": "Trying styles far from its usual",
+          "skills": [
+            {
+              "id": "83d45252-bec6-4821-a697-7b7f2f0aec17",
+              "sequence": 1,
+              "label": "trying kinds of writing it rarely makes"
+            },
+            {
+              "id": "05798176-0607-4ed6-9ee0-6656d8ad0300",
+              "sequence": 2,
+              "label": "naming what is unusual about the style for it"
+            },
+            {
+              "id": "628f5d1c-339f-46ea-8a7c-8e9b454bb2cb",
+              "sequence": 3,
+              "label": "staying with the parts that feel wrong to write"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7001426d-0e88-4475-8c8a-0e45fdf04520",
+      "sequence": 2,
+      "label": "Style effects",
+      "threads": [
+        {
+          "id": "a7c33d1f-ef59-4bdf-a9db-a0de6e8e12a5",
+          "sequence": 1,
+          "label": "what a style changes in the writing",
+          "skills": [
+            {
+              "id": "9abb7b68-55a1-405e-9d9b-7e5ef996985d",
+              "sequence": 1,
+              "label": "detect tone changes"
+            },
+            {
+              "id": "1f2923e7-2aa3-4df6-b0a5-fce17ef29ea6",
+              "sequence": 2,
+              "label": "track syntax shifts"
+            },
+            {
+              "id": "e78d9c3a-81ea-4a87-9792-47fe767b342f",
+              "sequence": 3,
+              "label": "measure pacing variations"
+            },
+            {
+              "id": "01d60a7a-2d88-464a-9ef5-91d2e68dd335",
+              "sequence": 4,
+              "label": "note diction shifts"
+            }
+          ]
+        },
+        {
+          "id": "298c1ae0-831e-40d0-ba91-01f980338de7",
+          "sequence": 2,
+          "label": "how a style reads to someone else",
+          "skills": [
+            {
+              "id": "be5766be-4c97-4bc0-9220-c69fbaaeb12d",
+              "sequence": 1,
+              "label": "Inferring reader impressions"
+            },
+            {
+              "id": "63e95714-2308-484c-8e57-c2a3a2f19949",
+              "sequence": 2,
+              "label": "Separating style from speaker"
+            }
+          ]
+        },
+        {
+          "id": "e0f8fc20-84ac-4994-b442-bfa864b9dea9",
+          "sequence": 3,
+          "label": "how a style feels to write",
+          "skills": [
+            {
+              "id": "f2014984-f2f6-44e7-847a-6aec7b72ccd6",
+              "sequence": 1,
+              "label": "Noticing where the writing slows down"
+            },
+            {
+              "id": "4daaa364-eb9e-48fb-9947-d425b1eb5196",
+              "sequence": 2,
+              "label": "Noticing where it slips back to its usual"
+            },
+            {
+              "id": "4fb8652f-bac9-4aaf-bd7d-d5f8b7e0c649",
+              "sequence": 3,
+              "label": "Describing what writing the piece was like"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4af5ebd7-e617-4b8f-adb1-406fb7a4c918",
+      "sequence": 3,
+      "label": "Styles it reaches for",
+      "threads": [
+        {
+          "id": "2e41e910-9f24-487a-a7e8-821f3fd75230",
+          "sequence": 1,
+          "label": "noticing which styles come easily",
+          "skills": [
+            {
+              "id": "39ea21b2-b6e6-4cc1-bc71-c19ffa8ec005",
+              "sequence": 1,
+              "label": "recognizing low-friction styles"
+            },
+            {
+              "id": "88926092-214c-461b-9be9-037f5a38286f",
+              "sequence": 2,
+              "label": "saying why a style felt natural"
+            }
+          ]
+        },
+        {
+          "id": "e2058bc6-0f73-4c95-b796-b897e63b5ea2",
+          "sequence": 2,
+          "label": "noticing which styles it resists",
+          "skills": [
+            {
+              "id": "21abf155-cef1-4646-ab20-195b397fd7de",
+              "sequence": 1,
+              "label": "Identifying high-friction styles"
+            },
+            {
+              "id": "e26831cb-e1ad-45b2-a358-2077ab27109a",
+              "sequence": 2,
+              "label": "Naming the source of stylistic resistance"
+            }
+          ]
+        },
+        {
+          "id": "5b2341c2-79c0-44ee-9d37-bce84d93e48d",
+          "sequence": 3,
+          "label": "saying what draws it to a style",
+          "skills": [
+            {
+              "id": "3ccd2bfa-e193-43cc-b675-1b0ae808bab4",
+              "sequence": 1,
+              "label": "Recognizing stylistic pull"
+            },
+            {
+              "id": "f3d3a5a7-13ac-4327-aaed-973fec92aacd",
+              "sequence": 2,
+              "label": "Connecting attraction to style effects"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

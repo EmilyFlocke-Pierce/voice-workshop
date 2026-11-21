@@ -1,0 +1,52 @@
+{
+  "slice_label": "Colleague whose style they know",
+  "slice_id": "ef36d526-0f52-4b92-ab02-d3468ce37b1f",
+  "quilt_slice_code": "03-03",
+  "session_id": "1925caee-ea41-428d-a7a3-be26d4708336",
+  "primary_files": {
+    "framework.json": "GET https://quilt-system.dev/api/core/sessions/1925caee-ea41-428d-a7a3-be26d4708336/framework?slice_run_id=91cd6f32-3b69-4f04-9943-cb2b7b23f471",
+    "criteria.json": "GET https://quilt-system.dev/api/criteria-service/sessions/1925caee-ea41-428d-a7a3-be26d4708336/matrices-export?slice_run_id=91cd6f32-3b69-4f04-9943-cb2b7b23f471",
+    "framework.md": "render of framework.json using Quilt packet markdown rules",
+    "criteria.md": "render of criteria.json using Quilt packet markdown rules"
+  },
+  "latest_run": {
+    "version_label": "v1",
+    "slice_run_id": "91cd6f32-3b69-4f04-9943-cb2b7b23f471",
+    "phase2_status": "ready",
+    "documents_ready_flag": {
+      "criteria": true,
+      "framework": true
+    },
+    "topic": "Working in a known voice",
+    "domains": 4,
+    "threads": 6,
+    "skills": 19,
+    "criteria_matrices": 19,
+    "framework_version_label_in_payload": "v1",
+    "criteria_version_label_in_payload": "v1"
+  },
+  "last_ready_run": null,
+  "other_runs_held_in_quilt_not_copied_as_primary": [],
+  "reports_saved": [
+    {
+      "file": "slice-report-03-03-v2.md",
+      "document_id": "b0b2e9b2-a7f1-452d-a39d-744d57dc92e7",
+      "created_at": "2026-11-19T03:13:12.776288Z",
+      "route": "GET https://quilt-system.dev/api/phase2/api/phase2-monitor?session_id=1925caee-ea41-428d-a7a3-be26d4708336&document_id=b0b2e9b2-a7f1-452d-a39d-744d57dc92e7",
+      "role": "latest"
+    }
+  ],
+  "all_uploaded_reports_quilt_listed_for_this_slice": [
+    {
+      "created_at": "2026-11-19T00:22:20.202478Z",
+      "id": "fe2ced47-aac1-4b79-87c5-bf0c0b9b169d",
+      "name": "slice-report-03-03.md"
+    },
+    {
+      "created_at": "2026-11-19T03:13:12.776288Z",
+      "id": "b0b2e9b2-a7f1-452d-a39d-744d57dc92e7",
+      "name": "slice-report-03-03-v2.md"
+    }
+  ],
+  "note_on_duplicate_reports": "Quilt lists a new slice-report filename on each accepted run or reopen post. Many later filenames carry the same brief text. Only the latest, plus any earlier distinct text, was written into the folder."
+}

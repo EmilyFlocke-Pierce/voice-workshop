@@ -1,0 +1,1 @@
+Nov 21 2026 6:17 AM CST: framework and criteria files here are the last ready (stable) version v1. The newer proposing version is in not-finished/.
