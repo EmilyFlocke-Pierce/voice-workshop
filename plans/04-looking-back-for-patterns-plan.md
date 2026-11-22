@@ -82,7 +82,7 @@ I have 23 pieces now, across four sessions and six styles, and a pile of notes I
 - **A piece is a try.** Every try in scope gets a label, P1 to Pn, in created order. The default denominator for a count is the latest version of each retry chain, and the agent can switch it to every try or to a named subset.
 - **Note ids.** Every note in the corpus has one id: `try:<try_id>:intent`, `try:<try_id>:scope_note`, `try:<try_id>:change_note`, `try:<try_id>:diagnosis`, `try:<try_id>:rough_edges`, `mark:<id>`, `stitch:<id>`, and `xnote:<id>` for 02's exercise notes. Claims evidence, rejections, placements, and the audit all use these ids.
 - **What counts as a reflection note.** All of the above. `landed` (yes, no, unsure) is shown with its piece but does not count, so a try with only a landed value is listed as "no notes".
-- **02's tables.** Once per lookback, check `SELECT name FROM sqlite_master WHERE type='table' AND name='exercises'`. When the table is there, read exercises and exercise_notes. When it is not, skip them and say so in the corpus reply.
+- **02's tables.** Once per lookback, check `SELECT name FROM sqlite_schema WHERE type='table' AND name='exercises'`. When the table is there, read exercises and exercise_notes. When it is not, skip them and say so in the corpus reply.
 - **Scope "style kinds".** When 02's tables are not there, refuse this scope with a message that style kinds arrive with slice 02 and that "all", dates, and sessions work now.
 - **Size.** `lookback_pieces: 200`. Past it, take the newest 200 tries in scope and say so in the corpus reply and the audit.
 
