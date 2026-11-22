@@ -46,6 +46,8 @@ All rows on Nov 21, 2026. Code lives in `app/`.
 21. Only the key's holder reads its rows. Every query in `src/index.ts`.
 22. Outside model hook, off by default. `src/outside.ts`.
 
+Lift after locate run 2 (II.B.2, LOCATE.md run 2, TAFFY's R8, R11, R12, R13 probes): `src/feedback/split.ts` now splits a line only when every part after a join reads as a full observation. A part with its own subject and verb stays as written. A verb phrase borrows the first part's subject when that subject comes out cleanly (the words before the main verb, with no preposition inside) and agrees with the new verb. A part with no verb continues the line, so the line stays one observation, as written. A true two-point line whose second subject cannot be carried (a pronoun, a subject with a preposition, a verb that disagrees) stays whole and goes to the flags with its own reason. The verb finder skips any word after a determiner or preposition, so "the end" and "the close" read as places. `test/split-combinations.test.ts` (npm run test:split) holds TAFFY's 48 combinations and her split shapes: 19 clean, 29 whole, 0 fragments, 0 garbled. CODE_VERSION moves to observe-2.
+
 Checks on ezra-01 at 724085d: typecheck clean, test:feedback 12 of 12, walkthrough 27 of 27.
 
 Say-less pass on Nov 21: SESSION.md 958 to 899 words, MANIFEST.md 996 to 966. The rest is labels, paths, and check names, so it stays.

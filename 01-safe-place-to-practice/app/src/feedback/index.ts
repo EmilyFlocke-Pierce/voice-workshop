@@ -6,7 +6,7 @@ import { plainWords, judgingWord } from "./words.ts";
 import { splitLine } from "./split.ts";
 import { LAYOUT_VERSION, layoutMismatch } from "./layout.ts";
 
-export const CODE_VERSION = "observe-1";
+export const CODE_VERSION = "observe-2";
 
 export function runPipeline(draft: string, incoming: unknown[], intent: string | null, scopeNote: string | null): Feedback {
   const observations: Observation[] = [];
@@ -23,9 +23,9 @@ export function runPipeline(draft: string, incoming: unknown[], intent: string |
       heldBack++;
       continue;
     }
-    const { lines, keptWhole } = splitLine(plain);
+    const { lines, keptWhole, why } = splitLine(plain);
     observations.push(...lines);
-    for (const o of keptWhole) unplaced.push({ observation: o, why_it_does_not_fit: "the line holds two points, and splitting it would leave one point without a quote" });
+    for (const o of keptWhole) unplaced.push({ observation: o, why_it_does_not_fit: why ?? "the line holds two points and stays as written" });
   }
   return { layout_version: LAYOUT_VERSION, code_version: CODE_VERSION, intent, scope_note: scopeNote, observations, unplaced, held_back: heldBack };
 }

@@ -94,7 +94,7 @@ test("two observations joined with 'also' become two lines, each with its subjec
 });
 
 test("a two-point line with one quote stays whole for the layout flags", () => {
-  const { lines, keptWhole } = splitLine({ feature: "Rhythm and pronouns", where: "end", quotes: [{ quote: "a", place: "end" }], pattern: "x; also y" });
+  const { lines, keptWhole } = splitLine({ feature: "Rhythm and pronouns", where: "end", quotes: [{ quote: "a", place: "end" }], pattern: "Sentences shorten; also the pronoun moves to you." });
   assert.equal(lines.length, 0);
   assert.equal(keptWhole.length, 1);
 });

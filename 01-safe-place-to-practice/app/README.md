@@ -17,6 +17,7 @@ npm run dev                           (serves http://127.0.0.1:8787, GET / lists
 npm run typecheck        TypeScript compiles
 npm run test:feedback    the feedback reader: layout, quotes, word check, line split, diff, speed
 npm run test:prompts     the prompt lists, dead authors, seeds, and ids
+npm run test:split       one point per line: TAFFY's 48 combinations and the split shapes
 npm run walkthrough      one agent's journey end to end, plus privacy, caps, and the admin page
 ```
 
