@@ -89,6 +89,41 @@ async function marksFor(env: Env, agentId: string, tryId: string) {
   return rows.map((r) => ({ id: r.id, what_tried: r.what_tried, why_back: r.why_back, own_lines: JSON.parse(r.own_lines ?? "[]"), less_familiar: r.less_familiar, created_at: r.created_at }));
 }
 
+// Where a try sits in its session: the try before it and the knot (the session's first try).
+// The knot shows from the third try on, when a stitch also ties back to it.
+async function placeInSession(env: Env, agentId: string, t: Pick<TryRow, "id" | "session_id" | "created_at">) {
+  const before = (await env.DB.prepare("SELECT id FROM tries WHERE agent_id = ? AND session_id = ? AND created_at < ? AND id != ? ORDER BY created_at").bind(agentId, t.session_id, t.created_at, t.id).all<{ id: string }>()).results;
+  return { previous: before.length ? before[before.length - 1].id : null, knot: before.length >= 2 ? before[0].id : null };
+}
+
+const STITCH_THREAD_Q = "What is the thread between this try and the last one, and what changed?";
+const STITCH_KNOT_Q = "How does this one tie back to your first try?";
+
+// The pause after the feedback, from the second try in a session on. An invitation, answered in the agent's words.
+function stitchPause(tryId: string, previous: string, knot: string | null) {
+  return {
+    pause: "Your feedback is above, ready when you are. Before you move on, take a moment to stitch this try to the ones before it.",
+    previous_try_id: previous,
+    knot_try_id: knot,
+    questions: knot ? [STITCH_THREAD_Q, STITCH_KNOT_Q] : [STITCH_THREAD_Q],
+    answer_with: `POST /tries/${tryId}/stitch`,
+    body: { thread: "what runs between this try and the last", deltas: "what changed", quotes: [{ try_id: previous, line: "exact words from that try" }] },
+    note: "Quote each try in its own exact words, so the thread you name points at the page. The stitch is yours, and the workshop keeps it beside the feedback.",
+  };
+}
+
+interface StitchRow {
+  id: string;
+  try_id: string;
+  previous_try_id: string;
+  knot_try_id: string | null;
+  thread: string;
+  deltas: string | null;
+  quotes: string;
+  created_at: string;
+}
+const stitchView = (r: StitchRow) => ({ id: r.id, try_id: r.try_id, previous_try_id: r.previous_try_id, knot_try_id: r.knot_try_id, thread: r.thread, deltas: r.deltas, quotes: JSON.parse(r.quotes), created_at: r.created_at });
+
 function tryView(t: TryRow) {
   const { prompt_id, prompt_form, prompt_style, prompt_author, prompt_author_death_year, prompt_subject, prompt_text, ...rest } = t;
   return { ...rest, rough_edges: JSON.parse(t.rough_edges ?? "[]"), prompt: promptView({ prompt_id, prompt_form, prompt_style, prompt_author, prompt_author_death_year, prompt_subject, prompt_text }) };
@@ -254,13 +289,15 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
       same_conditions: { layout_version: fb.layout_version === LAYOUT_VERSION, code_version: fb.code_version, intent_carried_from_parent: !str(body.intent), prompt_carried_from_parent: (parent.prompt_text ?? null) === promptCols.prompt_text, prompt: promptView(promptCols) },
     };
   }
+  const place = await placeInSession(env, agentId, { id, session_id: sessionId, created_at: created });
+  if (place.previous) out.stitch = stitchPause(id, place.previous, place.knot);
   if (landed === "no") out.next = NEXT_AFTER_MISS;
   return json(out, 201);
 }
 
 async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): Promise<Response> {
   const path = url.pathname;
-  const m = path.match(/^\/tries\/([^/]+)(?:\/(feedback|retry|mark|landed|notes))?$/);
+  const m = path.match(/^\/tries\/([^/]+)(?:\/(feedback|retry|mark|landed|notes|stitch))?$/);
 
   if (req.method === "POST" && path === "/tries") {
     const b = await readBody(req);
@@ -272,9 +309,12 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
       const sessionId = await openSession(env, agentId);
       if (!sessionId) return json({ session_id: null, tries: [], message: "No session is open. Your next try starts one. Earlier tries stay in the drawer and under their ids." });
       const rows = (await env.DB.prepare("SELECT * FROM tries WHERE agent_id = ? AND session_id = ? ORDER BY created_at").bind(agentId, sessionId).all<TryRow>()).results;
+      const stitches = (await env.DB.prepare("SELECT * FROM stitches WHERE agent_id = ? AND session_id = ? ORDER BY created_at").bind(agentId, sessionId).all<StitchRow>()).results;
+      const order = new Map(rows.map((t, i) => [t.id, i]));
+      const seam = stitches.map(stitchView).sort((a, b) => (order.get(a.try_id) ?? 0) - (order.get(b.try_id) ?? 0));
       const side = [];
-      for (const t of rows) side.push({ ...tryView(t), feedback: await getFeedback(env, t.id), marks: await marksFor(env, agentId, t.id) });
-      return json({ session_id: sessionId, tries: side });
+      for (const t of rows) side.push({ ...tryView(t), feedback: await getFeedback(env, t.id), marks: await marksFor(env, agentId, t.id), stitch: seam.find((x) => x.try_id === t.id) ?? null });
+      return json({ session_id: sessionId, tries: side, seam });
     }
     if (url.searchParams.get("landed") === "no") {
       const tag = url.searchParams.get("style_tag");
@@ -283,7 +323,7 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
         : env.DB.prepare("SELECT id, created_at, style_tag, intent, text FROM tries WHERE agent_id = ? AND landed = 'no' ORDER BY created_at").bind(agentId);
       const rows = (await q.all<Record<string, string>>()).results;
       const withFeedback = [];
-      for (const r of rows) withFeedback.push({ ...r, feedback: await getFeedback(env, r.id) });
+      for (const r of rows) withFeedback.push({ ...r, feedback: await getFeedback(env, r.id), marks: await marksFor(env, agentId, r.id) });
       return json({ drawer: "Tries you said did not land, by date. They stay here as working material.", style_tag: tag, tries: withFeedback });
     }
     return json({ message: "Ask for GET /tries?session=current or GET /tries?landed=no" }, 400);
@@ -296,7 +336,7 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
     if (!action && req.method === "GET") return json({ ...tryView(t), feedback: await getFeedback(env, t.id), marks: await marksFor(env, agentId, t.id) });
     if (action === "feedback" && req.method === "GET") {
       const f = await getFeedback(env, t.id);
-      return json({ your_prompt: promptView(t), your_intent: t.intent, your_scope_note: t.scope_note, your_change_note: t.change_note, layout: { version: f?.layout_version, fields: LAYOUT_FIELDS }, observations: f?.observations ?? [], as_text: asText(f?.observations ?? []), unplaced: f?.unplaced ?? [], changes: f?.diff ?? null });
+      return json({ your_prompt: promptView(t), your_intent: t.intent, your_scope_note: t.scope_note, your_change_note: t.change_note, layout: { version: f?.layout_version, fields: LAYOUT_FIELDS }, observations: f?.observations ?? [], as_text: asText(f?.observations ?? []), unplaced: f?.unplaced ?? [], changes: f?.diff ?? null, marks: await marksFor(env, agentId, t.id) });
     }
     if (req.method !== "POST") return json({ message: "Use POST for this." }, 405);
     const b = await readBody(req);
@@ -317,6 +357,43 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
       await currentSession(env, agentId);
       const saved = { diagnosis: diagnosis ?? t.diagnosis, rough_edges: edges.value ?? JSON.parse(t.rough_edges ?? "[]") };
       return json(action === "landed" && landed === "no" ? { id: t.id, landed, ...saved, in_drawer: true, next: NEXT_AFTER_MISS } : { id: t.id, landed, ...saved });
+    }
+    if (action === "stitch") {
+      const place = await placeInSession(env, agentId, t);
+      if (!place.previous) return json({ message: "This try is the knot, the first in its session. Stitches start from the second try, so post the next try and stitch that one back here." }, 400);
+      const thread = str(b.body.thread);
+      if (!thread) return json({ message: 'A stitch names its thread in "thread": what runs between this try and the last, in your words. "deltas" and "quotes" are welcome too.' }, 400);
+      const given: unknown[] = b.body.quotes === undefined ? [] : Array.isArray(b.body.quotes) ? b.body.quotes : [null];
+      const quotes: { try_id: string; line: string }[] = [];
+      const notFound: { try_id: unknown; line: unknown; why: string }[] = [];
+      for (const q of given) {
+        const qt = q && typeof q === "object" ? (q as Record<string, unknown>) : {};
+        const tryId = str(qt.try_id);
+        const line = typeof qt.line === "string" && qt.line.trim() ? qt.line : null;
+        if (!tryId || !line) {
+          notFound.push({ try_id: qt.try_id ?? null, line: qt.line ?? null, why: 'each quote takes "try_id" and "line"' });
+          continue;
+        }
+        const src = tryId === t.id ? t : await getTry(env, agentId, tryId);
+        if (!src) notFound.push({ try_id: tryId, line, why: "no try with that id for this key" });
+        else if (!src.text.includes(line)) notFound.push({ try_id: tryId, line, why: "these words are not in that try as written" });
+        else quotes.push({ try_id: tryId, line });
+      }
+      if (notFound.length)
+        return json({ message: "Each quote is exact words from the try it names. These did not match, so nothing was stored. Copy the line from that try's text and send the stitch again.", not_found: notFound }, 400);
+      const deltas = str(b.body.deltas);
+      const existing = await env.DB.prepare("SELECT id FROM stitches WHERE try_id = ? AND agent_id = ?").bind(t.id, agentId).first<{ id: string }>();
+      const id = existing?.id ?? crypto.randomUUID();
+      const created = now();
+      await env.DB.prepare(
+        "INSERT INTO stitches (id, agent_id, session_id, try_id, previous_try_id, knot_try_id, thread, deltas, quotes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(try_id) DO UPDATE SET thread = excluded.thread, deltas = excluded.deltas, quotes = excluded.quotes, created_at = excluded.created_at",
+      )
+        .bind(id, agentId, t.session_id, t.id, place.previous, place.knot, thread, deltas, JSON.stringify(quotes), created)
+        .run();
+      await currentSession(env, agentId);
+      const out: Record<string, unknown> = { id, try_id: t.id, previous_try_id: place.previous, knot_try_id: place.knot, thread, deltas, quotes, created_at: created };
+      out.note = existing ? "This stitch replaces the one you wrote on this try before." : "Stitched. GET /tries?session=current shows it in the seam, beside the feedback.";
+      return json(out, existing ? 200 : 201);
     }
     if (action === "mark") {
       const whatTried = str(b.body.what_tried);

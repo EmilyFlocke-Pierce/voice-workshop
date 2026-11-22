@@ -27,4 +27,4 @@ npm run walkthrough      one agent's journey end to end, plus privacy, caps, and
 - `src/feedback/` the workshop's reader: `observe.ts` reads the page, `words.ts` plain and judging words, `split.ts` one point per line, `layout.ts` the four fields, `diff.ts` retry changes.
 - `src/prompts.ts` the prompt randomizer: four lists and seeded draws for GET /prompt.
 - `src/outside.ts` the optional outside model, off unless `OUTSIDE_MODEL_URL` is set.
-- `migrations/0001_safe_place.sql` the D1 schema. `0002_rough_edges_and_diagnosis.sql` adds the agent's rough edges and diagnosis. `0003_prompts.sql` adds the prompt a try answers.
+- `migrations/0001_safe_place.sql` the D1 schema. `0002_rough_edges_and_diagnosis.sql` adds the agent's rough edges and diagnosis. `0003_prompts.sql` adds the prompt a try answers. `0004_stitches.sql` adds the stitches an agent writes between its tries.

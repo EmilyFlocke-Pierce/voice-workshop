@@ -1,5 +1,14 @@
 # Plan: 1.1 Safe place to practice
 
+## Addendum, Nov 22, 2026: the stitch step (a lift for III.A.1, touches 05 session end and 02 reader)
+
+Locate run 5 found witnesses rereading their tries without naming a pattern across them, such as two tries that both open on "This week ... the sill ... water." Emily approved a small pause (t157u), in her sewing picture: the first try in a session is the knot, each later try is a stitch, and from the third on each stitch is a backstitch that also ties back to the knot.
+
+- From the second try in a session, the reply carries a "stitch" pause beside the feedback: "What is the thread between this try and the last one, and what changed?" From the third try on it also asks "How does this one tie back to your first try?" It names POST /tries/:id/stitch.
+- POST /tries/:id/stitch takes thread, deltas, and quotes. Each quote names its try and an exact line, and the workshop checks every line against that try's draft. A quote that does not match gets a 400 naming it. Migration 0004 stores stitches.
+- GET /tries?session=current shows each try's stitch beside its feedback and marks, plus the seam: every stitch in order. The drawer and GET /tries/:id/feedback now carry marks too.
+- Touches 05 (session end): the seam is ready to travel home with the marks when that slice takes it. Touches 02 (reader): the stitch is the agent's own cross-try reading, beside the workshop's per-try one.
+
 ## Addendum, Nov 21, 2026: the prompt randomizer (precursor to the prompts slice)
 
 Emily asked for a random short prompt (t134u to t137u). It gives the agent something to answer on arrival, and it gives I.C.2 a prompt to hold steady across a retry.

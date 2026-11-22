@@ -74,8 +74,14 @@ try {
   check("the retry keeps the same layout and carries the intent", r1.body.changes.same_conditions.layout_version === true && r1.body.feedback.your_intent.startsWith("a flat voice"));
   const parentAfter = await call("GET", `/tries/${t1.body.id}`, { key });
   check("the parent stays as it was", parentAfter.body.text === ROUGH);
+  check("the first try in a session is the knot: no stitch pause", !("stitch" in t1.body));
+  check(
+    "the second try pauses for a stitch, names the endpoint, and keeps its feedback",
+    r1.body.stitch?.questions.length === 1 && /thread between this try and the last one/.test(r1.body.stitch.questions[0]) && r1.body.stitch.answer_with === `POST /tries/${r1.body.id}/stitch` && r1.body.stitch.previous_try_id === t1.body.id && r1.body.feedback.observations.length > 0,
+  );
 
   const t2 = await call("POST", "/tries", { key, body: { text: "Short one. Another.", style_tag: "clipped", landed: "no" } });
+  check("from the third try on, the pause also asks how it ties back to the knot", t2.body.stitch?.questions.length === 2 && /tie back to your first try/.test(t2.body.stitch.questions[1]) && t2.body.stitch.knot_try_id === t1.body.id && t2.body.stitch.previous_try_id === r1.body.id);
   const drawer = await call("GET", "/tries?landed=no", { key });
   check("the drawer lists misses by date", drawer.body.tries.length === 2 && drawer.body.tries[0].id === t1.body.id);
   const drawerTag = await call("GET", "/tries?landed=no&style_tag=clipped", { key });
@@ -102,6 +108,25 @@ try {
     markedT1?.marks.length === 1 && markedT1.marks[0].own_lines[0] === "counted the cars that did not stop" && markedR1?.marks.length === 1 &&
       sideMarks.body.tries.every((t) => Array.isArray(t.marks) && t.feedback && t.text) && JSON.stringify(singleT1.body.marks) === JSON.stringify(markedT1.marks),
   );
+  const knotStitch = await call("POST", `/tries/${t1.body.id}/stitch`, { key, body: { thread: "x" } });
+  check("the knot takes no stitch, and the reply says where stitches start", knotStitch.status === 400 && /knot/.test(knotStitch.body.message));
+  const badStitch = await call("POST", `/tries/${t2.body.id}/stitch`, { key, body: { thread: "short sentences again", quotes: [{ try_id: t2.body.id, line: "Short one." }, { try_id: t1.body.id, line: "a line that is not in the first try" }] } });
+  check("a stitch quote that is not in the named try gets a 400 naming it", badStitch.status === 400 && badStitch.body.not_found.length === 1 && badStitch.body.not_found[0].line === "a line that is not in the first try");
+  const goodStitch = await call("POST", `/tries/${t2.body.id}/stitch`, {
+    key,
+    body: { thread: "I keep reaching for a short line to close on", deltas: "the hedges are gone, and the sentences shrank to two words", quotes: [{ try_id: t2.body.id, line: "Short one." }, { try_id: t1.body.id, line: "counted the cars that did not stop" }] },
+  });
+  check("a stitch with exact quotes is stored, tied to the previous try and the knot", goodStitch.status === 201 && goodStitch.body.previous_try_id === r1.body.id && goodStitch.body.knot_try_id === t1.body.id && goodStitch.body.quotes.length === 2);
+  const seamView = await call("GET", "/tries?session=current", { key });
+  const stitchedT2 = seamView.body.tries.find((t) => t.id === t2.body.id);
+  check(
+    "the session view shows each try's stitch beside its feedback and marks, plus the seam in order",
+    stitchedT2?.stitch?.thread === "I keep reaching for a short line to close on" && seamView.body.seam.length === 1 && seamView.body.seam[0].try_id === t2.body.id && seamView.body.tries.filter((t) => t.stitch).length === 1 && stitchedT2.feedback && Array.isArray(stitchedT2.marks),
+  );
+  const fbView = await call("GET", `/tries/${t1.body.id}/feedback`, { key });
+  check("GET /tries/:id/feedback carries the try's marks", fbView.body.marks?.length === 1 && fbView.body.marks[0].own_lines[0] === "counted the cars that did not stop");
+  const drawerMarks = await call("GET", "/tries?landed=no", { key });
+  check("the drawer carries each try's marks", drawerMarks.body.tries.find((t) => t.id === t1.body.id)?.marks.length === 1 && drawerMarks.body.tries.every((t) => Array.isArray(t.marks)));
 
   const same = await call("POST", `/tries/${r1.body.id}/retry`, { key, body: { text: RETRY, change_note: "meant to cut the last perhaps" } });
   check("an identical retry says plainly that nothing changed", same.body.changes.nothing_changed === true && /no change/.test(same.body.changes.read_it));

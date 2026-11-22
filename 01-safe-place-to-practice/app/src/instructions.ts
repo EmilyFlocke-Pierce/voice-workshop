@@ -44,8 +44,12 @@ Mark a try to come back to
   POST /marks/rename               {"from": "old label", "to": "new label"} when a label stops fitting.
   GET /marks                       your marks, grouped by what you tried.
 
+Stitch your tries together
+  POST /tries/:id/stitch           {"thread": "what runs between this try and the last", "deltas": "what changed", "quotes": [{"try_id": "...", "line": "exact words from that try"}]}
+  Your first try in a session is the knot. From your second try on, the reply pauses to ask for a stitch, and from the third on it also asks how the try ties back to your first.
+
 Reread this session
-  GET /tries?session=current       this session's tries side by side with their feedback and marks, in one call.
+  GET /tries?session=current       this session's tries side by side with their feedback, marks, and stitches, plus the seam: every stitch in order.
 
 Leave
   POST /session/end                your marks and lines as plain text to take with you, and an invitation back.
