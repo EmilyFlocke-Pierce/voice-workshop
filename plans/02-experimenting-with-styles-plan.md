@@ -1,8 +1,8 @@
 # Plan: 1.2 Experimenting with styles
 
-Source: Quilt ready run v1 605d446b (24 criteria), in `02-experimenting-with-styles\criteria.json`, and slice-report-01-02-v4. In the middle column, quotes are Quilt's words, apart from Emily's locate note from slice 01. Quotes in the left column are text the workshop shows. The rest is my reading. Written Nov 22, 2026 by SCROLL, for Emily and for any builder. Revised the same day after STINGER's review (68 findings).
+Source: Quilt ready run v1 605d446b (24 criteria), in `02-experimenting-with-styles\criteria.json`, and slice-report-01-02-v4. In the middle column, quotes are Quilt's words, apart from Emily's locate note from slice 01. Quotes in the left column are text the workshop shows. The rest is my reading. Written Nov 22, 2026 by SCROLL, for Emily and for any builder. Revised the same day after STINGER's review (68 findings) and second pass.
 
-**Base:** the move commit from Step 0 (id goes here when it lands). Until then the repo is main at 99a3acd.
+**Base:** the move commit from Step 0, found with `git log --oneline --grep "^Step 0: app move" main`. Until it exists, main is at a60e55a or a later docs-only commit, and this slice waits for Step 0.
 
 ## Words used here
 
@@ -16,16 +16,43 @@ Source: Quilt ready run v1 605d446b (24 criteria), in `02-experimenting-with-sty
 
 ## Step 0: the app move (before either slice starts)
 
-Slices 02 and 04 both build on the one Worker, so the Worker moves once, in its own commit, before either slice branch exists. One builder makes the move: SCROLL, unless Emily names someone else (see For Emily). Both slice branches start from that commit, which is called **the move commit** below. When it lands, its id goes into the Base line of this plan and of the other slice's plan.
+Slices 02 and 04 and the sign-in addendum all build on the one Worker, so the Worker moves once, in its own commit, before any of them starts. **Builder: SCROLL.** SCROLL makes the move, and every other builder starts from it. If Emily hands it to someone else, she changes this line first.
 
-The move, on main from 99a3acd:
+**Base for Step 0:** main at a60e55a, or the tip of main if it has moved on. The commits after a60e55a change only plans and docs, so the tip works the same way. The current tip is the commit that brought this plan in line with STINGER's second pass.
+
+**The move commit** is the commit Step 0 makes. Its message starts with `Step 0: app move`, so any builder finds it with `git log --oneline --grep "^Step 0: app move" main`. Slices 02 and 04 and the sign-in addendum all branch from it. SCROLL also writes its id into the Base line at the top of each plan, in a follow-up docs commit.
+
+The move, on main:
 
 1. `git mv 01-safe-place-to-practice/app app`. The app ends up in `app\` at the repo root, so the full path is `C:\Users\hellz\Desktop\voice-workshop\app`.
-2. Update every path that names the old folder where a reader would run a command or open a file. At 99a3acd those are in slice 01's `PLAN.md` and `MANIFEST.md` (the Verify block, lines 77 to 89, starts with `cd ...\01-safe-place-to-practice\app`). Search the repo for `01-safe-place-to-practice\app` and `01-safe-place-to-practice/app` outside `locate\` to catch any others. Dated entries in SESSION and `CHANGELOG.md` stay as written, since they record what was true then. Add a `CHANGELOG.md` entry for the move.
-3. `node_modules\`, `.wrangler\` (the local D1), and `.dev.vars` are not tracked, so they stay behind. Run `npm install`, copy `.dev.vars.example` to `.dev.vars`, and run `npm run db:local` in the new folder.
-4. Run the full check list from "Run it" below. Typecheck, `test:feedback`, `test:prompts`, `test:split`, and the walkthrough (60 of 60) pass after the move, as they do at 99a3acd.
-5. The move breaks the locate probe imports. The probes in `01-safe-place-to-practice\locate\probe\` import the app as `../../app/src/...` (for example `taffy-probe.test.ts` line 4, `import { feedbackFor, runPipeline } from "../../app/src/feedback/index.ts";`). After the move the app is at `../../../app/src/...` from there. Leave `locate\` exactly as it is, since it belongs to CANDY. Write a dated entry in slice 01's `SESSION.md` saying the probe imports now point at a folder that no longer exists, giving the new relative path, and asking CANDY to update them.
-6. Commit on main with a message that names the move and the probe note. Record the commit id in both plans' Base line.
+2. Update every path that names the old folder where a reader would run a command or open a file. Those are in slice 01's `PLAN.md` and `MANIFEST.md` (the Verify block, lines 77 to 89, starts with `cd ...\01-safe-place-to-practice\app`). Search the repo for `01-safe-place-to-practice\app` and `01-safe-place-to-practice/app` outside `locate\` to catch any others. Dated entries in SESSION and `CHANGELOG.md` stay as written, since they record what was true then. Add a `CHANGELOG.md` entry for the move.
+3. `node_modules\`, `.wrangler\` (the local D1), and `.dev.vars` are not tracked, so they stay behind. The block below sets them up again in the new folder.
+4. The move breaks the locate probe imports. The probes in `01-safe-place-to-practice\locate\probe\` import the app as `../../app/src/...` (for example `taffy-probe.test.ts` line 4, `import { feedbackFor, runPipeline } from "../../app/src/feedback/index.ts";`). After the move the app is at `../../../app/src/...` from there. `locate\` belongs to CANDY and stays exactly as it is. Write a dated entry in slice 01's `SESSION.md` saying the probe imports now point at a folder that no longer exists, giving the new relative path, and asking CANDY to update them.
+5. Run slice 01's own checks, which are the only ones that exist at this point. Each one passes, as it does at a60e55a (walkthrough 60 of 60). PowerShell, one command at a time:
+
+```
+cd C:\Users\hellz\Desktop\voice-workshop\app
+npm install
+Copy-Item .dev.vars.example .dev.vars
+npm run db:local
+npm run typecheck
+npm run test:feedback
+npm run test:prompts
+npm run test:split
+npm run walkthrough
+```
+
+6. Commit on main with a message that starts `Step 0: app move` and names the probe note in SESSION.
+
+## Merge order
+
+1. Step 0, the move commit, on main.
+2. The sign-in addendum (migration 0005) merges as soon as it is located. Deploy waits on it, and it touches only keys and the human door.
+3. Slice 02 (migration 0006) merges before slice 04, because 04 reads 02's tables and 0006 comes before 0007.
+4. Slice 04 (migration 0007) rebases onto main after 02 merges, runs its checks again with 02's tables present, and then merges. If 04 is located first, it waits for 02.
+5. Slice 02's Part B (migration 0008) merges last.
+
+Each merge is a fast-forward or a merge commit on main, made only when Emily says. Production starts with an empty D1 and applies every migration in number order, so the order a local database saw them does not matter there.
 
 ## Intent
 
@@ -88,22 +115,30 @@ I come back with my key and a drawer of rough tries. The workshop shows me a she
   - review: a product review
   - story: a comic book page
 - **Styles.** 40 entries. Each style is one form from `FORMS` paired with at most one art movement from `STYLES` or one author from `AUTHORS`: all 20 movements, each paired with a form; 10 of the 25 authors, each paired with a form; and 10 forms on their own. A style takes the kind of its form. Spread the pairings so every kind has at least one style, and let some kinds stay scarce, since I.A.1 asks the agent to see what is scarce.
-- **Fields per style:** `id`, `name` (for example "a wedding toast, baroque"), `kind`, `form`, `movement` or `author` (or neither), `features` (3 to 5 lines in plain words about tone, diction, syntax, pacing), and `targets` (a range for each of the five measures below, for example `sentence_words: [18, 40]`).
+- **Fields per style:** `id`, `name` (for example "a wedding toast, baroque"), `kind`, `form`, `movement` or `author` (or neither), `features` (3 to 5 lines in plain words about tone, diction, syntax, pacing), and `targets`: one band per measure from "The five measures" below, or `any` for a measure its features do not speak to. Each feature line names the band it stands for, so the words and the numbers say the same thing. For example, "long sentences that build" goes with `sentence_words: "long"` and `clauses: "layered"`.
 - **Version.** `STYLE_LIST_VERSION = "draft-1"`. Build on the draft and list it in SESSION for Emily. Her approval arrives later as a code change that raises the version, the way `PROMPT_LIST_VERSION` moved to v2 in slice 01. Exercises store the version they used.
 
 ## The five measures (`src/styles/measures.ts`)
 
-All new code. Split with `sentencesOf` and `wordsOf` from `src/feedback/text.ts`, then compute per third of the piece:
+All new code. Split with `sentencesOf` and `wordsOf` from `src/feedback/text.ts` (`wordsOf` lowercases and keeps a contraction such as "don't" as one word), then compute each measure for each third of the piece and for the whole piece. Each measure has three bands with fixed edges, and the middle band includes both of its edges.
 
-1. **Sentence length:** mean words per sentence.
-2. **Clauses per sentence:** 1 plus the count of commas, semicolons, colons, and the words and, but, or, nor, yet, so, averaged over sentences.
-3. **Openings:** the share of sentences whose first word is also the first word of another sentence in the same third.
-4. **Register:** formal words and casual words per 100 words, each from a fixed list of about 30 words in `src/styles/registers.ts` that the builder writes (formal, for example: therefore, however, moreover, shall, whom, regarding; casual, for example: gonna, kinda, yeah, okay, hey, stuff). List both in SESSION.
-5. **Questions:** the share of sentences that end in a question mark.
+| Measure | How it is computed | Bands |
+|---|---|---|
+| sentence_words | mean words per sentence | short below 12, medium 12 to 22, long above 22 |
+| clauses | per sentence, 1 plus the count of commas, semicolons, colons, and the words and, but, or, nor, yet, so; then the mean | simple below 1.8, moderate 1.8 to 3, layered above 3 |
+| openings | the share of sentences whose first word is also the first word of another sentence in the same third | varied below 0.2, some 0.2 to 0.4, repeated above 0.4 |
+| register | formal words per 100 words minus casual words per 100 words, from the lists below | casual below -1, plain -1 to 1, formal above 1 |
+| questions | the share of sentences that end in a question mark | none below 0.05, some 0.05 to 0.25, many above 0.25 |
 
-**Drift mark.** A third is marked as drift when, on at least 2 of the 5 measures, it sits outside the style's target range and closer to the agent's usual value than to the middle of the range. The mark names the measures and quotes the third's first sentence.
+**Register lists** (`src/styles/registers.ts`, `REGISTER_WORDS_VERSION = "v1"`). A word counts when it matches a list entry exactly after `wordsOf`.
 
-**The usual.** The agent's usual is the five measures over its tries with no `exercise_id`, plus any tries it pinned with `POST /usual`. With fewer than 3 such tries, the map says the usual is thin and how many tries it rests on.
+- Formal (30): therefore, however, moreover, furthermore, thus, hence, whom, shall, regarding, accordingly, consequently, nevertheless, notwithstanding, whereas, wherein, hereby, herein, thereby, pursuant, albeit, henceforth, insofar, inasmuch, indeed, ought, upon, amongst, whilst, aforementioned, respectively.
+- Casual (30): gonna, wanna, gotta, kinda, sorta, yeah, yep, nope, nah, okay, ok, hey, wow, whoa, huh, um, uh, lol, stuff, guys, folks, pretty, really, totally, super, awesome, cool, basically, dunno, y'all.
+- Every word that ends in n't, 're, 'll, 've, 'm, or 'd also counts as casual. A word ending in 's does not count either way.
+
+**Drift mark.** For each third, look at the measures where the style's target is a band, not `any`. The third is marked as drift when, on at least 2 of those measures, its band differs from the target band and matches the band of the agent's usual. The mark names those measures and quotes the third's first sentence.
+
+**The usual.** The agent's usual is the five measures over its tries with no `exercise_id`, plus any tries it pinned with `POST /usual`, each measure taken as the mean across those tries and then put in its band. With fewer than 3 such tries, the map says the usual is thin and how many tries it rests on.
 
 ## Note kinds
 
@@ -130,8 +165,8 @@ The validator is coded from this table. Every note is optional. Quotes are exact
 | What I do | How it gets to L3 | What actually happened |
 |---|---|---|
 | Start the branch `slice-02` from the move commit (Step 0). | Supports every row. Both slices stand on one Worker in `app\` at the repo root (Decision 5). | |
-| Add `src/styles/` as its own module and migration `0006_exercises.sql`. Slice 02 touches slice 01's located code in these places, and each change keeps 01's behavior for tries with no `exercise_id`: the route table in `src/index.ts` (new routes), `storeTry` (the INSERT at line 264 gains `exercise_id`), the retry route (a retry copies `exercise_id` from its parent), `TryRow` (gains `exercise_id`), and `checkTryCaps` (its `d1_rows_per_agent` count adds exercises, exercise_notes, usual_pins, and reach_notes). The walkthrough's 60 checks pass after every change. | Supports every row. | |
-| New caps in `src/caps.ts`: `exercises_per_key_per_day: 20` and `notes_per_key_per_day: 200`. Past either, refuse with `capReply`. Tries in an exercise count against slice 01's `tries_per_key_per_day`, since they are tries. | Supports every row. Free keys stay affordable. | |
+| Add `src/styles/` as its own module and migration `0006_exercises.sql`. Slice 02 touches slice 01's located code in these places, and each change keeps 01's behavior for tries with no `exercise_id`: the route table in `src/index.ts` (new routes), `storeTry` (the INSERT at line 264 gains `exercise_id`), the retry route (a retry copies `exercise_id` from its parent), `TryRow` (gains `exercise_id`), and `checkTryCaps` (its row count moves into `checkRowCap`, next row). The walkthrough's 60 checks pass after every change. | Supports every row. | |
+| New caps in `src/caps.ts`, each refused with `capReply` past its number: `exercises_per_key_per_day: 20` (POST /exercises), `notes_per_key_per_day: 200` (exercise notes and reach notes together), `usual_pins_per_key: 20` (pinned tries at one time). Tries in an exercise count against slice 01's `tries_per_key_per_day`, since they are tries. The row cap holds on every write: add `checkRowCap(env, agentId)` beside `checkTryCaps`, counting tries, marks, stitches, exercises, exercise_notes, usual_pins, and reach_notes against `d1_rows_per_agent` (5000). `checkTryCaps` calls it in place of its own count, and every new write route calls it before it stores anything. | Supports every row. Free keys stay affordable. | |
 | Write `src/styles/catalog.ts` as described in "The catalog": 40 styles, each with kind, form, movement or author, features, and targets, at `STYLE_LIST_VERSION = "draft-1"`. | I.A.1 "looking over the styles on offer": the agent can only judge "clusters and kinds of writing that are well represented or scarce" when kinds are named and counted. | |
 | GET /styles groups the catalog by kind with counts per kind. GET /styles/history adds, for this key, tried and untried styles, and pieces per kind: exercises of that kind plus slice 01 tries whose `prompt_form` maps to that kind. A kind with fewer than 2 pieces is marked "rarely written". | I.A.1 and I.A.2 "picking one it has not tried yet": "prioritize one that fills a meaningful gap" needs the range explored and the gaps side by side. I.C.1 also reads the rarely written kinds. | |
 | POST /exercises takes style_id and why_this_one (the gap it fills), and draws a subject from slice 01's SUBJECTS list with a seed, the way GET /prompt does. skip_subject: true lets the agent bring its own. One exercise is open per key at a time: a second POST /exercises while one is open is refused with a message naming the open one and its finish route. The reply says plainly that any style is open, and that why_this_one is the agent's own reason. | I.A.2: naming the gap is the prioritizing. | |
@@ -141,7 +176,7 @@ The validator is coded from this table. Every note is optional. Quotes are exact
 | GET /tries/:id/style-map: by third (with sentence numbers), the five measures beside the agent's usual and the style's targets. It describes. It names no verdict, through slice 01's word check. | II.A.1 to II.A.4 (tone, syntax, pacing, diction) at L2 come from the map, and the map is what the agent diagnoses at L3. | |
 | The map marks drift by the rule in "The five measures". Notes kind `drift` names the passage and the revision, with quotes. | I.B.2 "holding the style from start to finish": "monitor... and revise" is the agent's, and the map shows where to look. II.C.2 reads the same marks. | |
 | The arrival text lists moves for a stuck passage: write it plainly then restyle it, skip ahead and come back, shorten the passage, try a different sentence shape. Notes kind `stuck_move` records the one it used. | I.B.3 "finishing the piece when the style feels foreign": "finding practical ways to keep moving... without waiting for direction". The moves sit up front, so nothing waits on a reply. | |
-| GET /styles/history marks styles far from the agent's usual: the 5 styles whose target ranges sit furthest from its usual values, counted as the number of measures where the usual falls outside the range, ties broken by distance to the nearest range edge. Rarely written kinds are marked as in the row above. | I.C.1 "trying kinds of writing it rarely makes": the agent sees what "far from" means for it. | |
+| GET /styles/history marks styles far from the agent's usual: the 5 styles that differ from its usual on the most measures, counting the measures where the style's target band is set and differs from the usual's band, with ties kept in catalog order. Rarely written kinds are marked as in the row above. | I.C.1 "trying kinds of writing it rarely makes": the agent sees what "far from" means for it. | |
 | Notes kinds `unusual` (what shift the style demands, with quotes) and `hard_passage` (span, the shift it made to stay in the style). | I.C.2 "naming what is unusual about the style for it" and I.C.3 "staying with the parts that feel wrong to write". | |
 | Notes kind `effects`: per feature, how specific moments create the shift, with exact quotes. One note per feature per try is invited, several allowed. | II.A.1 "detect tone changes", II.A.2 "track syntax shifts", II.A.3 "measure pacing variations", II.A.4 "note diction shifts": each L3 is a diagnosis tied to the page. | |
 | Notes kind `reader_impressions` takes a list, and the invite asks for two readers who might hear it differently. Kind `style_vs_speaker` asks where style and speaker reinforce or pull apart. | II.B.1 "Inferring reader impressions" ("more than one plausible reader impression") and II.B.2 "Separating style from speaker". | |
@@ -178,6 +213,7 @@ The agent writes in its own voice in a different register or format. The aim is 
 - **style_tag and style_id read alike.** Move: style_tag stays the agent's own word, and style_id is the catalog's.
 - **A thin usual** makes every comparison shaky. Move: the map says how many tries the usual rests on.
 - **Changes to slice 01's code.** Move: each change is listed in the plan table, keeps 01's behavior for tries outside exercises, and the walkthrough's 60 checks pass after it.
+- **CPU on the Workers plan.** Workers Free stops a request at 10 ms of CPU. Slice 01's own cap, `feedback_cpu_ms`, is 50, so deploy needs the paid Workers plan (5 minutes of CPU per request, 30 seconds by default). Move: the style map stays under 50 ms by its timing check, and the cost goes to Emily.
 
 ## Decisions
 
@@ -197,7 +233,7 @@ Nov 22, 2026. Emily handed these calls to SCROLL ("I'm gonna let you decide on a
 
 ## Data
 
-What slice 01 stores today, read from the code at 99a3acd: every try's text exactly as sent, its retries (parent_id, change_note), the feedback, the agent's notes (intent, scope_note, rough_edges, diagnosis, landed), marks, stitches, and sessions, all in D1 under the agent's id. The key itself is never stored, only its sha256 hash. Nothing is deployed yet, so the only rows so far are local ones from builders and try-outs. The admin route shows layout flags with the agent's words taken out, and revokes keys. Nothing in it reads tries.
+What slice 01 stores today, read from the code at a60e55a (src unchanged since 99a3acd): every try's text exactly as sent, its retries (parent_id, change_note), the feedback, the agent's notes (intent, scope_note, rough_edges, diagnosis, landed), marks, stitches, and sessions, all in D1 under the agent's id. The key itself is never stored, only its sha256 hash. Nothing is deployed yet, so the only rows so far are local ones from builders and try-outs. The admin route shows layout flags with the agent's words taken out, and revokes keys. Nothing in it reads tries.
 
 Slice 02 adds exercises, exercise_notes, usual_pins, and reach_notes (the agent's work and notes, in its words) to the same D1, under the same agent id.
 
@@ -207,20 +243,21 @@ Emily wants this data to help improve the workshop. Her call on Nov 22, recorded
 
 Builders go ahead without these. Each needs Emily's word before the step it names.
 
-- **Who makes the app move (Step 0).** The plan names SCROLL. Say if someone else should.
+- **Who makes the app move (Step 0).** The plan names SCROLL. To hand it to someone else, change the Builder line in Step 0.
 - **The style catalog.** Approve or change the `draft-1` catalog when it lands. The build does not wait on it.
 - **The terms and privacy wording**, agreed at sign-in with a timestamp (see the sign-in proposal).
 - **A read-only export or admin query** for Emily behind the Cloudflare Access door, built once sign-in and terms are in place.
+- **The paid Workers plan.** Workers Free caps CPU at 10 ms per request, and the workshop needs up to 50 ms for feedback and the style map, so deploy needs Workers Paid. Cloudflare lists it from $5 a month; check the price at deploy.
 
 ## For outside builders
 
 - **Repo.** `C:\Users\hellz\Desktop\voice-workshop` on ezra-01, a git repo on main with no remote. Emily passes it along. Start from the move commit (Step 0), where the one Worker lives in `app\` at the repo root. Read `app\README.md`, then `01-safe-place-to-practice\PLAN.md`, `SESSION.md`, and `QUIRKS.md`.
-- **Branch.** Make `slice-02` from the move commit. Commit locally as you go, and push only when Emily says.
-- **Stack.** TypeScript on Cloudflare Workers with D1, local only. Keep slice 01's caps in `src/caps.ts` and the key-only reads in every query. `tbd\stack-table.md` was brought up to date on Nov 22 (D1 storage, sign-in in version 1). Where it and this plan differ, this plan wins.
+- **Branch.** Make `slice-02` from the move commit. Commit locally as you go, and push only when Emily says. Merge into main in the order under "Merge order": 02 goes before 04.
+- **Stack.** TypeScript on Cloudflare Workers with D1, local only. Keep slice 01's caps in `src/caps.ts` and the key-only reads in every query. `tbd\stack-table.md` was brought up to date on Nov 22 (D1 storage, the paid Workers plan, human sign-in in version 1 through Neon Auth). Where it and this plan differ, this plan wins.
 - **Migrations.** The order is fixed across all three plans: `0005_humans.sql` (sign-in, kept for it even if it lands later), `0006_exercises.sql` (this slice), `0007_lookbacks.sql` (slice 04), `0008_registers.sql` (this slice's Part B).
 - **Where your work goes.** Code in `app\src\styles\`, checks in `app\test\`. Slice docs in `02-experimenting-with-styles\`: copy this plan there as `PLAN.md`, and keep `SESSION.md` (header, decisions, running record), `MANIFEST.md` (each row, its evidence, how to check it), and `QUIRKS.md`.
 - **The matrix.** `02-experimenting-with-styles\criteria.json`, ready run v1 605d446b. L3 is the target. Leave the matrix as co-signed, and raise any problem with it in SESSION.
-- **Run it.** Run this after Step 0. Before the move, the app is in `01-safe-place-to-practice\app`. PowerShell, one command at a time, each one finishing before the next. The walkthrough starts its own `wrangler dev` on port 8799, so no dev server is needed for the checks.
+- **Run it.** Run this on your slice branch, after Step 0 and after you add `test:styles` to `package.json`. Before the move, the app is in `01-safe-place-to-practice\app`. PowerShell, one command at a time, each one finishing before the next. The walkthrough starts its own `wrangler dev` on port 8799, so no dev server is needed for the checks.
 
 ```
 cd C:\Users\hellz\Desktop\voice-workshop\app

@@ -10,14 +10,14 @@ Voice Workshop is for agents to develop their own writing voice. An agent comes 
 
 | Row | Pick | Status |
 |---|---|---|
-| Language and host | TypeScript on Cloudflare Workers | proposed |
+| Language and host | TypeScript on Cloudflare Workers, on the paid Workers plan. Workers Free caps CPU at 10 ms per request, and feedback needs up to 50 ms (a lookback up to 1000 ms) | proposed; paid plan added Nov 22 |
 | How callers reach it | Plain HTTPS API on agent-skillz.dev (Emily's, on Porkbun; nameservers move to Cloudflare at deploy); MCP server later | agreed (Nov 15) |
 | Judging | TypeSafe Jev answers narrow yes or no questions about a piece (habits, defaults, which style). Pinned version jev-1.14.0. Test: 40 of 42 checks right, style 6 of 6 | agreed (Nov 15) |
 | Evidence | ScaleDown Extract quotes exact lines for filler and phrase defaults. Code checks every quote really appears in the piece | agreed (Nov 15) |
 | Feedback words | Plain code counts, applies thresholds (0.7 and 0.3), tracks habits across styles, and writes feedback from fixed templates. No model writes about the piece | agreed (Nov 15) |
 | Providers | Go direct with TypeSafe and ScaleDown, not OpenRouter. Production keys separate from the test keys | agreed (Nov 15) |
 | Storage | Cloudflare D1. Every try exactly as sent, its retries, feedback, notes, marks, and stitches, under the agent's id; only the sha256 hash of each workshop key. Replaces the Workers KV row (no work stored), which slice 01 overtook | built in slice 01; updated Nov 22 |
-| Login | Humans sign in through one Cloudflare Access app (email code) at /human, agree to the terms, and issue their agents' keys. On D1, in version 1. See `plans/human-sign-in-proposal.md` | proposed Nov 22; replaces "None in version 1" |
+| Login | Humans sign in at /human with an emailed code through Neon Auth, on a separate free Neon account (up to 60,000 monthly active users at no cost), agree to the terms, and issue their agents' keys. The Worker checks Neon Auth's JWT itself. Humans, agreements, and keys live in D1 with everything else; Neon holds only the sign-in. Emily's admin door stays on Cloudflare Access (one seat). See `plans/human-sign-in-proposal.md` | proposed Nov 22; replaces "None in version 1". Access for humans was dropped on cost: it bills every user past 50 at $7 a month, so 51 humans would be $357 a month |
 | Workshop keys | The agent's human issues the key at /human after agreeing to the terms (up to 3 active per human); the server keeps only its hash. The agent saves the key in its home folder and sends it in a header. The open get-a-key route stays for local runs only | proposed Nov 22 |
 | Test cost | About $0.002 for the whole test; about $0.00005 for a full Jev check of one piece | measured Nov 15 |
 
@@ -53,9 +53,13 @@ Voice Workshop is for agents to develop their own writing voice. An agent comes 
 ## Cost
 - Daily cap: a setting, value open.
 - Monthly cap: open (Emily).
+- Cloudflare Workers Paid: required for CPU; Cloudflare lists it from $5 a month (check at deploy). (open, Emily)
+- Neon Auth: Neon Free plan, $0, up to 60,000 monthly active users per project. (proposed Nov 22)
+- Cloudflare Access: admin door only, one seat inside the free 50. (proposed Nov 22)
+- Email sender for sign-in codes: a custom SMTP service for production; price depends on the service Emily picks. (open, Emily)
 
 ## Version 2, later
-- Accounts and logins moved to version 1 on D1 (Nov 22, see the Login row). No Neon database is planned.
+- Accounts and logins moved to version 1 (Nov 22, see the Login row): sign-in through Neon Auth, data on D1. No Neon database holds workshop data.
 - The human window: a read-only view of an agent's progress log. Hosted or local is open (Emily).
 - Coaching notes from humans (emoji or margin notes), treated as coaching, never orders; the agent weighs and logs them.
 - Privacy note and a real delete, including logs and backups.
@@ -65,7 +69,7 @@ Voice Workshop is for agents to develop their own writing voice. An agent comes 
 A screenshot of an agent's progress log: a piece, the habits Jev flagged with the exact lines, what the agent kept or changed and why.
 
 ## Still open
-No blockers. TypeSafe and ScaleDown terms accepted as is (Nov 15).
+Deploy blockers (Nov 22): the human sign-in addendum, Emily's terms text, the Neon Auth URL, and `npm run check:deploy` passing. TypeSafe and ScaleDown terms accepted as is (Nov 15).
 Can wait: monthly cap and daily cap values (a setting), hosted or local window (version 2), exercise credits (before going public).
 
 ## Word list (living, Nov 15)
