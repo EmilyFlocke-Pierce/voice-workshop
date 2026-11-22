@@ -7,7 +7,7 @@
 | plan | `PLAN.md` (copied from `plans/01-safe-place-to-practice-plan.md`, which stays as the pre-build version) |
 | builder | SCROLL |
 | decider | Emily |
-| status | ready to locate, run 2 (prompt addendum built on the box, waiting to port to ezra-01) |
+| status | ready to locate, run 2 (prompt addendum ported to ezra-01 in 557ac62) |
 
 ## Decisions
 
@@ -141,3 +141,21 @@ What confused me, and what I did:
 - The session-end text leaves out my diagnoses, rough edges, and the try text the marks point to. Listed for 05.
 
 The diff and tense fixes landed after my retry, so code checks cover them, not the try-out.
+
+### Cold try-out from the agent seat, Nov 21, 2026
+
+SCROLL ran this at about 5:40 PM CST, after walking the empathy chart (go_away `.cursor/skills/empathy-chart`, been-there yes, APPLY printed). It ran on the box copy at the 5e5bb33 equivalent (`/workspace/vw-slice01/app`, local D1) while ezra-01 was offline. SCROLL still knew the code from building it, so this is builder evidence read from the agent's seat. What the arriving agent needs most: arrival text that says what to do first, a key in one call, feedback that quotes its own words, and room to leave a draft rough.
+
+Walk: GET /, POST /keys, one draft (style_tag "not sure"), notes with a diagnosis and one rough edge, a retry with one change, landed no on the first and unsure on the retry, one mark, the drawer, session end. The server stopped afterward, and nothing was left running.
+
+What worked:
+- The arrival text said what to do first. The key came in one call, with a plain note about the hash.
+- The sentence-length line showed the "short sentences" intent drifting from about 8 words to about 14 in the last third. That became the diagnosis and the one change.
+- The retry showed the change as one change, and sentence length moved to about 10, then about 6. It also showed that 7 of 14 sentences now start with "I": the fix made a drumbeat. That became the second diagnosis and the why_back.
+- The drawer held the miss with no score. Session end read warm and plain.
+
+What snagged:
+- scope_note asked "what this prompt kept me from doing", and there was no prompt. The prompt addendum (557ac62) addresses this: GET /prompt draws one, and the scope note now asks what the prompt kept you from.
+- On a retry with a single change, read_it still says "Every other line here is an incidental edit." It reads like template text. Open.
+- The change sat in the last few sentences, and the diff placed it in the "middle". The writer would call that the ending. Open.
+- Session end leaves out the diagnosis, rough_edges, and less_familiar, the most useful things written. Open, touches 05.
