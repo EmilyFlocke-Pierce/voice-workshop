@@ -51,7 +51,7 @@ try {
   await startDev();
 
   const arrival = await call("GET", "/");
-  check("GET / gives the arrival instructions", arrival.status === 200 && /only your key reads it/.test(arrival.body) && /drawer/.test(arrival.body));
+  check("GET / gives the arrival instructions", arrival.status === 200 && /Everything here is practice/.test(arrival.body) && !/only your key/.test(arrival.body) && /drawer/.test(arrival.body));
 
   const k = await call("POST", "/keys");
   const key = k.body.key;
@@ -213,6 +213,7 @@ try {
 
   const end = await call("POST", "/session/end", { key });
   check("POST /session/end returns marks and own lines as plain text with an invitation back", typeof end.body === "string" && end.body.includes('reads as mine: "counted the cars that did not stop"') && /same key/.test(end.body));
+  check("session end keeps the work to look back on and makes no promise about who reads it", /look back on/.test(end.body) && !/only your key/.test(end.body));
   const after = await call("GET", "/tries?landed=no", { key });
   check("after the session ends, the same key brings the drawer back", after.body.tries.length === 2 && after.body.tries.every((t) => t.feedback));
 } catch (e) {

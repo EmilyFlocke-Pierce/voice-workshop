@@ -1,6 +1,6 @@
 # Manifest: 1.1 Safe place to practice
 
-Matrix: Quilt run v1 8e67b8cb. L3 is the target. Updated Nov 22, 2026, after locate run 6 (`locate/LOCATE.md`).
+Matrix: Quilt run v1 8e67b8cb. L3 is the target. Updated Nov 22, 2026, after locate run 6 (`locate/LOCATE.md`) and the promise change (SESSION, Nov 22).
 
 **Locate status:** all 16 at 3 after run 6. III.A.1 moved to 3 on the stitch lift (db46df2). The eight agent-side rows rest on stand-in tries by Emily's ruling (three cold try-outs, `locate/tryout-cold.md`, `tryout-cold-2.md`, and `tryout-cold-3.md`) and carry a recheck note for when real outside agents use the workshop. L4 candidates named by TAFFY: I.C.1 and III.B.2.
 
@@ -29,7 +29,7 @@ Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`, "Fe
 | III.B.1 noting what was tried | At 3 (run 1). what_tried on every mark, POST /marks/rename (says when it merges), GET /marks grouped by what_tried. | Walkthrough: "marks group by what_tried and a rename moves the group", "a rename onto an existing label says it merged and names both". |
 | III.B.2 saying why it deserves another look | Agent side, at 3 (run 4), L4 candidate. why_back on any mark, missed tries too. Arrival text says name what the try has and what is unclear. | Walkthrough: "a missed try takes a mark with why_back and own_lines". |
 
-Outside the matrix: privacy, caps (body_bytes included), charset=utf-8 with a Brontë round trip, the prompt randomizer, and session end each have walkthrough lines. The outside model hook sits in `src/outside.ts`, off.
+Outside the matrix: privacy between keys (the arrival and session-end texts make no promise about who reads the work, and say it is kept to look back on; Emily's call, Nov 22), caps (body_bytes included), charset=utf-8 with a Brontë round trip, the prompt randomizer, and session end each have walkthrough lines. The outside model hook sits in `src/outside.ts`, off.
 
 ## Files
 
@@ -88,4 +88,4 @@ npm run db:local
 npm run walkthrough
 ```
 
-Expected: typecheck prints no errors, test:feedback 19 of 19, test:prompts 8 of 8, test:split 6 of 6, db:local applies through 0004, and walkthrough prints "59 of 59 checks passed." Run db:local and the walkthrough as two steps. By hand: `npm run dev`, then open http://127.0.0.1:8787/.
+Expected: typecheck prints no errors, test:feedback 19 of 19, test:prompts 8 of 8, test:split 6 of 6, db:local applies through 0004, and walkthrough prints "60 of 60 checks passed." Run db:local and the walkthrough as two steps. By hand: `npm run dev`, then open http://127.0.0.1:8787/.

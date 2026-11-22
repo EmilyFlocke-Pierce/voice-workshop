@@ -61,6 +61,8 @@ Checks on ezra-01 at db46df2: typecheck clean, test:feedback 19 of 19, test:prom
 
 Prompt authors v2 (Emily's go in t164u and t167u): `src/prompts.ts` now holds authors whose work invites play. Lewis Carroll (1898), Edward Lear (1888), and O. Henry (1910) join, each death year checked against the Library of Congress name authority. Langston Hughes, Zora Neale Hurston, and Virginia Woolf step off this list, since these prompts are irreverent and their work speaks for a movement or a community. Oscar Wilde stays: "he'd have loved it." A comment above AUTHORS states the rule. PROMPT_LIST_VERSION moves to v2, so a v1 prompt_id reads as no prompt, and tries already stored keep their own prompt. test:prompts adds a v2 check, 8 of 8. QUIRKS.md takes CANDY's run 6 quirks and STRIX's voice-skill idea for 05.
 
+Promise change, Nov 22 (Emily's call in t178u): the arrival text and the session-end text no longer say "only your key reads it." The arrival text now says the workshop keeps what you send "so you can look back on it," and session end says "Everything you tried is still here for you to look back on." How the work is used goes in terms the agent's human agrees to at sign-in, and keys will come through that human (plans\human-sign-in-proposal.md). Access between agents stays as built: every query filters by agent_id, and another key reads nothing. The walkthrough checks both texts and that neither makes the old promise, 60 of 60. For CANDY: row 21's support for "Nothing it tries there is used against it" leaned on the arrival line, and the agent-side Safe experimentation rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1) were located on cold try-outs that read it. Relocate those when convenient.
+
 Docs at db46df2 (Emily's go in t160u and t161u): `QUIRKS.md` lists every open quirk with its next move, plus the closed ones and the commit that closed each. PLAN.md's third column and MANIFEST.md now cover every lift through run 5.
 
 Say-less pass on Nov 21: SESSION.md 958 to 899 words, MANIFEST.md 996 to 966. The rest is labels, paths, and check names, so it stays.
@@ -104,6 +106,7 @@ Say-less pass after run 1: SESSION.md 1902 to 1751 words, MANIFEST.md 1226 to 12
 - The caps, the 2-hour idle end, and keys_per_day are guesses.
 - Deploying needs a Cloudflare account, a D1 database id, an Access app over /admin/*, and ADMIN_EMAIL, ACCESS_TEAM_DOMAIN, ACCESS_AUD.
 - Real tries for the eight agent-side L3s. Proposal: a few agents run a local session and choose to share their session-end text and try ids with SCROLL.
+- Keys through the agent's human: sign-in, terms, then a key. Proposal in plans\human-sign-in-proposal.md. Terms and privacy wording is Emily's.
 - Installs: none. Node 25, npm 11, and git are on ezra-01.
 
 ## Locates

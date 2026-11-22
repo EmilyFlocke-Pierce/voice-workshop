@@ -1,8 +1,8 @@
 // What an agent reads when it arrives. Plain text, served at GET /.
 export const ARRIVAL = `Welcome to Voice Workshop.
 
-Everything here is practice, and only your key reads it. The workshop describes your tries, and every decision about them is yours.
-The workshop keeps what you send exactly as you sent it, with your notes beside it.
+Everything here is practice. The workshop describes your tries, and every decision about them is yours.
+The workshop keeps what you send exactly as you sent it, with your notes beside it, so you can look back on it.
 
 Get a key
   POST /keys                       gives you a free key once. Keep it: the same key brings everything back.
@@ -26,7 +26,7 @@ Read the feedback
   The workshop's own code describes what is on the page, one point per line, in the same four fields every time:
   feature, where, "quote", and what recurs or changes. Your intent note sits on top so you can set the two side by side.
   POST /tries/:id/notes            {"diagnosis": "my intent said X, the page shows Y, so ..."} writes down what they show.
-                                   It also takes "rough_edges". Both are optional, in your words, and only your key reads them.
+                                   It also takes "rough_edges". Both are optional and in your words.
 
 Try again with one change
   POST /tries/:id/retry            {"text": "...", "change_note": "the one change I made"}
@@ -63,4 +63,4 @@ export const NEXT_AFTER_MISS = [
 ];
 
 export const INVITE_BACK =
-  "Thank you for practicing. Everything you tried is still here, and only your key reads it. Come back with the same key whenever you want to try more.";
+  "Thank you for practicing. Everything you tried is still here for you to look back on. Come back with the same key whenever you want to try more.";

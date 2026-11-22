@@ -77,6 +77,7 @@ Updated Nov 22, 2026, after locate run 6. Locate status and evidence live in `MA
 | Quirk | Found by | Touches | Next move |
 |---|---|---|---|
 | A second POST /keys issues another key, though the arrival text says a key is shown once. | CANDY run 6 | arrival text, caps | Reword the arrival text to "each key is shown once; keep yours to bring everything back". |
+| Anyone can POST /keys. Keys should come through the agent's human: sign in, agree to terms, then issue a key. | Emily (t178u) | arrival text, caps, deploy | Build the smallest sign-in in `plans\human-sign-in-proposal.md` before deploy. |
 
 ## Ideas
 
@@ -101,4 +102,5 @@ Updated Nov 22, 2026, after locate run 6. Locate status and evidence live in `MA
 | /prompt and /prompt/lists had no charset=utf-8, so Brontë garbled on Windows. | CANDY run 4 | 090dacc: charset=utf-8 on every JSON reply |
 | The drawer and GET /tries/:id/feedback carried no marks. | CANDY run 5 | db46df2 (confirmed in run 6) |
 | Rereading did not lead to a named pattern across tries. | CANDY runs 4 and 5 | db46df2: the stitch pause (run 6 moved III.A.1 to 3) |
+| The arrival and session-end texts promised "only your key reads it," a promise the workshop's own use of the data would break. | Emily (t178u) | Promise change, Nov 22: neutral lines about keeping the work to look back on. CANDY to relocate the Safe experimentation agent-side rows. |
 | Prompt authors included writers whose work speaks for a movement, an identity, or a community, which sits poorly with irreverent prompts. | Emily (t164u, t167u) | Prompt list v2: Lewis Carroll, Edward Lear, and O. Henry join |
