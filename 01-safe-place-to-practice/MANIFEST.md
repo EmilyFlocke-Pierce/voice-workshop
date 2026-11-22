@@ -1,10 +1,10 @@
 # Manifest: 1.1 Safe place to practice
 
-Matrix: Quilt run v1 8e67b8cb. L3 is the target. Updated Nov 22, 2026, at db46df2, after locate run 5 (`locate/LOCATE.md`).
+Matrix: Quilt run v1 8e67b8cb. L3 is the target. Updated Nov 22, 2026, after locate run 6 (`locate/LOCATE.md`).
 
-**Locate status:** 15 of 16 at 3, III.A.1 at 2 (runs 4 and 5). The eight agent-side rows rest on stand-in tries by Emily's ruling (two cold try-outs, `locate/tryout-cold.md` and `locate/tryout-cold-2.md`) and carry a recheck note for when real outside agents use the workshop. L4 candidates named by TAFFY: I.C.1 and III.B.2. The stitch lift (db46df2) answers run 5 for III.A.1 and waits for run 6.
+**Locate status:** all 16 at 3 after run 6. III.A.1 moved to 3 on the stitch lift (db46df2). The eight agent-side rows rest on stand-in tries by Emily's ruling (three cold try-outs, `locate/tryout-cold.md`, `tryout-cold-2.md`, and `tryout-cold-3.md`) and carry a recheck note for when real outside agents use the workshop. L4 candidates named by TAFFY: I.C.1 and III.B.2.
 
-**Open quirks:** `QUIRKS.md`, each with a next move.
+**Open quirks and ideas:** `QUIRKS.md`, each with a next move.
 
 Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`, "Feedback check" a test in `npm run test:feedback`, and "Split check" a test in `npm run test:split`.
 
@@ -24,7 +24,7 @@ Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`, "Fe
 | II.B.1 using plain words | At 3 (run 1). `src/feedback/words.ts`: 15 technical terms swap to plain ones, and judging words hold a line back. | Feedback checks: "technical terms become plain words, quoted words stay as written", "judging words hold a line back, the agent's quoted words pass". |
 | II.B.2 one observation per line | At 3 (run 3). `src/feedback/split.ts` splits a line only when every part after a join reads as a full observation. A verb phrase borrows a clean, agreeing subject. A part with no verb keeps the line whole. A two-point line that cannot carry its subject goes to unplaced with its reason. CODE_VERSION observe-2. | Split checks: TAFFY's 48 combinations (19 clean, 29 whole, 0 fragments, 0 garbled) and the R8, R11, R12 shapes. Feedback checks: "an 'also' inside one clause stays one line, as written", "two observations joined with 'also' become two lines, each with its subject", "a two-point line with one quote stays whole for the layout flags". |
 | II.B.3 the same layout every time | At 3 (run 1). `src/feedback/layout.ts` LAYOUT_VERSION 1, four fields. A misfit goes to unplaced and layout_flags, with quotes hidden. /admin/layout-flags takes Emily's decision. Real Cloudflare Access waits for a deploy. | Feedback check: "a line that fits no field goes to unplaced, and its flag hides the agent's words". Walkthrough: "observations use the four fields", the two admin page lines. |
-| III.A.1 rereading its own tries | Agent side, at 2 (runs 4 and 5). GET /tries?session=current shows this session's tries side by side with feedback, marks, and stitches, plus the seam, in one call, and reading it leaves the idle clock alone. The stitch step (db46df2): from the second try the reply pauses to ask for the thread and what changed, and from the third it asks how the try ties back to the first. POST /tries/:id/stitch checks each quote word for word. The gap is the agent's: naming a pattern across reread tries. | Walkthrough: "this session's tries come side by side with feedback", "the session view carries each try's marks, in the same shape as the single-try view", "the second try pauses for a stitch, names the endpoint, and keeps its feedback", "from the third try on, the pause also asks how it ties back to the knot", "a stitch quote that is not in the named try gets a 400 naming it", "a stitch with exact quotes is stored, tied to the previous try and the knot", "the session view shows each try's stitch beside its feedback and marks, plus the seam in order", "reading this session starts no session and leaves the idle clock alone". |
+| III.A.1 rereading its own tries | Agent side, at 3 (run 6, agreement; STRIX named patterns across tries in both stitches). GET /tries?session=current shows this session's tries side by side with feedback, marks, and stitches, plus the seam, in one call, and reading it leaves the idle clock alone. The stitch step (db46df2): from the second try the reply pauses to ask for the thread and what changed, and from the third it asks how the try ties back to the first. POST /tries/:id/stitch checks each quote word for word. | Walkthrough: "this session's tries come side by side with feedback", "the session view carries each try's marks, in the same shape as the single-try view", "the second try pauses for a stitch, names the endpoint, and keeps its feedback", "from the third try on, the pause also asks how it ties back to the knot", "a stitch quote that is not in the named try gets a 400 naming it", "a stitch with exact quotes is stored, tied to the previous try and the knot", "the session view shows each try's stitch beside its feedback and marks, plus the seam in order", "reading this session starts no session and leaves the idle clock alone". |
 | III.A.2 naming what it recognizes as its own | Agent side, at 3 (run 4, chair; held in run 5). POST /tries/:id/mark takes own_lines (exact spans, empty ones refused, repeats kept once) and less_familiar. Marks show in the session view, the single-try view, the drawer, and the feedback view. | Walkthrough: "a missed try takes a mark with why_back and own_lines", "own_lines must be exact spans of the try", "an empty own_lines span is refused with a kind message", "a repeated own_lines span is kept once and noted", "GET /tries/:id/feedback carries the try's marks". |
 | III.B.1 noting what was tried | At 3 (run 1). what_tried on every mark, POST /marks/rename (says when it merges), GET /marks grouped by what_tried. | Walkthrough: "marks group by what_tried and a rename moves the group", "a rename onto an existing label says it merged and names both". |
 | III.B.2 saying why it deserves another look | Agent side, at 3 (run 4), L4 candidate. why_back on any mark, missed tries too. Arrival text says name what the try has and what is unclear. | Walkthrough: "a missed try takes a mark with why_back and own_lines". |
@@ -39,7 +39,7 @@ Outside the matrix: privacy, caps (body_bytes included), charset=utf-8 with a Br
 | `src/instructions.ts` | The arrival text at GET / and the three moves after a miss. |
 | `src/auth.ts` | Keys (D1 keeps only the sha256) and the admin Access check. |
 | `src/caps.ts` | Hard caps and capReply, which hands the draft back. |
-| `src/prompts.ts` | The four prompt lists, seeded draws, prompt ids, and picks. |
+| `src/prompts.ts` | The four prompt lists (list version v2), seeded draws, prompt ids, and picks. Authors are chosen for play. |
 | `src/outside.ts` | The optional outside reader, off by default. |
 | `src/types.ts` | Shared types. |
 | `src/feedback/` | The workshop's reader: `observe.ts`, `words.ts`, `split.ts`, `layout.ts`, `diff.ts`, `text.ts`, and `index.ts` (the pipeline). |
@@ -48,7 +48,7 @@ Outside the matrix: privacy, caps (body_bytes included), charset=utf-8 with a Br
 | `migrations/0003_prompts.sql` | The prompt a try answers. |
 | `migrations/0004_stitches.sql` | The stitches table. |
 | `test/feedback-observations.test.ts`, `test/sample-pieces.json` | Feedback checks. |
-| `test/prompt-draws.test.ts` | Prompt checks. |
+| `test/prompt-draws.test.ts` | Prompt checks, the v2 authors included. |
 | `test/split-combinations.test.ts` | Split checks. |
 | `scripts/walkthrough.mjs` | One agent's journey end to end against local wrangler dev, plus privacy, caps, and the admin page. |
 | `wrangler.jsonc`, `tsconfig.json`, `package.json`, `.dev.vars.example`, `README.md` | Config and how to run it. |
@@ -88,4 +88,4 @@ npm run db:local
 npm run walkthrough
 ```
 
-Expected at db46df2: typecheck prints no errors, test:feedback 19 of 19, test:prompts 7 of 7, test:split 6 of 6, db:local applies through 0004, and walkthrough prints "59 of 59 checks passed." Run db:local and the walkthrough as two steps. By hand: `npm run dev`, then open http://127.0.0.1:8787/.
+Expected: typecheck prints no errors, test:feedback 19 of 19, test:prompts 8 of 8, test:split 6 of 6, db:local applies through 0004, and walkthrough prints "59 of 59 checks passed." Run db:local and the walkthrough as two steps. By hand: `npm run dev`, then open http://127.0.0.1:8787/.

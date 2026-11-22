@@ -7,7 +7,7 @@
 | plan | `PLAN.md` (copied from `plans/01-safe-place-to-practice-plan.md`, which stays as the pre-build version) |
 | builder | SCROLL |
 | decider | Emily |
-| status | located through run 5: 15 of 16 at 3, III.A.1 at 2. Stitch lift for III.A.1 at db46df2, ready for run 6. Open quirks in `QUIRKS.md`. |
+| status | located through run 6: all 16 at 3. The agent-side levels carry the recheck note for real outside agents. Open quirks and ideas in `QUIRKS.md`. |
 
 ## Decisions
 
@@ -58,6 +58,8 @@ Lift after locate run 5 (III.A.1, Emily's go in t157u): the stitch step. Run 5 f
 
 Checks on ezra-01 at 724085d: typecheck clean, test:feedback 12 of 12, walkthrough 27 of 27.
 Checks on ezra-01 at db46df2: typecheck clean, test:feedback 19 of 19, test:prompts 7 of 7, test:split 6 of 6, walkthrough 59 of 59.
+
+Prompt authors v2 (Emily's go in t164u and t167u): `src/prompts.ts` now holds authors whose work invites play. Lewis Carroll (1898), Edward Lear (1888), and O. Henry (1910) join, each death year checked against the Library of Congress name authority. Langston Hughes, Zora Neale Hurston, and Virginia Woolf step off this list, since these prompts are irreverent and their work speaks for a movement or a community. Oscar Wilde stays: "he'd have loved it." A comment above AUTHORS states the rule. PROMPT_LIST_VERSION moves to v2, so a v1 prompt_id reads as no prompt, and tries already stored keep their own prompt. test:prompts adds a v2 check, 8 of 8. QUIRKS.md takes CANDY's run 6 quirks and STRIX's voice-skill idea for 05.
 
 Docs at db46df2 (Emily's go in t160u and t161u): `QUIRKS.md` lists every open quirk with its next move, plus the closed ones and the commit that closed each. PLAN.md's third column and MANIFEST.md now cover every lift through run 5.
 
@@ -135,7 +137,7 @@ CANDY's readings of the foggy criteria, which I take: I.C.1 is one try against i
 
 Checks after the lifts, on ezra-01: typecheck clean, test:feedback 19 of 19, walkthrough 38 of 38.
 
-### Runs 2 to 5, Nov 21 and 22, 2026
+### Runs 2 to 6, Nov 21 and 22, 2026
 
 CANDY chaired each run, with TOFFEE and TAFFY locating. The full record is on top of `locate/LOCATE.md`.
 
@@ -145,8 +147,9 @@ CANDY chaired each run, with TOFFEE and TAFFY locating. The full record is on to
 | 3 | 1234718 | II.B.2 to 3 (TAFFY's 48: 19 clean, 29 whole, 0 fragments, 0 garbled). |
 | 4 | 1234718 | The eight agent-side skills on stand-in tries (Emily's ruling), led by a cold try-out: seven at 3, III.A.1 at 2. L4 candidates: I.C.1 and III.B.2. |
 | 5 | 090dacc | III.A.1 held at 2, III.A.2 held at 3, on SEAL's cold try-out. The reread happens, and the agent has yet to name a pattern across tries. |
+| 6 | 6c23d11 (code db46df2) | III.A.1 to 3 by agreement, on STRIX's cold try-out. STRIX answered both stitch pauses with patterns shared across its tries. |
 
-Slice after run 5: 15 of 16 at 3, III.A.1 at 2. The agent-side levels carry a recheck note for when real outside agents use the workshop. The stitch lift (db46df2) answers run 5 and waits for run 6. Quirks from every run are in `QUIRKS.md`.
+Slice after run 6: all 16 at 3. The agent-side levels carry a recheck note for when real outside agents use the workshop. Quirks from every run are in `QUIRKS.md`.
 
 ### Builder try-out, Nov 21, 2026
 

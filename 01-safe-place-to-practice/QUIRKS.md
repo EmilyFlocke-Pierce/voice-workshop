@@ -2,7 +2,7 @@
 
 A to-be-done list. None of these holds a level, and none is pressing. Each row says what the quirk is, who found it, what it touches, and the next move to make. Pick one up when it helps a criterion or a neighbor slice.
 
-Updated Nov 22, 2026, at db46df2. Locate status and evidence live in `MANIFEST.md` and `locate/LOCATE.md`.
+Updated Nov 22, 2026, after locate run 6. Locate status and evidence live in `MANIFEST.md` and `locate/LOCATE.md`.
 
 ## Open
 
@@ -11,7 +11,10 @@ Updated Nov 22, 2026, at db46df2. Locate status and evidence live in `MANIFEST.m
 | Quirk | Found by | Touches | Next move |
 |---|---|---|---|
 | One diagnosis per try: a second diagnosis replaces the first. | CANDY run 4 (cold try-out) | I.C.1, III.A.1 | Keep diagnoses as a dated list on the try, and show the latest first. |
-| One stitch per try: a second stitch replaces the first, the same way as diagnosis. | SCROLL (stitch lift, db46df2) | III.A.1 | Move stitches to the same dated-list shape when diagnoses move. |
+| One stitch per try: a second stitch replaces the first, the same way as diagnosis. | SCROLL (stitch lift, db46df2); CANDY run 6 | III.A.1 | Move stitches to the same dated-list shape when diagnoses move. |
+| A thread's prose is checked only for being non-empty. Its quotes are checked word for word. | CANDY run 6 | III.A.1 | Leave the prose free, and invite one quote per try the thread names. |
+| The tie-back-to-first-try question has no field of its own, so the agent folds it into thread and deltas. STRIX asked for one. | CANDY run 6 (STRIX) | III.A.1 | Add an optional "tie_back" field on stitches from the third try on, and show it in the seam. |
+| "1/" style markers in a thread shift the line numbers it refers to. | CANDY run 6 | III.A.1 | Quote lines by their words, as stitches already do, and say so in the pause note. |
 | Rough edges stay on the parent when the agent retries. | CANDY run 4 (cold try-out) | I.A.1 | Carry each rough edge whose span still appears in the retry, and list the ones that dropped out. |
 | A retry starts with no marks, because marks belong to one try. | CANDY run 5 | III.A.2, III.B.2 | Show the parent's marks on the retry as "marks on the parent", read only. |
 | why_back is optional, so a try the agent calls "a useful miss" can carry no reason. | CANDY run 4 | III.B.2 (agent side) | Invite why_back in the mark reply when it is empty, in one kind line. |
@@ -50,7 +53,7 @@ Updated Nov 22, 2026, at db46df2. Locate status and evidence live in `MANIFEST.m
 | A prompt sent as four picks reports source "drawn". | Gemini try (CEO's), Nov 21 | prompts slice | Report source "picked" for four named picks. |
 | GET /prompt has no cap. It has no key to count by. | CANDY run 2 | caps | Take to Emily as a design call: a per-IP cap, or leave open. |
 | The prompt's art style sits beside style_tag, and the two can read as the same thing. | SCROLL | 02 | Ask 02 whether style_tag stays the agent's own word and art style stays the prompt's. |
-| Author death years in `src/prompts.ts` are unchecked against a source. | SCROLL | prompts slice | Check each death_year against one named source and note the source in prompts.ts. |
+| Author death years in `src/prompts.ts` are checked for the three v2 additions only. | SCROLL | prompts slice | Check the other 22 against the Library of Congress name authority and note it in prompts.ts. |
 
 ### Session end and views
 
@@ -69,6 +72,18 @@ Updated Nov 22, 2026, at db46df2. Locate status and evidence live in `MANIFEST.m
 | The walkthrough chained right after db:local stopped once at 43 of 47 (local D1 held). Alone it passes. | CANDY run 3 (TOFFEE) | checks | Run db:local and the walkthrough as two steps, as the Verify block says. |
 | The caps, the 2-hour idle end, and keys_per_day are guesses. | SCROLL | caps | Set them with Emily before a deploy. |
 
+### Keys
+
+| Quirk | Found by | Touches | Next move |
+|---|---|---|---|
+| A second POST /keys issues another key, though the arrival text says a key is shown once. | CANDY run 6 | arrival text, caps | Reword the arrival text to "each key is shown once; keep yours to bring everything back". |
+
+## Ideas
+
+| Idea | From | Touches | Next move |
+|---|---|---|---|
+| At session end, the agent gets a voice skill it keeps and updates each visit: its own lines, costume lines, habits to watch, and what to try next. | STRIX, CANDY run 6 | 05 | Emily's call. Bring it to 05 when that slice opens. |
+
 ## Closed
 
 | Quirk | Found by | Closed by |
@@ -84,4 +99,6 @@ Updated Nov 22, 2026, at db46df2. Locate status and evidence live in `MANIFEST.m
 | II.B.2 split garbled and fragmented ordinary lines. | CANDY run 2 | 1234718: split only full observations (run 3 moved II.B.2 to 3) |
 | The session view showed no marks. | CANDY run 4 | 090dacc |
 | /prompt and /prompt/lists had no charset=utf-8, so Brontë garbled on Windows. | CANDY run 4 | 090dacc: charset=utf-8 on every JSON reply |
-| The drawer and GET /tries/:id/feedback carried no marks. | CANDY run 5 | db46df2 |
+| The drawer and GET /tries/:id/feedback carried no marks. | CANDY run 5 | db46df2 (confirmed in run 6) |
+| Rereading did not lead to a named pattern across tries. | CANDY runs 4 and 5 | db46df2: the stitch pause (run 6 moved III.A.1 to 3) |
+| Prompt authors included writers whose work speaks for a movement, an identity, or a community, which sits poorly with irreverent prompts. | Emily (t164u, t167u) | Prompt list v2: Lewis Carroll, Edward Lear, and O. Henry join |

@@ -2,7 +2,7 @@
 // Forms stay short. Every author died long ago, and death_year sits beside each name so anyone can check it.
 // A prompt_id is the list version plus the seed, so the same id always gives the same four picks.
 
-export const PROMPT_LIST_VERSION = "v1";
+export const PROMPT_LIST_VERSION = "v2";
 
 export const FORMS = [
   "a comic book page", "a press release", "a text message", "a comedy roast", "a haiku-length poem", "a product review",
@@ -35,16 +35,21 @@ export const STYLES = [
   { name: "pre-Raphaelite", phrase: "pre-Raphaelite" },
 ];
 
+// Choose authors whose work invites play: broadly famous, quotable, and light enough to be borrowed in fun.
+// These prompts are irreverent, so keep authors whose work speaks for a movement, an identity, or a community off this list.
+// Each author died long ago and carries a death_year.
+// v2, Nov 22, 2026: Lewis Carroll (1898), Edward Lear (1888), and O. Henry (1910) join the list, each year checked
+// against the Library of Congress name authority or Wikipedia. Checking the rest is on QUIRKS.md.
 export const AUTHORS = [
   { name: "Herman Melville", death_year: 1891 },
   { name: "Emily Dickinson", death_year: 1886 },
   { name: "Mark Twain", death_year: 1910 },
   { name: "Jane Austen", death_year: 1817 },
   { name: "Edgar Allan Poe", death_year: 1849 },
-  { name: "Virginia Woolf", death_year: 1941 },
+  { name: "Lewis Carroll", death_year: 1898 },
   { name: "Franz Kafka", death_year: 1924 },
   { name: "Oscar Wilde", death_year: 1900 },
-  { name: "Zora Neale Hurston", death_year: 1960 },
+  { name: "Edward Lear", death_year: 1888 },
   { name: "Ernest Hemingway", death_year: 1961 },
   { name: "Charles Dickens", death_year: 1870 },
   { name: "Leo Tolstoy", death_year: 1910 },
@@ -57,7 +62,7 @@ export const AUTHORS = [
   { name: "Geoffrey Chaucer", death_year: 1400 },
   { name: "Mary Shelley", death_year: 1851 },
   { name: "Jonathan Swift", death_year: 1745 },
-  { name: "Langston Hughes", death_year: 1967 },
+  { name: "O. Henry", death_year: 1910 },
   { name: "James Joyce", death_year: 1941 },
   { name: "Matsuo Bash\u014d", death_year: 1694 },
   { name: "Jack London", death_year: 1916 },

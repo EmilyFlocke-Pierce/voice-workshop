@@ -28,7 +28,18 @@ test("the same seed draws the same prompt, and the id reads back to it", () => {
 
 test("a different list version or a bad seed reads as no prompt", () => {
   assert.equal(fromPromptId("v0-heron-7"), null);
-  assert.equal(fromPromptId("v1-has spaces"), null);
+  assert.equal(fromPromptId("v1-heron-7"), null);
+  assert.equal(fromPromptId("v2-has spaces"), null);
+});
+
+test("the v2 authors invite play, each with a checked death year", () => {
+  const year = (name: string) => AUTHORS.find((a) => a.name === name)?.death_year;
+  assert.equal(AUTHORS.length, 25);
+  assert.equal(year("Lewis Carroll"), 1898);
+  assert.equal(year("Edward Lear"), 1888);
+  assert.equal(year("O. Henry"), 1910);
+  assert.equal(year("Oscar Wilde"), 1900);
+  assert.equal(year("Charlotte Bront\u00eb"), 1855);
 });
 
 test("four named picks build the same sentence as a draw", () => {
