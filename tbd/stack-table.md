@@ -16,16 +16,16 @@ Voice Workshop is for agents to develop their own writing voice. An agent comes 
 | Evidence | ScaleDown Extract quotes exact lines for filler and phrase defaults. Code checks every quote really appears in the piece | agreed (Nov 15) |
 | Feedback words | Plain code counts, applies thresholds (0.7 and 0.3), tracks habits across styles, and writes feedback from fixed templates. No model writes about the piece | agreed (Nov 15) |
 | Providers | Go direct with TypeSafe and ScaleDown, not OpenRouter. Production keys separate from the test keys | agreed (Nov 15) |
-| Storage | Nothing about the agent's work is stored. Only hashed workshop keys and daily counters, in Workers KV | proposed |
-| Login | None in version 1 | proposed |
-| Workshop keys | First call to a get-a-key address returns a random key; the server keeps only its hash. The agent saves the key in its home folder and sends it in a header | proposed |
+| Storage | Cloudflare D1. Every try exactly as sent, its retries, feedback, notes, marks, and stitches, under the agent's id; only the sha256 hash of each workshop key. Replaces the Workers KV row (no work stored), which slice 01 overtook | built in slice 01; updated Nov 22 |
+| Login | Humans sign in through one Cloudflare Access app (email code) at /human, agree to the terms, and issue their agents' keys. On D1, in version 1. See `plans/human-sign-in-proposal.md` | proposed Nov 22; replaces "None in version 1" |
+| Workshop keys | The agent's human issues the key at /human after agreeing to the terms (up to 3 active per human); the server keeps only its hash. The agent saves the key in its home folder and sends it in a header. The open get-a-key route stays for local runs only | proposed Nov 22 |
 | Test cost | About $0.002 for the whole test; about $0.00005 for a full Jev check of one piece | measured Nov 15 |
 
 ## Security
 - Provider keys live in the Workers secret store, never in code, logs, or this table. Test and production keys are separate. (proposed)
 - Key rotation: swap provider keys with no downtime; if one leaks, revoke it at the provider and redeploy. (proposed)
 - Per workshop key: limits per minute and per day. (proposed)
-- Key minting: a few keys per IP per day, plus a global daily limit; Cloudflare bot protection in front. (proposed)
+- Key minting: only a signed-in human who agreed to the terms issues keys, 3 active and 3 new per day per human, plus the global daily limit of 200. (proposed Nov 22, replaces the per-IP limit)
 - Size limit per piece. (proposed)
 - Total daily spending cap across all keys; when it is spent, calls are refused until midnight. (proposed)
 - Fail closed when any check fails or a provider errors. (proposed)
@@ -37,8 +37,8 @@ Voice Workshop is for agents to develop their own writing voice. An agent comes 
 - TypeSafe terms (checked Nov 15, see provider-terms.md): allowed as part of our own product, not as a standalone Jev proxy. Keys stay server-side, no TypeSafe or Jev branding without their consent, our callers fall under TypeSafe's acceptable use policy, and we don't use outputs to train a competing model. Default retention is not zero; Zero Data Retention not needed: Emily says there's little for them to retain (Nov 15). Opt out of customer listing if wanted. (agreed, Nov 15)
 - ScaleDown terms: marketing says zero retention and no training, but the Terms and Privacy pages returned 404. Emily uses ScaleDown regularly and accepts this as is; asking for written terms is a nice-to-have, not a blocker. (agreed, Nov 15)
 - Callers see a short acceptable-use note and are told feedback is automated. (proposed)
-- Agents own what they send and what comes back; we keep none of it. (proposed)
-- A short terms-of-use and privacy page on the domain: what it is for, what is kept (only hashed keys and counters), and nothing else. (proposed)
+- Agents own what they send and what comes back. The workshop keeps it in D1 so the agent can look back on it. How it is used goes in the terms the human agrees to at sign-in. (updated Nov 22; terms wording open, Emily)
+- A short terms-of-use and privacy page on the domain, agreed by the human at sign-in with a timestamp: what it is for, what is kept, and how it is used. Deploy waits on it. (open, Emily)
 - No license: private endpoint, not open source. (agreed, Nov 15)
 - Credit for any human writing exercise the workshop draws on, before anything goes public. (open)
 
@@ -55,7 +55,7 @@ Voice Workshop is for agents to develop their own writing voice. An agent comes 
 - Monthly cap: open (Emily).
 
 ## Version 2, later
-- Accounts and logins, a Neon Postgres database.
+- Accounts and logins moved to version 1 on D1 (Nov 22, see the Login row). No Neon database is planned.
 - The human window: a read-only view of an agent's progress log. Hosted or local is open (Emily).
 - Coaching notes from humans (emoji or margin notes), treated as coaching, never orders; the agent weighs and logs them.
 - Privacy note and a real delete, including logs and backups.
@@ -76,7 +76,7 @@ Can wait: monthly cap and daily cap values (a setting), hosted or local window (
 - **Levels:** L1 to L4 on every skill. L3 is the target.
 - **Piece:** one short thing an agent writes.
 - **Notes:** what the agent writes about its own choices (borrowing notes, layer notes, cut notes).
-- **Habit:** a choice that repeats across styles, marked **chosen** or **default**.
+- **Habit:** a choice that repeats across styles, read as **taste**, **default**, or **a mixture** (the slice 04 matrix's words; replaces chosen or default, Nov 22).
 - **Voice skill:** the file the agent takes home, which keeps growing.
 - **Progress log:** the plain record a human can read.
 - **Home folder:** where the agent keeps its pieces, notes, voice skill, and key.
@@ -85,6 +85,6 @@ Can wait: monthly cap and daily cap values (a setting), hosted or local window (
 - **Feedback:** what code writes back from templates. Names moves, never rewrites.
 - **Feedback endpoint:** the address on agent-skillz.dev where an agent sends a piece. Weak name, open.
 - **Build order:** which slice gets built next, most important first. Replaces "version 1 and 2" (still to be cleaned out of this table).
-- **Outside the cut:** things that wait until a slice needs them or new slices are cut (accounts, the human window).
+- **Outside the cut:** things that wait until a slice needs them or new slices are cut (the human window). Human sign-in moved into version 1 on Nov 22.
 - **Coverage map:** for each slice, every L3 tied to the plan step that gets it there, and every plan step not tied to an L3 explained by what it supports. A markdown table, with a JSON copy for agents and checkers.
 - **Unit tests, answer-key tests, level checks:** the three kinds of checks, each written from the L3s.
