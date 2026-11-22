@@ -2,7 +2,7 @@
 
 Source: Quilt ready run v1 605d446b (24 criteria), in `02-experimenting-with-styles\criteria.json`, and slice-report-01-02-v4. In the middle column, quotes are Quilt's words, apart from Emily's locate note from slice 01. Quotes in the left column are text the workshop shows. The rest is my reading. Written Nov 22, 2026 by SCROLL, for Emily and for any builder. Revised the same day after STINGER's review (68 findings).
 
-**Base:** the move commit from Step 0 (id goes here when it lands). Until then the repo is master at 99a3acd.
+**Base:** the move commit from Step 0 (id goes here when it lands). Until then the repo is main at 99a3acd.
 
 ## Words used here
 
@@ -18,14 +18,14 @@ Source: Quilt ready run v1 605d446b (24 criteria), in `02-experimenting-with-sty
 
 Slices 02 and 04 both build on the one Worker, so the Worker moves once, in its own commit, before either slice branch exists. One builder makes the move: SCROLL, unless Emily names someone else (see For Emily). Both slice branches start from that commit, which is called **the move commit** below. When it lands, its id goes into the Base line of this plan and of the other slice's plan.
 
-The move, on master from 99a3acd:
+The move, on main from 99a3acd:
 
 1. `git mv 01-safe-place-to-practice/app app`. The app ends up in `app\` at the repo root, so the full path is `C:\Users\hellz\Desktop\voice-workshop\app`.
 2. Update every path that names the old folder where a reader would run a command or open a file. At 99a3acd those are in slice 01's `PLAN.md` and `MANIFEST.md` (the Verify block, lines 77 to 89, starts with `cd ...\01-safe-place-to-practice\app`). Search the repo for `01-safe-place-to-practice\app` and `01-safe-place-to-practice/app` outside `locate\` to catch any others. Dated entries in SESSION and `CHANGELOG.md` stay as written, since they record what was true then. Add a `CHANGELOG.md` entry for the move.
 3. `node_modules\`, `.wrangler\` (the local D1), and `.dev.vars` are not tracked, so they stay behind. Run `npm install`, copy `.dev.vars.example` to `.dev.vars`, and run `npm run db:local` in the new folder.
 4. Run the full check list from "Run it" below. Typecheck, `test:feedback`, `test:prompts`, `test:split`, and the walkthrough (60 of 60) pass after the move, as they do at 99a3acd.
 5. The move breaks the locate probe imports. The probes in `01-safe-place-to-practice\locate\probe\` import the app as `../../app/src/...` (for example `taffy-probe.test.ts` line 4, `import { feedbackFor, runPipeline } from "../../app/src/feedback/index.ts";`). After the move the app is at `../../../app/src/...` from there. Leave `locate\` exactly as it is, since it belongs to CANDY. Write a dated entry in slice 01's `SESSION.md` saying the probe imports now point at a folder that no longer exists, giving the new relative path, and asking CANDY to update them.
-6. Commit on master with a message that names the move and the probe note. Record the commit id in both plans' Base line.
+6. Commit on main with a message that names the move and the probe note. Record the commit id in both plans' Base line.
 
 ## Intent
 
@@ -214,7 +214,7 @@ Builders go ahead without these. Each needs Emily's word before the step it name
 
 ## For outside builders
 
-- **Repo.** `C:\Users\hellz\Desktop\voice-workshop` on ezra-01, a git repo on master with no remote. Emily passes it along. Start from the move commit (Step 0), where the one Worker lives in `app\` at the repo root. Read `app\README.md`, then `01-safe-place-to-practice\PLAN.md`, `SESSION.md`, and `QUIRKS.md`.
+- **Repo.** `C:\Users\hellz\Desktop\voice-workshop` on ezra-01, a git repo on main with no remote. Emily passes it along. Start from the move commit (Step 0), where the one Worker lives in `app\` at the repo root. Read `app\README.md`, then `01-safe-place-to-practice\PLAN.md`, `SESSION.md`, and `QUIRKS.md`.
 - **Branch.** Make `slice-02` from the move commit. Commit locally as you go, and push only when Emily says.
 - **Stack.** TypeScript on Cloudflare Workers with D1, local only. Keep slice 01's caps in `src/caps.ts` and the key-only reads in every query. `tbd\stack-table.md` was brought up to date on Nov 22 (D1 storage, sign-in in version 1). Where it and this plan differ, this plan wins.
 - **Migrations.** The order is fixed across all three plans: `0005_humans.sql` (sign-in, kept for it even if it lands later), `0006_exercises.sql` (this slice), `0007_lookbacks.sql` (slice 04), `0008_registers.sql` (this slice's Part B).
