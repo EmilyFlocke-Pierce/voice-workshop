@@ -7,7 +7,7 @@
 | plan | `PLAN.md` (copied from `plans/01-safe-place-to-practice-plan.md`, which stays as the pre-build version) |
 | builder | SCROLL |
 | decider | Emily |
-| status | ready to locate, run 2 (prompt addendum ported to ezra-01 in 557ac62) |
+| status | located through run 5: 15 of 16 at 3, III.A.1 at 2. Stitch lift for III.A.1 at db46df2, ready for run 6. Open quirks in `QUIRKS.md`. |
 
 ## Decisions
 
@@ -46,6 +46,10 @@ All rows on Nov 21, 2026. Code lives in `app/`.
 21. Only the key's holder reads its rows. Every query in `src/index.ts`.
 22. Outside model hook, off by default. `src/outside.ts`.
 
+Lifts after run 1 (5e5bb33): the diff, the split, rough_edges and diagnosis, and the run 1 quirks. The full list is under Locates, "Lifts after run 1". b0593ab names the builder try-out as builder evidence.
+
+Prompt addendum (557ac62, Emily's ask in t134u to t137u): GET /prompt draws a short form, an art style, an author who died long ago, and a subject, with ?seed= for the same draw. GET /prompt/lists shows every choice. A try names its prompt by prompt_id, four picks, or own_prompt, and migration 0003 stores it. A retry carries its parent's prompt, so I.C.2's "same prompt" holds. test:prompts checks the lists, the seeds, and the ids, 7 of 7. 40d882f adds the cold try-out from the agent seat, under Locates.
+
 Lift after locate run 2 (II.B.2, LOCATE.md run 2, TAFFY's R8, R11, R12, R13 probes): `src/feedback/split.ts` now splits a line only when every part after a join reads as a full observation. A part with its own subject and verb stays as written. A verb phrase borrows the first part's subject when that subject comes out cleanly (the words before the main verb, with no preposition inside) and agrees with the new verb. A part with no verb continues the line, so the line stays one observation, as written. A true two-point line whose second subject cannot be carried (a pronoun, a subject with a preposition, a verb that disagrees) stays whole and goes to the flags with its own reason. The verb finder skips any word after a determiner or preposition, so "the end" and "the close" read as places. `test/split-combinations.test.ts` (npm run test:split) holds TAFFY's 48 combinations and her split shapes: 19 clean, 29 whole, 0 fragments, 0 garbled. CODE_VERSION moves to observe-2.
 
 Lift after locate run 4 (LOCATE.md run 4, quirks from locate\tryout-cold.md): GET /tries?session=current now carries each try's marks beside its feedback, and GET /tries/:id carries them too, in the same shape (id, what_tried, why_back, own_lines, less_familiar, created_at). An agent rereads its session side by side in one call. This answers "the session view doesn't show marks" (III.A.1, III.A.2). Every JSON reply, capped replies included, now names charset=utf-8 through the shared json helper, so Brontë reads the same on Windows. This answers "/prompt and /prompt/lists have no charset=utf-8". The walkthrough checks both, 50 of 50.
@@ -53,6 +57,9 @@ Lift after locate run 4 (LOCATE.md run 4, quirks from locate\tryout-cold.md): GE
 Lift after locate run 5 (III.A.1, Emily's go in t157u): the stitch step. Run 5 found witnesses rereading their tries without naming a pattern across them, so the workshop now invites one. The first try in a session is the knot. From the second try on, the reply carries a stitch pause beside the feedback ("What is the thread between this try and the last one, and what changed?"), and from the third on it also asks "How does this one tie back to your first try?" POST /tries/:id/stitch stores thread, deltas, and quotes, and checks each quote word for word against the try it names, so a stitch points at the page. GET /tries?session=current shows each try's stitch and the seam, every stitch in order. The drawer and GET /tries/:id/feedback now carry marks too, answering two run 5 quirks. Migration 0004 adds the stitches table. The walkthrough checks it all, 59 of 59.
 
 Checks on ezra-01 at 724085d: typecheck clean, test:feedback 12 of 12, walkthrough 27 of 27.
+Checks on ezra-01 at db46df2: typecheck clean, test:feedback 19 of 19, test:prompts 7 of 7, test:split 6 of 6, walkthrough 59 of 59.
+
+Docs at db46df2 (Emily's go in t160u and t161u): `QUIRKS.md` lists every open quirk with its next move, plus the closed ones and the commit that closed each. PLAN.md's third column and MANIFEST.md now cover every lift through run 5.
 
 Say-less pass on Nov 21: SESSION.md 958 to 899 words, MANIFEST.md 996 to 966. The rest is labels, paths, and check names, so it stays.
 Say-less pass after run 1: SESSION.md 1902 to 1751 words, MANIFEST.md 1226 to 1205. Duplicate connections merged, settled criteria folded into Locates.
@@ -77,7 +84,7 @@ Say-less pass after run 1: SESSION.md 1902 to 1751 words, MANIFEST.md 1226 to 12
 - **Session end with 04 and 05.** It lists every mark the key holds, across sessions. 05 builds the voice skill from own_lines and why_back, and could carry diagnoses, rough edges, and the marked try's text.
 - **style_tag with 02.** Free text now, and only what_tried renames. 02 may want shared tags or tag renames.
 - **Retry chains with 03.** parent_id and change_note are ready. The diff works by sentence. Layering may need word-level changes.
-- **Prompts.** Tries carry no prompt, so I.C.2's "same prompt" and the scope note wait on the slice that hands out prompts. The try-out felt this on arrival.
+- **Stitches with 05 and 02 (Nov 22).** The seam is ready to travel home with the marks when 05 takes it. The stitch is the agent's own cross-try reading, beside 02's per-try reader.
 - **Evidence with 06.** Only the agent's key reads its tries, so evidence for the agent-side L3s comes from what agents choose to share. 06 owns sharing.
 - **Emily's admin page with 06.** The Cloudflare Access check built here is the same door humans use in 06.
 - **The reader with 02 and 03.** It lives in 01, and 02 and 03 will call it. It misses near-repeat lines and a line that turns from question to statement. Places are relative thirds, so they shift between tries of different lengths.
@@ -127,6 +134,19 @@ CANDY's readings of the foggy criteria, which I take: I.C.1 is one try against i
 - **Left as is: layout_flags.** The workshop's reader always fits the layout, so flags fill only from the outside reader.
 
 Checks after the lifts, on ezra-01: typecheck clean, test:feedback 19 of 19, walkthrough 38 of 38.
+
+### Runs 2 to 5, Nov 21 and 22, 2026
+
+CANDY chaired each run, with TOFFEE and TAFFY locating. The full record is on top of `locate/LOCATE.md`.
+
+| Run | HEAD | What moved |
+|---|---|---|
+| 2 | 40d882f | I.C.2 to 3. II.A.2 holds at 3. II.B.2 held at 2 (garbled and fragment splits). |
+| 3 | 1234718 | II.B.2 to 3 (TAFFY's 48: 19 clean, 29 whole, 0 fragments, 0 garbled). |
+| 4 | 1234718 | The eight agent-side skills on stand-in tries (Emily's ruling), led by a cold try-out: seven at 3, III.A.1 at 2. L4 candidates: I.C.1 and III.B.2. |
+| 5 | 090dacc | III.A.1 held at 2, III.A.2 held at 3, on SEAL's cold try-out. The reread happens, and the agent has yet to name a pattern across tries. |
+
+Slice after run 5: 15 of 16 at 3, III.A.1 at 2. The agent-side levels carry a recheck note for when real outside agents use the workshop. The stitch lift (db46df2) answers run 5 and waits for run 6. Quirks from every run are in `QUIRKS.md`.
 
 ### Builder try-out, Nov 21, 2026
 
