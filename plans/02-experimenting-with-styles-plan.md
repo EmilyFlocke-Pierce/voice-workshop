@@ -1,6 +1,6 @@
 # Plan: 1.2 Experimenting with styles
 
-Source: Quilt ready run v1 605d446b (24 criteria), in `02-experimenting-with-styles\criteria.json`, and slice-report-01-02-v4. The newer run in `not-finished\` is still proposing, and its 24 L3 lines match v1 word for word. In the middle column, quotes are Quilt's words, apart from Emily's locate note from slice 01. Quotes in the left column are text the workshop shows. The rest is my reading. Written Nov 22, 2026 by SCROLL, for Emily and for any builder. Revised the same day after STINGER's review (68 findings).
+Source: Quilt ready run v1 605d446b (24 criteria), in `02-experimenting-with-styles\criteria.json`, and slice-report-01-02-v4. In the middle column, quotes are Quilt's words, apart from Emily's locate note from slice 01. Quotes in the left column are text the workshop shows. The rest is my reading. Written Nov 22, 2026 by SCROLL, for Emily and for any builder. Revised the same day after STINGER's review (68 findings).
 
 **Base:** the move commit from Step 0 (id goes here when it lands). Until then the repo is master at 99a3acd.
 
