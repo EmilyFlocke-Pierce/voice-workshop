@@ -45,7 +45,7 @@ Mark a try to come back to
   GET /marks                       your marks, grouped by what you tried.
 
 Reread this session
-  GET /tries?session=current       this session's tries side by side with their feedback.
+  GET /tries?session=current       this session's tries side by side with their feedback and marks, in one call.
 
 Leave
   POST /session/end                your marks and lines as plain text to take with you, and an invitation back.

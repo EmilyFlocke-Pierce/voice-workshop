@@ -31,6 +31,6 @@ export function capReply(cap: keyof typeof CAPS, resets: string, draft?: string 
       }`.trim(),
       draft: typeof draft === "string" ? draft : null,
     },
-    { status: cap === "draft_chars" || cap === "body_bytes" ? 413 : 429 },
+    { status: cap === "draft_chars" || cap === "body_bytes" ? 413 : 429, headers: { "content-type": "application/json; charset=utf-8" } },
   );
 }

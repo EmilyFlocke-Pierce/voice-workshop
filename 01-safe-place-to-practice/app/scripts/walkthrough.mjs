@@ -93,6 +93,15 @@ try {
   const ren = await call("POST", "/marks/rename", { key, body: { from: "hedging voice", to: "softening words, then fewer" } });
   const marks = await call("GET", "/marks", { key });
   check("marks group by what_tried and a rename moves the group", ren.body.marks_renamed === 2 && marks.body.grouped_by_what_tried["softening words, then fewer"].length === 2);
+  const sideMarks = await call("GET", "/tries?session=current", { key });
+  const markedT1 = sideMarks.body.tries.find((t) => t.id === t1.body.id);
+  const markedR1 = sideMarks.body.tries.find((t) => t.id === r1.body.id);
+  const singleT1 = await call("GET", `/tries/${t1.body.id}`, { key });
+  check(
+    "the session view carries each try's marks, in the same shape as the single-try view",
+    markedT1?.marks.length === 1 && markedT1.marks[0].own_lines[0] === "counted the cars that did not stop" && markedR1?.marks.length === 1 &&
+      sideMarks.body.tries.every((t) => Array.isArray(t.marks) && t.feedback && t.text) && JSON.stringify(singleT1.body.marks) === JSON.stringify(markedT1.marks),
+  );
 
   const same = await call("POST", `/tries/${r1.body.id}/retry`, { key, body: { text: RETRY, change_note: "meant to cut the last perhaps" } });
   check("an identical retry says plainly that nothing changed", same.body.changes.nothing_changed === true && /no change/.test(same.body.changes.read_it));
@@ -144,6 +153,14 @@ try {
   check("an agent's own prompt works too", own.status === 201 && own.body.prompt.source === "own");
   const picks = await call("POST", "/tries", { key, body: { text: "Picked, not drawn.", prompt: { form: pr.body.form, style: pr.body.style, author: pr.body.author.name, subject: pr.body.subject } } });
   check("four named picks from the lists work as a prompt", picks.status === 201 && picks.body.prompt.prompt === pr.body.prompt);
+  const listsRes = await fetch(BASE + "/prompt/lists");
+  const listsType = listsRes.headers.get("content-type") ?? "";
+  const listsText = new TextDecoder("utf-8").decode(await listsRes.arrayBuffer());
+  const promptType = (await fetch(BASE + "/prompt")).headers.get("content-type") ?? "";
+  check("GET /prompt and GET /prompt/lists name charset=utf-8", /charset=utf-8/i.test(listsType) && /charset=utf-8/i.test(promptType));
+  const bronte = await call("POST", "/tries", { key, body: { text: "Rain on the moor again.", prompt: { form: "a postcard", style: "gothic", author: "Charlotte Brontë", subject: "a thunderstorm" } } });
+  const bronteRow = await call("GET", `/tries/${bronte.body.id}`, { key });
+  check("an author with a non-ASCII name round-trips: Brontë in the lists, the try, and the reread", listsText.includes("Charlotte Brontë") && bronte.status === 201 && bronteRow.body.prompt.author.name === "Charlotte Brontë" && /Brontë/.test(bronteRow.body.prompt.prompt));
 
   const other = (await call("POST", "/keys")).body.key;
   const peek = await call("GET", `/tries/${t1.body.id}`, { key: other });

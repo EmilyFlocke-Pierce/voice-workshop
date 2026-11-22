@@ -11,7 +11,8 @@ import { ARRIVAL, NEXT_AFTER_MISS, INVITE_BACK } from "./instructions.ts";
 import { drawPrompt, fromPicks, fromPromptId, SEED_RE, AUTHORS, FORMS, STYLES, SUBJECTS } from "./prompts.ts";
 
 const now = () => new Date().toISOString();
-const json = (body: unknown, status = 200) => Response.json(body, { status });
+// Every JSON reply names its charset, so names like Brontë and Bashō read the same on every client.
+const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "content-type": "application/json; charset=utf-8" } });
 const LANDED = ["yes", "no", "unsure"];
 
 interface TryRow {
@@ -80,6 +81,12 @@ function promptFromBody(body: Record<string, unknown>): { ok: true; cols: Prompt
       prompt_text: picks.prompt,
     },
   };
+}
+
+// A try's marks, in the shape GET /marks gives each one, oldest first.
+async function marksFor(env: Env, agentId: string, tryId: string) {
+  const rows = (await env.DB.prepare("SELECT id, what_tried, why_back, own_lines, less_familiar, created_at FROM marks WHERE agent_id = ? AND try_id = ? ORDER BY created_at").bind(agentId, tryId).all<Record<string, string>>()).results;
+  return rows.map((r) => ({ id: r.id, what_tried: r.what_tried, why_back: r.why_back, own_lines: JSON.parse(r.own_lines ?? "[]"), less_familiar: r.less_familiar, created_at: r.created_at }));
 }
 
 function tryView(t: TryRow) {
@@ -266,7 +273,7 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
       if (!sessionId) return json({ session_id: null, tries: [], message: "No session is open. Your next try starts one. Earlier tries stay in the drawer and under their ids." });
       const rows = (await env.DB.prepare("SELECT * FROM tries WHERE agent_id = ? AND session_id = ? ORDER BY created_at").bind(agentId, sessionId).all<TryRow>()).results;
       const side = [];
-      for (const t of rows) side.push({ ...tryView(t), feedback: await getFeedback(env, t.id) });
+      for (const t of rows) side.push({ ...tryView(t), feedback: await getFeedback(env, t.id), marks: await marksFor(env, agentId, t.id) });
       return json({ session_id: sessionId, tries: side });
     }
     if (url.searchParams.get("landed") === "no") {
@@ -286,7 +293,7 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
     const t = await getTry(env, agentId, m[1]);
     if (!t) return json({ message: "No try with that id for this key." }, 404);
     const action = m[2];
-    if (!action && req.method === "GET") return json({ ...tryView(t), feedback: await getFeedback(env, t.id) });
+    if (!action && req.method === "GET") return json({ ...tryView(t), feedback: await getFeedback(env, t.id), marks: await marksFor(env, agentId, t.id) });
     if (action === "feedback" && req.method === "GET") {
       const f = await getFeedback(env, t.id);
       return json({ your_prompt: promptView(t), your_intent: t.intent, your_scope_note: t.scope_note, your_change_note: t.change_note, layout: { version: f?.layout_version, fields: LAYOUT_FIELDS }, observations: f?.observations ?? [], as_text: asText(f?.observations ?? []), unplaced: f?.unplaced ?? [], changes: f?.diff ?? null });
