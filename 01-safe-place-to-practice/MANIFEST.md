@@ -77,7 +77,7 @@ Outside the matrix: privacy between keys (the arrival and session-end texts make
 In PowerShell on ezra-01, one command at a time:
 
 ```
-cd C:\Users\hellz\Desktop\voice-workshop\01-safe-place-to-practice\app
+cd C:\Users\hellz\Desktop\voice-workshop\app
 npm install
 Copy-Item .dev.vars.example .dev.vars
 npm run typecheck

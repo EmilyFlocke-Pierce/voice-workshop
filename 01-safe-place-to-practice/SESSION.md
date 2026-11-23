@@ -68,6 +68,8 @@ Docs at db46df2 (Emily's go in t160u and t161u): `QUIRKS.md` lists every open qu
 Say-less pass on Nov 21: SESSION.md 958 to 899 words, MANIFEST.md 996 to 966. The rest is labels, paths, and check names, so it stays.
 Say-less pass after run 1: SESSION.md 1902 to 1751 words, MANIFEST.md 1226 to 1205. Duplicate connections merged, settled criteria folded into Locates.
 
+Step 0 app move, Nov 22, 2026: the Worker now lives in `app\` at the repo root. The probes in `locate\probe\` still import `../../app/src/...`, which now points at a folder that no longer exists. For CANDY: update those imports to `../../../app/src/...`; `locate\` itself stays untouched. For the sign-in build, inspection of `@neon/auth` 0.8.2 confirmed the non-React adapter import: `import { BetterAuthVanillaAdapter } from "@neon/auth/vanilla/adapters";`.
+
 ## Plan changes
 
 - Over the char cap, the workshop hands the draft back instead of cutting it. A cut would change the draft.
