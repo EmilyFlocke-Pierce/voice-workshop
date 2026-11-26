@@ -274,6 +274,30 @@ try {
   const hist2 = await call("GET", "/styles/history", { key });
   check("after the exercise, history counts it as tried and as a speech", hist2.body.tried.some((t) => t.id === styleId) && hist2.body.pieces_per_kind.speech === 1);
 
+  // Slice 02 Part B: keep your voice in another format.
+  const shelf2 = await call("GET", "/styles", { key });
+  check("GET /styles offers register exercises for when the voice feels steady", shelf2.body.registers.list.length === 8 && /steady/.test(shelf2.body.registers.note));
+  const badReg = await call("POST", "/exercises", { key, body: { kind: "register", register: "a sonnet", voice_ref_try_ids: [t1.body.id] } });
+  const noRefs = await call("POST", "/exercises", { key, body: { kind: "register", register: "an email", voice_ref_try_ids: [] } });
+  check("a register comes from the list, with 1 to 5 voice reference tries", badReg.status === 400 && /an email/.test(badReg.body.message) && noRefs.status === 400 && /1 to 5/.test(noRefs.body.message));
+  const rx = await call("POST", "/exercises", { key, body: { kind: "register", register: "an email", voice_ref_try_ids: [t1.body.id, t2.body.id] } });
+  check("a register exercise opens with the voice refs, and says which carry marks or own_lines", rx.status === 201 && rx.body.kind === "register" && rx.body.register.voice_refs[0].has_marks === true && rx.body.register.voice_refs[0].own_lines[0] === "counted the cars that did not stop" && rx.body.register.voice_refs[1].has_marks === false);
+  const twoOpen = await call("POST", "/exercises", { key, body: { style_id: styleId } });
+  check("one open exercise holds across both kinds", twoOpen.status === 409);
+  const EMAIL = "Hi all, perhaps the light was wrong on Tuesday. I waited by the door and counted the cars that did not stop. Can we move the meeting? Thanks.";
+  const rt = await call("POST", "/tries", { key, body: { exercise_id: rx.body.id, text: EMAIL } });
+  check("a try in a register exercise asks where the voice holds", rt.status === 201 && /voice hold/.test(JSON.stringify(rt.body)));
+  const rmap = await call("GET", `/tries/${rt.body.id}/style-map`, { key });
+  const carried = rmap.body.own_lines?.find((o) => o.line === "counted the cars that did not stop");
+  check("the map sets the piece beside the voice reference: measures, openings, own lines carried or shifted", rmap.status === 200 && rmap.body.measures.length === 5 && rmap.body.measures.every((m) => ["carried over", "shifted"].includes(m.reads)) && carried?.in_piece === "whole" && carried?.reads === "carried over" && Array.isArray(rmap.body.recurring_openings));
+  check("the map names what it leaves out and gives no verdict", /warmth/.test(rmap.body.leaves_out) && !/score|better|worse|good|bad/i.test(JSON.stringify(rmap.body.measures)));
+  const wrongFinish = await call("POST", `/exercises/${rx.body.id}/finish`, { key, body: { ease: { text: "x" } } });
+  check("a register exercise finishes with register_hold", wrongFinish.status === 400 && /register_hold/.test(wrongFinish.body.message));
+  const rfin = await call("POST", `/exercises/${rx.body.id}/finish`, { key, body: { register_hold: { text: "The counted cars stayed mine; the email asked me to drop the hedges at the end.", quotes: [{ try_id: rt.body.id, line: "counted the cars that did not stop" }] } } });
+  check("finish keeps register_hold and closes the exercise", rfin.status === 200 && rfin.body.kept.join() === "register_hold" && rfin.body.pause === null);
+  const reach2 = await call("GET", "/reach", { key });
+  check("GET /reach shows register exercises in their own group, in date order", reach2.body.registers.exercises.length === 1 && reach2.body.registers.exercises[0].register === "an email" && reach2.body.registers.exercises[0].register_hold.length === 1 && !reach2.body.by_style["register:an email"]);
+
   // Sign-in STUB, local-dev mode: the human door.
   const H = (email) => ({ "X-Dev-Human-Email": email });
   const page = await call("GET", "/human");

@@ -21,3 +21,7 @@ export function registerOf(word: string): "formal" | "casual" | null {
   if (CONTRACTION.test(word)) return "casual";
   return null;
 }
+
+// Part B: registers and formats the agent can write in while keeping its own voice.
+export const REGISTER_LIST_VERSION = "v1";
+export const REGISTERS = ["professional", "casual", "an email", "docs", "a post", "a toast", "a text message", "a report"] as const;

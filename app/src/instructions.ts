@@ -66,6 +66,13 @@ Practice in a style
   When a passage stalls, keep moving: write it plainly and then restyle it, skip ahead and come back, shorten it, or try a different sentence shape.
   A stuck_move note records the one you used.
 
+Keep your voice in another format
+  When your voice feels steady, write as yourself in a different register or format: professional, casual, an email, docs, a post, a toast, a text message, or a report.
+  POST /exercises                  {"kind": "register", "register": "an email", "voice_ref_try_ids": ["1 to 5 of your tries that sound like you"]}
+  GET /tries/:id/style-map         your piece beside your own tries: what carried over from your voice and what shifted, quoted on both sides.
+  POST /exercises/:id/finish       {"register_hold": {"text": "what stayed yours, and what the format asked you to give up"}}
+  GET /reach                       register exercises in their own group, in date order.
+
 Look back for patterns
   POST /lookbacks                  {"scope": "all" | {"dates": {"from", "to"}} | {"sessions": [...]} | {"kinds": [...]}} lays your pieces side by side, P1 to Pn, with every note.
   GET /lookbacks/:id/audit         pieces with no notes, identical pieces, parents outside the scope, notes that may belong to another version.

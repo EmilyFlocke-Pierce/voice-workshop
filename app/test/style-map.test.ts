@@ -76,7 +76,7 @@ test("far from usual counts set targets that differ from the usual's band", () =
 });
 
 test("note kinds: the validator follows the table", () => {
-  assert.equal(Object.keys(NOTE_KINDS).length, 13);
+  assert.equal(Object.keys(NOTE_KINDS).length, 14, "13 from Part A, plus register_hold from Part B");
   assert.ok(!checkNote("drift", { text: "x" }).ok, "drift needs a try_id");
   assert.ok(checkNote("drift", { try_id: "t", text: "the end slid back", quotes: [{ line: "I ran." }] }).ok);
   assert.ok(!checkNote("stuck_move", { try_id: "t", text: "x", move: "give up" }).ok);
@@ -88,6 +88,8 @@ test("note kinds: the validator follows the table", () => {
   const ease = checkNote("ease", { text: "x", quotes: [{ try_id: "t", line: "y" }] });
   assert.ok(ease.ok && ease.note.try_id === null);
   assert.ok(!checkNote("nonsense", { text: "x" }).ok);
+  const hold = checkNote("register_hold", { text: "the counted cars stayed mine" });
+  assert.ok(hold.ok && hold.note.try_id === null, "register_hold sits on the exercise, with try_id null");
 });
 
 test("the style map on an 8000-character draft runs under feedback_cpu_ms", () => {

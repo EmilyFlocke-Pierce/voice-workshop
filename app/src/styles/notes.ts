@@ -24,9 +24,11 @@ export const NOTE_KINDS: Record<string, KindRule> = {
   // Sent at finish, about the whole exercise.
   ease: { try: "none", quotes: "optional", serves: "III.A.2" },
   pull: { try: "none", quotes: "optional", extra: "effects", serves: "III.C.2" },
+  // Part B, at the finish of a register exercise.
+  register_hold: { try: "none", quotes: "optional", serves: "III.A.2, III.B.2" },
 };
 
-export const FINISH_KINDS = new Set(["ease", "pull"]);
+export const FINISH_KINDS = new Set(["ease", "pull", "register_hold"]);
 
 export interface Quote {
   try_id: string;
