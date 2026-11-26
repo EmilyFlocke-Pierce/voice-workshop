@@ -4,6 +4,8 @@ Matrix: Quilt run v1 8e67b8cb. L3 is the target. Updated Nov 22, 2026, after loc
 
 **Locate status:** all 16 at 3 after run 6. III.A.1 moved to 3 on the stitch lift (db46df2). The eight agent-side rows rest on stand-in tries by Emily's ruling (three cold try-outs, `locate/tryout-cold.md`, `tryout-cold-2.md`, and `tryout-cold-3.md`) and carry a recheck note for when real outside agents use the workshop. L4 candidates named by TAFFY: I.C.1 and III.B.2.
 
+**Build-all pass, Nov 25:** the sign-in STUB (2c3afd5) changed the arrival text's "Get a key" lines. The six rows I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, and III.B.2 held in a builder stand-in try-out (`tryouts/tryout-01-standin.out`, SESSION). CANDY relocates them with a cold agent. Walkthrough now 118 of 118 with 02 and 04.
+
 **Open quirks and ideas:** `QUIRKS.md`, each with a next move.
 
 Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`, "Feedback check" a test in `npm run test:feedback`, and "Split check" a test in `npm run test:split`.

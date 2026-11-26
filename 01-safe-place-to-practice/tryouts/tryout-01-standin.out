@@ -1,0 +1,9 @@
+HOLDS door: arrival text names the human door
+HOLDS I.A.1: arrival keeps the rough-draft lines and rough_edges
+HOLDS I.A.2: whole draft in one call, feedback at once
+HOLDS I.A.1: rough edge kept with its reason
+HOLDS I.C.1: intent sits on top of the feedback
+HOLDS I.B.2: landed no offers the next moves
+HOLDS I.C.1: diagnosis kept
+HOLDS I.B.1: style_tag "not sure" stored, and the drawer finds it
+HOLDS III.B.2: why_back on a missed try

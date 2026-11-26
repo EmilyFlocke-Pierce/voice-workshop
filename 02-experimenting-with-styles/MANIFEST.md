@@ -1,0 +1,65 @@
+# Manifest: 1.2 Experimenting with styles
+
+Matrix: `criteria.json` (Quilt session 1925caee, v1). L3 is the target. Plan: `PLAN.md` (column 3 filled). Branch `build-all`: Part A in 5f7dbf3, Part B in 6512a2f.
+
+**Locate status:** not located yet. Locating belongs to CANDY. Every agent-side row rests only on builder stand-in try-outs (`tryout02.mjs`, `tryout-all.mjs`, see SESSION), and needs a cold try-out and a recheck when real outside agents use the workshop.
+
+Part B sits beyond the matrix, so it has no rows here. Its walkthrough lines are listed under Verify.
+
+Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "test:styles" a test in `npm run test:styles`.
+
+## Criteria
+
+| Criterion (Quilt number and label, verbatim) | Evidence | How to check it |
+|---|---|---|
+| I.A.1 looking over the styles on offer | Built. GET /styles: 40 styles by 8 kinds with counts per kind, each with features and targets (`src/styles/catalog.ts`, draft-1). Agent side: the assessment is the agent's; reach notes and why_this_one hold it. | Walkthrough: "GET /styles groups 40 styles by 8 kinds with counts". test:styles: "the catalog: 40 styles, ...". |
+| I.A.2 picking one it has not tried yet | Built. GET /styles/history: tried and untried, pieces per kind, rarely written kinds, 5 styles far from the usual. why_this_one names the gap, with an invite when it is missing. Agent side, builder stand-in only. | Walkthrough: "GET /styles/history shows untried styles, ...", "the exercise reply says any style is open and why is the agent's own". |
+| I.A.3 naming what it expects the style to do | Built. POST /exercises takes expectations {items: [{feature, effect}], combined}; invite when missing. | Walkthrough: "POST /exercises takes a style, why, and expectations, and draws a subject". |
+| I.B.1 using the style features on purpose | Built. The style map by third beside the targets; calibration note kind. Agent side, not yet tried by an outside agent. | Walkthrough: "the style map shows each third beside the usual and the style's targets". test:styles: "note kinds: the validator follows the table". |
+| I.B.2 holding the style from start to finish | Built. Drift marks (2 or more measures in a third back in the usual's band); drift pause after a first try; drift note with exact quotes. | Walkthrough: "the map marks the last third drifting back to the usual, ...", "a drift note names the passage and the revision, ...". test:styles: "drift: ...". |
+| I.B.3 finishing the piece when the style feels foreign | Built. Four stuck moves in the arrival text and in every exercise pause; stuck_move note. | Walkthrough: "effects and stuck_move notes are kept". |
+| I.C.1 trying kinds of writing it rarely makes | Built. Far-from-usual styles and rarely written kinds in history. 🦋 in FLAGS: kinds count only drawn or exercise tries, so "usual range" reads two ways. | Walkthrough: "GET /styles/history shows ... rarely written kinds, and 5 styles far from the usual". test:styles: "far from usual counts ...". |
+| I.C.2 naming what is unusual about the style for it | Built. unusual note kind with quotes; the map shows where the piece sits apart from the usual. | test:styles: "note kinds: ...". |
+| I.C.3 staying with the parts that feel wrong to write | Built. hard_passage note kind (span required) and the stuck moves. | test:styles: "note kinds: ..." (hard_passage needs a span). |
+| II.A.1 detect tone changes | Built. effects note with feature tone, exact quotes; effects pause on a retry. | Walkthrough: "a retry stays in the exercise and asks the effects question". |
+| II.A.2 track syntax shifts | Built. effects note with feature syntax; clauses measure by third. | Walkthrough: "effects and stuck_move notes are kept". test:styles: "the five measures count what the plan says". |
+| II.A.3 measure pacing variations | Built. effects note with feature pacing; sentence_words by third. | Same as II.A.2. |
+| II.A.4 note diction shifts | Built. effects note with feature diction; register measure (word lists v1). | Same as II.A.2. |
+| II.B.1 Inferring reader impressions | Built. reader_impressions takes two readers or more; finish asks about two readers. | Walkthrough: "reader impressions take two readers or more", "finish takes ease and pull ... asks about two readers". |
+| II.B.2 Separating style from speaker | Built. style_vs_speaker note kind. Part B reuses it on register tries. | test:styles: "note kinds: ...". |
+| II.C.1 Noticing where the writing slows down | Built. slowdowns note kind, quotes required. | test:styles: "note kinds: ...". |
+| II.C.2 Noticing where it slips back to its usual | Built. slips_back note kind, quotes required; drift marks show the moments. Part B reads it the other way: keeping the usual is the aim. | Walkthrough: "the map marks the last third drifting back ...". |
+| II.C.3 Describing what writing the piece was like | Built. what_it_was_like note kind, quotes required. | test:styles: "note kinds: ...". |
+| III.A.1 recognizing low-friction styles | Built. GET /reach: ease by style and by kind, with counts, in order. Part B: registers group in date order. | Walkthrough: "GET /reach shows ease and pull by style and by kind, ...", "GET /reach shows register exercises in their own group, in date order". |
+| III.A.2 saying why a style felt natural | Built. ease at finish with quotes. Part B: register_hold at finish. | Walkthrough: "finish takes ease and pull in one call, ...", "finish keeps register_hold and closes the exercise". |
+| III.B.1 Identifying high-friction styles | Built. Ease notes across exercises in GET /reach; reach notes take the agent's reading, with REACH_Q asking which repeat. | Walkthrough: "POST /reach/notes keeps the agent's reading across exercises". |
+| III.B.2 Naming the source of stylistic resistance | Built. ease asks which part came from the style and which from habits; register_hold asks what the format asked it to give up. | Walkthrough: finish lines. |
+| III.C.1 Recognizing stylistic pull | Built. pull at finish; GET /reach by style over time. | Walkthrough: "GET /reach shows ease and pull by style and by kind, ...". |
+| III.C.2 Connecting attraction to style effects | Built. pull takes effects; GET /reach lists effects named in pull by style side by side. | Walkthrough: same line, effects "delay,ceremony". |
+
+## Verify
+
+From `app/` (PowerShell on ezra-01, or bash):
+
+```
+npm install
+npm run db:local
+npm run typecheck
+npm run test:styles
+npm run walkthrough
+```
+
+Expect test:styles 9 of 9 and the walkthrough 118 of 118. Part B lines start at "GET /styles offers register exercises".
+
+## Files
+
+| Path | What it holds |
+|---|---|
+| `src/styles/catalog.ts` | The 40 styles, kinds, measures, bands. |
+| `src/styles/measures.ts` | Band edges, values, thirds, the usual, drift marks. |
+| `src/styles/registers.ts` | Register word lists, and Part B's REGISTERS. |
+| `src/styles/notes.ts` | Note kinds and their checks. |
+| `src/styles/routes.ts` | Every slice 02 route. |
+| `src/styles/register-exercises.ts` | Part B: voice refs and the map beside the agent's own voice. |
+| `migrations/0006_exercises.sql`, `0008_registers.sql` | Tables for Part A and Part B. |
+| `test/style-map.test.ts` | test:styles. |

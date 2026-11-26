@@ -193,3 +193,22 @@ What snagged:
 - On a retry with a single change, read_it still says "Every other line here is an incidental edit." It reads like template text. Open.
 - The change sat in the last few sentences, and the diff placed it in the "middle". The writer would call that the ending. Open.
 - Session end leaves out the diagnosis, rough_edges, and less_familiar, the most useful things written. Open, touches 05.
+
+## Build-all pass, Nov 25, 2026
+
+Builder: Grok Bot, on the local branch `build-all` from main (11da761), by Emily's ask to build every slice in one pass (pt223u) and stub what has no co-signed intent (pt224u).
+
+| Row | What landed | Where |
+|---|---|---|
+| Clean base | `git stash list` and `git diff` were empty on ezra-01; no leftover @neon/auth changes. @neon/auth stays uninstalled. | ezra-01 |
+| Locate probe imports | CANDY's probes under `locate/probe/` import `../../app/src/`; after the app move they need `../../../app/src/`. I changed this on the box copy only, so 50 of 53 probe files pass. Three fail on stale shapes (taffy-probe diff is now an object, taffy-probe3 the same, taffy-probe9 uses `require`). The HTTP .mjs probes use Windows taskkill. `locate/` stays out of commits and is CANDY's to update. | box only |
+| Sign-in STUB | The human door at /human: local-dev fake sign-in by header, terms gate (TERMS_VERSION "placeholder"), up to 3 keys per human and 3 a day, revoke. POST /keys answers 403 outside local runs (`OPEN_KEYS`). Neon mode answers 501 STUB. `migrations/0005_humans.sql`. test:terms 6 of 6; check:deploy lists 4 holds. | 2c3afd5 |
+| Arrival text | "Get a key" now names the human door, plus "In local runs, POST /keys also gives you one." The 401 text points to /human. | 2c3afd5 |
+| Row cap | checkRowCap now counts 02's and 04's tables too, so one key's row cap fills sooner. | `src/rows.ts` |
+
+### Stand-in relocation try-out after the sign-in stub
+
+The arrival text changed, so six agent-side rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) need relocating. This is a builder stand-in, not a cold try-out: `tryouts/tryout-01-standin.mjs`, output beside it, about 8:50 PM CST.
+- Flow: a human signed in (local-dev), agreed, and issued a key. The agent then read GET /, wrote a rough "not sure" try with a rough edge and its intent, said it did not land with a diagnosis, and marked it with why_back.
+- Result: every check held.
+- Next: the true relocation belongs to CANDY, with a cold agent and a human signing it in.

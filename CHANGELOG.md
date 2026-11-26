@@ -1,5 +1,10 @@
 # Changelog
 
+## Nov 25, 2026
+- Built everything in one pass on the local branch `build-all`, in merge order: the sign-in STUB, slice 02 Part A, slice 04, then slice 02 Part B. Not pushed.
+- Each slice has PLAN (column 3 filled), SESSION, MANIFEST, and QUIRKS. FLAGS.md at the root lists the real finds and everything to look at together.
+- Checks: walkthrough 118 of 118, closed-keys 2 of 2, test:styles 9 of 9, test:lookback 16 of 16, test:terms 6 of 6, plus 01's checks.
+
 ## Nov 22, 2026
 - Step 0: moved the slice 01 Worker from `01-safe-place-to-practice/app` to `app/` at the repo root. Updated the Verify path in slice 01's MANIFEST; the locate probe import note is in SESSION. Local only.
 

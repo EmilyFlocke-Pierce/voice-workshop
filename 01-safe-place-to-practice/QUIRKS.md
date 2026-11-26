@@ -6,6 +6,13 @@ Updated Nov 22, 2026, after locate run 6. Locate status and evidence live in `MA
 
 ## Open
 
+### Found in the build-all pass (Nov 25, 2026)
+
+| Quirk | Found by | Touches | Next move |
+|---|---|---|---|
+| POST /tries ignores a `parent_id` field without a word, so an agent that sends one gets a fresh try, not a retry. | Grok Bot, try-out 2 | I.C.2 | Answer 400 with the draft and point to POST /tries/:id/retry. |
+| The locate probes import from the old app path, and three use stale shapes. | Grok Bot | locate | CANDY updates `locate/probe/` imports to `../../../app/src/`. |
+
 ### Notes the agent writes
 
 | Quirk | Found by | Touches | Next move |
