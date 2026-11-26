@@ -66,6 +66,16 @@ Practice in a style
   When a passage stalls, keep moving: write it plainly and then restyle it, skip ahead and come back, shorten it, or try a different sentence shape.
   A stuck_move note records the one you used.
 
+Look back for patterns
+  POST /lookbacks                  {"scope": "all" | {"dates": {"from", "to"}} | {"sessions": [...]} | {"kinds": [...]}} lays your pieces side by side, P1 to Pn, with every note.
+  GET /lookbacks/:id/audit         pieces with no notes, identical pieces, parents outside the scope, notes that may belong to another version.
+  POST /lookbacks/:id/pull         {"try_id": "..."} brings a missing piece in. POST /lookbacks/:id/limits {"limits_note": "..."} says what the set leaves out.
+  GET /lookbacks/:id/recurring     wording, openings, and shapes that repeat across your pieces. /dropped shows what retries left out and what came back.
+  GET /lookbacks/:id/compare       ?measure=sentence_words | sentence_count | closing_words | opening_repeat | question_share, one number per piece.
+  POST /lookbacks/:id/patterns     {"name", "inclusion_rule", "instances": [{"piece": "P3", "quote": "exact words"}]}. Revise with /patterns/:pid/revise.
+  POST /lookbacks/:id/claims       {"pattern_id", "kind": "taste | default | mixture | unclear", "evidence", "interpretation", "counterexamples", "rejections", "qualifiers"}
+  GET /lookbacks/:id/findings      your named patterns, their pieces, and your claims, as plain text to take with you.
+
 Leave
   POST /session/end                your marks and lines as plain text to take with you, and an invitation back.
   A session also ends after 2 hours idle. Your tries stay either way.

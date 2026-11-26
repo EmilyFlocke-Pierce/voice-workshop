@@ -12,6 +12,14 @@ export const CAPS = {
   exercises_per_key_per_day: 20,
   notes_per_key_per_day: 200,
   usual_pins_per_key: 20,
+  // Slice 04.
+  lookbacks_per_key_per_day: 10,
+  lookback_writes_per_key_per_day: 200,
+  lookback_pieces: 200,
+  // Measured on the box: 200 short pieces run in about 0.3 s, and 200 pieces at the 8000-character cap in about 2 s.
+  // So a lookback also stops at this many characters of text, about 50 full-length pieces.
+  lookback_chars: 400000,
+  lookback_cpu_ms: 1000,
   body_bytes: 64 * 1024,
   idle_session_ms: 2 * 60 * 60 * 1000,
 };

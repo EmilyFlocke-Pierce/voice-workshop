@@ -1,0 +1,383 @@
+{
+ "rows": {
+  "tries": [
+   {
+    "id": "t3",
+    "parent_id": null,
+    "session_id": "s1",
+    "text": "The tide went out early. Nobody noticed the boats.",
+    "intent": "a quiet harbor",
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-21T10:00:00.000Z"
+   },
+   {
+    "id": "t4",
+    "parent_id": "t3",
+    "session_id": "s2",
+    "text": "The tide went out early. Nobody noticed the boats lean.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": "the boats lean",
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:01:00.000Z"
+   },
+   {
+    "id": "t6",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "A door. A hall. A light under the door.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:02:00.000Z"
+   },
+   {
+    "id": "t7",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "The kettle sang and nobody came.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": "no",
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:03:00.000Z"
+   },
+   {
+    "id": "t8",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "The old dog barked at the gate. The night was cold.",
+    "intent": "next time try \"the lantern swung twice slowly\" in the middle",
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:04:00.000Z"
+   },
+   {
+    "id": "t9",
+    "parent_id": "t8",
+    "session_id": "s2",
+    "text": "The night was cold, and the lantern swung twice slowly over the gate.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": "cut \"the old dog barked\" and moved the lantern in",
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:05:00.000Z"
+   },
+   {
+    "id": "t10",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "Same words, twice over.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:06:00.000Z"
+   },
+   {
+    "id": "t11",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "Same words, twice over.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:07:00.000Z"
+   },
+   {
+    "id": "t12",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "Past the mill there was a small bright window. I walked toward it.",
+    "intent": "a walk at dusk",
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:08:00.000Z"
+   },
+   {
+    "id": "t13",
+    "parent_id": "t12",
+    "session_id": "s2",
+    "text": "Past the mill the road bent. I walked toward it.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": "dropped \"a small bright window\" to see what the walk does without it",
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:09:00.000Z"
+   },
+   {
+    "id": "t14",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "The bakery was closed. I bought nothing.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:10:00.000Z"
+   },
+   {
+    "id": "t15",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "At the end of the lane, a small bright window waited.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": "dusk",
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:11:00.000Z"
+   },
+   {
+    "id": "t16",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "We packed bread, cheese, and apples. The car was cold.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:12:00.000Z"
+   },
+   {
+    "id": "t17",
+    "parent_id": "t16",
+    "session_id": "s2",
+    "text": "We packed bread. The car was cold.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": "shorter packing line",
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:13:00.000Z"
+   },
+   {
+    "id": "t18",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "After the storm the light came back slowly.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:14:00.000Z"
+   },
+   {
+    "id": "t19",
+    "parent_id": null,
+    "session_id": "s2",
+    "text": "Every morning the lights come back to the square.",
+    "intent": null,
+    "scope_note": null,
+    "change_note": null,
+    "diagnosis": null,
+    "rough_edges": null,
+    "landed": null,
+    "style_tag": null,
+    "prompt_form": null,
+    "prompt_style": null,
+    "prompt_author": null,
+    "exercise_id": null,
+    "created_at": "2026-11-22T10:15:00.000Z"
+   }
+  ],
+  "marks": [
+   {
+    "id": "m1",
+    "try_id": "t12",
+    "what_tried": "a window as an anchor",
+    "why_back": "the walk needs a goal",
+    "own_lines": "[]",
+    "less_familiar": null
+   }
+  ],
+  "stitches": [
+   {
+    "id": "st1",
+    "try_id": "t9",
+    "thread": "both open on \"The old dog barked at the gate\"",
+    "deltas": "\"The night was cold\" moved",
+    "quotes": "[{\"try_id\": \"t8\", \"line\": \"The old dog barked at the gate.\"}]"
+   }
+  ],
+  "xnotes": [],
+  "exercises": [],
+  "placements": []
+ },
+ "expect": [
+  {
+   "type": "parent_outside",
+   "scope": {
+    "sessions": [
+     "s2"
+    ]
+   },
+   "try": "t4"
+  },
+  {
+   "type": "pull_next_label",
+   "scope": {
+    "sessions": [
+     "s2"
+    ]
+   },
+   "pull": "t3"
+  },
+  {
+   "type": "no_notes",
+   "try": "t6"
+  },
+  {
+   "type": "no_notes",
+   "try": "t7"
+  },
+  {
+   "type": "misplaced",
+   "note_id": "try:t8:intent",
+   "span": "the lantern swung twice slowly"
+  },
+  {
+   "type": "not_listed",
+   "note_id": "try:t9:change_note"
+  },
+  {
+   "type": "not_listed",
+   "note_id": "stitch:st1"
+  },
+  {
+   "type": "identical",
+   "tries": [
+    "t10",
+    "t11"
+   ]
+  },
+  {
+   "type": "dropped_wording",
+   "retry": "t13",
+   "words": "a small bright window",
+   "evidence": "explicit",
+   "returns_in": "t15"
+  },
+  {
+   "type": "removed_move",
+   "retry": "t17",
+   "move": "list_of_three"
+  },
+  {
+   "type": "near",
+   "words": [
+    "the light came back",
+    "the lights come back"
+   ]
+  }
+ ]
+}

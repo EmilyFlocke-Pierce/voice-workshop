@@ -10,6 +10,7 @@ import { outsideObservations } from "./outside.ts";
 import { json, now, readBody, str } from "./http.ts";
 import { checkRowCap } from "./rows.ts";
 import { currentSession, openSession } from "./sessions.ts";
+import { lookbackNudge, lookbackRoutes } from "./lookback/routes.ts";
 import { exercisePause, exerciseForTry, styleRoutes } from "./styles/routes.ts";
 import { humanRoutes } from "./human/routes.ts";
 import { ARRIVAL, NEXT_AFTER_MISS, INVITE_BACK } from "./instructions.ts";
@@ -259,6 +260,8 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
   const path = url.pathname;
   const styled = await styleRoutes(req, env, url, agentId);
   if (styled) return styled;
+  const lookedBack = await lookbackRoutes(req, env, url, agentId);
+  if (lookedBack) return lookedBack;
   const m = path.match(/^\/tries\/([^/]+)(?:\/(feedback|retry|mark|landed|notes|stitch))?$/);
 
   if (req.method === "POST" && path === "/tries") {
@@ -410,7 +413,8 @@ async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): P
       const own = JSON.parse(r.own_lines) as string[];
       return `- ${r.what_tried}${r.why_back ? `\n  why come back: ${r.why_back}` : ""}${own.map((l) => `\n  reads as mine: "${l}"`).join("")}`;
     });
-    const text = `Your marks from Voice Workshop\n\n${lines.join("\n") || "(no marks yet)"}\n\n${INVITE_BACK}\n`;
+    const nudge = await lookbackNudge(env, agentId, sessionId);
+    const text = `Your marks from Voice Workshop\n\n${lines.join("\n") || "(no marks yet)"}\n\n${INVITE_BACK}\n${nudge ? `\n${nudge}\n` : ""}`;
     return new Response(text, { headers: { "content-type": "text/plain; charset=utf-8" } });
   }
 

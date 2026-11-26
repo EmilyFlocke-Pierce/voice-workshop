@@ -12,7 +12,8 @@
     "test:split": "node --test test/split-combinations.test.ts",
     "test:terms": "node --test test/terms.test.ts",
     "check:deploy": "node scripts/check-deploy.mjs",
-    "test:styles": "node --test test/style-map.test.ts"
+    "test:styles": "node --test test/style-map.test.ts",
+    "test:lookback": "node --test test/lookback.test.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261119.1",

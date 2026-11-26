@@ -301,6 +301,45 @@ try {
   const revokedUse = await call("GET", "/tries?landed=no", { key: hkeys[1].body.key });
   check("a revoked key reads nothing", revokedUse.status === 401);
 
+  // Slice 04: look back for patterns.
+  const lb = await call("POST", "/lookbacks", { key, body: { scope: "all" } });
+  check("POST /lookbacks lays the pieces side by side with labels, notes, and limits", lb.status === 201 && lb.body.pieces.length >= 3 && lb.body.pieces[0].label === "P1" && lb.body.pieces.every((p, i, a) => i === 0 || p.created_at >= a[i - 1].created_at) && typeof lb.body.limits.layered === "string");
+  check("a retry shows its parent's label and its chain", lb.body.pieces.some((p) => p.parent && p.parent.label && Array.isArray(p.chain)));
+  const audit = await call("GET", `/lookbacks/${lb.body.id}/audit`, { key });
+  check("the audit lists what it found and asks what the set leaves out", audit.status === 200 && Array.isArray(audit.body.items) && /POST \/lookbacks\/.+\/limits/.test(audit.body.pause.answer_with));
+  const lim = await call("POST", `/lookbacks/${lb.body.id}/limits`, { key, body: { limits_note: "Only one session of short pieces; no exercises from early on." } });
+  check("the agent's limits note is kept", lim.status === 200 || lim.status === 201);
+  const rec = await call("GET", `/lookbacks/${lb.body.id}/recurring`, { key });
+  const dr = await call("GET", `/lookbacks/${lb.body.id}/dropped`, { key });
+  check("recurring and dropped answer with candidates, not verdicts", rec.status === 200 && Array.isArray(rec.body.items) && dr.status === 200 && Array.isArray(dr.body.items));
+  const p1 = lb.body.pieces[0];
+  const q = p1.text.split(/\s+/).slice(0, 3).join(" ");
+  const badPat = await call("POST", `/lookbacks/${lb.body.id}/patterns`, { key, body: { name: "x", inclusion_rule: "x", instances: [{ piece: "P1", quote: "words that are not there" }] } });
+  check("a pattern quote that is not in the piece is refused, and nothing is stored", badPat.status === 400 && badPat.body.not_found.length === 1);
+  const pat = await call("POST", `/lookbacks/${lb.body.id}/patterns`, { key, body: { name: "how I open", inclusion_rule: "the first words of a piece", instances: [{ piece: "P1", quote: q }] } });
+  check("a named pattern counts against the latest version of each chain by default", pat.status === 201 && pat.body.rule_version === 1 && typeof pat.body.counts.reading === "string");
+  const rev = await call("POST", `/lookbacks/${lb.body.id}/patterns/${pat.body.id}/revise`, { key, body: { denominator: "every" } });
+  check("revising a pattern keeps the old rule as a version", rev.status === 200 && rev.body.rule_version === 2);
+  const cmp = await call("GET", `/lookbacks/${lb.body.id}/compare?measure=sentence_words`, { key });
+  check("compare shows one measure per piece", cmp.status === 200 && cmp.body.pieces.length === lb.body.pieces.length);
+  const cl = await call("POST", `/lookbacks/${lb.body.id}/claims`, { key, body: { pattern_id: pat.body.id, kind: "default", evidence: [{ piece: "P1", quote: q }], interpretation: "I start the same way each time." } });
+  check("a default claim with no notes weighed or counterexamples gets asked for them", cl.status === 201 && /counterexamples/.test(cl.body.asks));
+  const fnd = await call("GET", `/lookbacks/${lb.body.id}/findings`, { key });
+  check("findings come back as plain text with quotes and claims", typeof fnd.body === "string" && fnd.body.includes("how I open") && fnd.body.includes(`P1: "${q}"`) && /claim: default/.test(fnd.body));
+  const peekLb = await call("GET", `/lookbacks/${lb.body.id}`, { key: (await call("POST", "/keys")).body.key });
+  check("another key reads none of this lookback", peekLb.status === 404);
+  const nk = (await call("POST", "/keys")).body.key;
+  for (let i = 0; i < 5; i++) await call("POST", "/tries", { key: nk, body: { text: `Piece ${i} of the first sitting, short and plain.` } });
+  const end1 = await call("POST", "/session/end", { key: nk });
+  check("no look-back nudge before 6 tries across 2 sessions", typeof end1.body === "string" && !/POST \/lookbacks/.test(end1.body));
+  await call("POST", "/tries", { key: nk, body: { text: "A piece from the second sitting." } });
+  const end2 = await call("POST", "/session/end", { key: nk });
+  check("session end offers a lookback once there are 6 tries across 2 sessions", /POST \/lookbacks/.test(end2.body) && /6 pieces across 2 sessions/.test(end2.body));
+  await call("POST", "/tries", { key: nk, body: { text: "A third sitting." } });
+  await call("POST", "/lookbacks", { key: nk, body: {} });
+  const end3 = await call("POST", "/session/end", { key: nk });
+  check("after a lookback, the nudge waits", !/POST \/lookbacks/.test(end3.body));
+
   const flagsNo = await call("GET", "/admin/layout-flags");
   check("the admin page refuses a caller without Access", flagsNo.status === 403);
   const flags = await call("GET", "/admin/layout-flags", { headers: { "Cf-Access-Authenticated-User-Email": "emily@example.com" } });

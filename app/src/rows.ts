@@ -4,11 +4,11 @@ import type { Env } from "./types.ts";
 import { CAPS, capReply } from "./caps.ts";
 
 // Tables keyed by agent_id directly.
-export const AGENT_TABLES = ["tries", "marks", "stitches", "exercises", "exercise_notes", "usual_pins", "reach_notes"];
+export const AGENT_TABLES = ["tries", "marks", "stitches", "exercises", "exercise_notes", "usual_pins", "reach_notes", "lookbacks"];
 // Tables keyed through a lookback (counted by joining on lookbacks.agent_id).
-export const LOOKBACK_TABLES: string[] = [];
+export const LOOKBACK_TABLES = ["lookback_pieces", "lookback_placements", "lookback_results", "patterns"];
 // Tables keyed through a pattern.
-export const PATTERN_TABLES: string[] = [];
+export const PATTERN_TABLES = ["pattern_revisions", "claims"];
 
 export async function rowsOf(env: Env, agentId: string): Promise<number> {
   const parts = [
