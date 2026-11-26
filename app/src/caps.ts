@@ -8,6 +8,10 @@ export const CAPS = {
   // Sign-in STUB caps, from the proposal; Emily's numbers to confirm.
   keys_per_human: 3,
   keys_per_human_per_day: 3,
+  // Slice 02.
+  exercises_per_key_per_day: 20,
+  notes_per_key_per_day: 200,
+  usual_pins_per_key: 20,
   body_bytes: 64 * 1024,
   idle_session_ms: 2 * 60 * 60 * 1000,
 };

@@ -222,6 +222,58 @@ try {
   for (let i = 0; i < 61; i++) last = await call("POST", "/tries", { key: daily, body: { text: `Try number ${i}.` } });
   check("the 61st try in a day: the reply names the cap, the reset time, and returns the draft", last.status === 429 && last.body.cap === "tries_per_key_per_day" && last.body.draft === "Try number 60." && !!Date.parse(last.body.resets));
 
+  // Slice 02: one style exercise, end to end.
+  const shelf = await call("GET", "/styles", { key });
+  check("GET /styles groups 40 styles by 8 kinds with counts", shelf.status === 200 && shelf.body.by_kind.length === 8 && Object.values(shelf.body.counts_per_kind).reduce((a, b) => a + b, 0) === 40);
+  const hist = await call("GET", "/styles/history", { key });
+  check("GET /styles/history shows untried styles, pieces per kind, rarely written kinds, and 5 styles far from the usual", hist.status === 200 && hist.body.untried.length === 40 && Array.isArray(hist.body.rarely_written) && hist.body.far_from_your_usual.length === 5 && hist.body.your_usual.rests_on >= 3);
+  const styleId = "wedding-toast--baroque";
+  const ex = await call("POST", "/exercises", { key, body: { style_id: styleId, why_this_one: "I have written no speeches and nothing long", seed: "walk-ex", expectations: { items: [{ feature: "long sentences", effect: "the reader waits for the point" }, { feature: "formal words", effect: "distance" }], combined: "waiting plus distance makes it feel like a ceremony" } } });
+  check("POST /exercises takes a style, why, and expectations, and draws a subject", ex.status === 201 && ex.body.style.id === styleId && typeof ex.body.subject === "string" && /^Write a wedding toast, baroque, about /.test(ex.body.prompt) && ex.body.expectations.combined.startsWith("waiting"));
+  check("the exercise reply says any style is open and why is the agent's own", /Any style is open to you/.test(ex.body.open_choice) && ex.body.if_stuck.length === 4 && ex.body.ahead.questions.ease && ex.body.ahead.questions.pull);
+  const ex2 = await call("POST", "/exercises", { key, body: { style_id: "museum-placard--minimalist" } });
+  check("one exercise at a time: a second is refused and names the open one", ex2.status === 409 && ex2.body.open_exercise_id === ex.body.id);
+  const exP = await call("POST", "/tries", { key, body: { text: "x.", exercise_id: ex.body.id, prompt_id: pr.body.prompt_id } });
+  check("a try in an exercise refuses a prompt of its own", exP.status === 400 && exP.body.draft === "x.");
+  const TOAST = "Friends, gathered here beneath these lanterns, and kin, who have travelled from the hills and from the harbour, I rise to speak of two people whose patience, whose stubbornness, and whose laughter have carried them, through every season, to this table. Let the record show that they met in a queue, that the queue was long, and that neither of them, then or since, has once complained of it. Let it show, too, that he burned the first dinner, that she ate it, and that the smoke alarm, faithful as ever, sang the anthem of their courtship. I am done. Raise a glass. Drink.";
+  const et = await call("POST", "/tries", { key, body: { text: TOAST, exercise_id: ex.body.id, intent: "hold the long build to the end" } });
+  check("a try in an exercise stores the exercise and answers its style and subject", et.status === 201 && et.body.exercise_id === ex.body.id && et.body.prompt.form === "a wedding toast" && et.body.prompt.style === "baroque");
+  check("inside an exercise the reply asks one thing: the drift question, in place of the stitch", et.body.pause?.question === "Where does the map show you sliding back, and what will you change?" && !("stitch" in et.body));
+  const map = await call("GET", `/tries/${et.body.id}/style-map`, { key });
+  const endThird = map.body.by_third?.find((t) => t.third === "end");
+  check("the style map shows each third beside the usual and the style's targets", map.status === 200 && map.body.by_third.length === 3 && endThird.beside.sentence_words.style_target === "long" && endThird.beside.sentence_words.your_usual !== undefined);
+  check("the map marks the last third drifting back to the usual, with its first sentence", map.body.drift_marks.some((d) => d.third === "end" && d.measures.includes("sentence_words") && TOAST.includes(d.quote)));
+  const badNote = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "drift", try_id: et.body.id, text: "the end", quotes: [{ line: "words not in the toast" }] } });
+  check("a note quote that is not in the try is refused, and nothing is stored", badNote.status === 400 && badNote.body.not_found.length === 1);
+  const drift = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "drift", try_id: et.body.id, text: "The ending snapped back to my short sentences. I will let the last line build too.", quotes: [{ line: "I am done. Raise a glass. Drink." }] } });
+  check("a drift note names the passage and the revision, with an exact quote", drift.status === 201 && drift.body.kind === "drift");
+  const TOAST2 = TOAST.replace("I am done. Raise a glass. Drink.", "And so, before the candles gutter and the band, which has waited with the patience of saints, begins again, I ask you all to rise, and raise a glass, and drink to them.");
+  const er = await call("POST", `/tries/${et.body.id}/retry`, { key, body: { text: TOAST2, change_note: "the ending builds like the rest" } });
+  check("a retry stays in the exercise and asks the effects question", er.status === 201 && er.body.exercise_id === ex.body.id && er.body.pause?.question === "Which moment made the effect, and how? Quote it.");
+  const eff = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "effects", feature: "pacing", try_id: er.body.id, text: "The delay before 'drink' makes the room wait with me.", quotes: [{ line: "I ask you all to rise" }] } });
+  const stuck = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "stuck_move", try_id: et.body.id, move: "plain_then_restyle", text: "I wrote the ending plainly first" } });
+  check("effects and stuck_move notes are kept", eff.status === 201 && stuck.status === 201 && stuck.body.move === "plain_then_restyle");
+  const pin = await call("POST", "/usual", { key, body: { try_id: t1.body.id, pinned: true } });
+  const unpin = await call("POST", "/usual", { key, body: { try_id: t1.body.id, pinned: false } });
+  check("POST /usual pins and unpins a try", pin.status === 200 && pin.body.pinned_tries.includes(t1.body.id) && unpin.body.pinned_tries.length === 0);
+  const exView = await call("GET", `/exercises/${ex.body.id}`, { key });
+  check("GET /exercises/:id has the tries, notes, and both finish questions ahead of time", exView.body.tries.length === 2 && exView.body.notes.length === 3 && /Quote the piece/.test(exView.body.ahead.questions.ease) && /surprised you/.test(exView.body.ahead.questions.pull));
+  const fin = await call("POST", `/exercises/${ex.body.id}/finish`, { key, body: { ease: { text: "Formal words came easy; the long build fought my habit of stopping short.", quotes: [{ try_id: er.body.id, line: "I ask you all to rise" }] }, pull: { text: "Yes. The delay surprised me.", effects: ["delay", "ceremony"] } } });
+  check("finish takes ease and pull in one call, closes the exercise, and asks about two readers", fin.status === 200 && fin.body.status === "finished" && fin.body.kept.join() === "ease,pull" && /two readers/.test(fin.body.pause.question));
+  const late = await call("POST", "/tries", { key, body: { text: "One more.", exercise_id: ex.body.id } });
+  const lateRetry = await call("POST", `/tries/${er.body.id}/retry`, { key, body: { text: "One more.", change_note: "x" } });
+  check("a try or a retry on a finished exercise is pointed to a new exercise", late.status === 400 && /new exercise/.test(late.body.message) && lateRetry.status === 400);
+  const readers = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "reader_impressions", try_id: er.body.id, readers: [{ reader: "the bride's grandmother", impression: "a proper toast" }, { reader: "a friend from work", impression: "a parody" }] } });
+  check("reader impressions take two readers or more", readers.status === 201 && readers.body.readers.length === 2);
+  const reach = await call("GET", "/reach", { key });
+  check("GET /reach shows ease and pull by style and by kind, with pull's effects side by side", reach.status === 200 && reach.body.by_style[styleId].counts.ease_notes === 1 && reach.body.by_kind.speech.counts.exercises === 1 && reach.body.effects_named_in_pull_by_style[styleId].effects.join() === "delay,ceremony");
+  const rn = await call("POST", "/reach/notes", { key, body: { text: "One exercise so far; the delay is the effect I want to chase.", quotes: [{ try_id: er.body.id, line: "I ask you all to rise" }] } });
+  check("POST /reach/notes keeps the agent's reading across exercises", rn.status === 201);
+  const peekEx = await call("GET", `/exercises/${ex.body.id}`, { key: (await call("POST", "/keys")).body.key });
+  check("another key reads none of this exercise", peekEx.status === 404);
+  const hist2 = await call("GET", "/styles/history", { key });
+  check("after the exercise, history counts it as tried and as a speech", hist2.body.tried.some((t) => t.id === styleId) && hist2.body.pieces_per_kind.speech === 1);
+
   // Sign-in STUB, local-dev mode: the human door.
   const H = (email) => ({ "X-Dev-Human-Email": email });
   const page = await call("GET", "/human");

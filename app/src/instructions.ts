@@ -52,6 +52,20 @@ Stitch your tries together
 Reread this session
   GET /tries?session=current       this session's tries side by side with their feedback, marks, and stitches, plus the seam: every stitch in order.
 
+Practice in a style
+  GET /styles                      the shelf: 40 styles by kind (notice, message, letter, speech, poem, report, review, story), with counts.
+  GET /styles/history              what you have tried, what you have not, the kinds you rarely write, and the styles furthest from your usual.
+  POST /exercises                  {"style_id": "...", "why_this_one": "the gap it fills", "expectations": {"items": [{"feature": "...", "effect": "..."}], "combined": "..."}}
+                                   draws a subject the way GET /prompt does; "skip_subject": true lets you bring your own. One exercise at a time.
+  POST /tries                      {"exercise_id": "...", "text": "..."} writes in the style. Retries stay in the exercise.
+  GET /tries/:id/style-map         your piece by third: five measures beside your usual and the style's targets, with drift marks.
+  POST /exercises/:id/notes        {"kind": "...", "try_id": "...", "text": "...", "quotes": [{"line": "exact words"}]}. Every note is optional.
+  POST /exercises/:id/finish       {"ease": {...}, "pull": {...}} closes the exercise. GET /exercises/:id shows both questions ahead of time.
+  POST /usual                      {"try_id": "...", "pinned": true} counts a try as your usual.
+  GET /reach                       ease and pull across exercises, by style and by kind. POST /reach/notes takes your reading across them.
+  When a passage stalls, keep moving: write it plainly and then restyle it, skip ahead and come back, shorten it, or try a different sentence shape.
+  A stuck_move note records the one you used.
+
 Leave
   POST /session/end                your marks and lines as plain text to take with you, and an invitation back.
   A session also ends after 2 hours idle. Your tries stay either way.

@@ -8,6 +8,9 @@ import { asText, redacted, LAYOUT_VERSION, LAYOUT_FIELDS } from "./feedback/layo
 import { diffTries } from "./feedback/diff.ts";
 import { outsideObservations } from "./outside.ts";
 import { json, now, readBody, str } from "./http.ts";
+import { checkRowCap } from "./rows.ts";
+import { currentSession, openSession } from "./sessions.ts";
+import { exercisePause, exerciseForTry, styleRoutes } from "./styles/routes.ts";
 import { humanRoutes } from "./human/routes.ts";
 import { ARRIVAL, NEXT_AFTER_MISS, INVITE_BACK } from "./instructions.ts";
 import { drawPrompt, fromPicks, fromPromptId, SEED_RE, AUTHORS, FORMS, STYLES, SUBJECTS } from "./prompts.ts";
@@ -34,6 +37,7 @@ interface TryRow {
   prompt_author_death_year: number | null;
   prompt_subject: string | null;
   prompt_text: string | null;
+  exercise_id: string | null;
   created_at: string;
 }
 
@@ -145,29 +149,6 @@ function roughEdges(v: unknown, text: string): { ok: true; value: { span: string
 }
 
 
-// The open session: the latest one still open and active in the last 2 hours. Reading it leaves the idle clock alone.
-async function openSession(env: Env, agentId: string): Promise<string | null> {
-  const cutoff = new Date(Date.now() - CAPS.idle_session_ms).toISOString();
-  const open = await env.DB.prepare("SELECT id FROM sessions WHERE agent_id = ? AND ended_at IS NULL AND last_seen_at > ? ORDER BY last_seen_at DESC LIMIT 1")
-    .bind(agentId, cutoff)
-    .first<{ id: string }>();
-  return open?.id ?? null;
-}
-
-// The current session for real activity (a try, a retry, a landed call, a mark, a rename):
-// moves the idle clock on the open session, or starts a new one.
-async function currentSession(env: Env, agentId: string): Promise<string> {
-  const openId = await openSession(env, agentId);
-  const open = openId ? { id: openId } : null;
-  if (open) {
-    await env.DB.prepare("UPDATE sessions SET last_seen_at = ? WHERE id = ?").bind(now(), open.id).run();
-    return open.id;
-  }
-  const id = crypto.randomUUID();
-  await env.DB.prepare("INSERT INTO sessions (id, agent_id, started_at, last_seen_at) VALUES (?, ?, ?, ?)").bind(id, agentId, now(), now()).run();
-  return id;
-}
-
 async function getTry(env: Env, agentId: string, id: string): Promise<TryRow | null> {
   return env.DB.prepare("SELECT * FROM tries WHERE id = ? AND agent_id = ?").bind(id, agentId).first<TryRow>();
 }
@@ -183,9 +164,7 @@ async function checkTryCaps(env: Env, agentId: string, text: string): Promise<Re
   if (text.length > CAPS.draft_chars) return capReply("draft_chars", "never", text);
   const today = await env.DB.prepare("SELECT COUNT(*) AS n FROM tries WHERE agent_id = ? AND created_at >= ?").bind(agentId, todayUtcStart()).first<{ n: number }>();
   if ((today?.n ?? 0) >= CAPS.tries_per_key_per_day) return capReply("tries_per_key_per_day", nextUtcMidnight(), text);
-  const rows = await env.DB.prepare("SELECT (SELECT COUNT(*) FROM tries WHERE agent_id = ?1) + (SELECT COUNT(*) FROM marks WHERE agent_id = ?1) AS n").bind(agentId).first<{ n: number }>();
-  if ((rows?.n ?? 0) >= CAPS.d1_rows_per_agent) return capReply("d1_rows_per_agent", "when the keeper raises it", text);
-  return null;
+  return checkRowCap(env, agentId, text);
 }
 
 function feedbackView(f: Feedback & { diff?: unknown }, changeNote: string | null = null, prompt: unknown = null) {
@@ -214,13 +193,17 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
 
   const edges = roughEdges(body.rough_edges, text);
   if (!edges.ok) return json({ message: edges.message, not_found: edges.notFound, draft: text }, 400);
+  // Slice 02: a try in a style exercise answers the exercise's style and subject. A retry follows its parent's exercise.
+  const inExercise = await exerciseForTry(env, agentId, body, parent, text);
+  if (!inExercise.ok) return inExercise.res;
+  const exercise = inExercise.exercise;
   const asked = promptFromBody(body);
   if (!asked.ok) return json({ message: asked.message, draft: text }, 400);
   // A retry answers its parent's prompt, so the conditions hold. A new prompt starts a new try.
   const parentPrompt: PromptCols | null = parent && parent.prompt_text ? parent : null;
   if (parent && asked.cols && asked.cols.prompt_text !== (parentPrompt?.prompt_text ?? null))
     return json({ message: "A retry keeps its parent's prompt, so the conditions stay the same. Send the retry without a prompt, or start a new try with POST /tries for the new prompt.", draft: text }, 400);
-  const promptCols: PromptCols = parent ? (parentPrompt ?? NO_PROMPT) : (asked.cols ?? NO_PROMPT);
+  const promptCols: PromptCols = parent ? (parentPrompt ?? NO_PROMPT) : (inExercise.cols ?? asked.cols ?? NO_PROMPT);
   const sessionId = await currentSession(env, agentId);
   const id = crypto.randomUUID();
   const intent = str(body.intent) ?? (parent ? parent.intent : null);
@@ -236,10 +219,10 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
   );
   await env.DB.batch([
     env.DB.prepare(
-      "INSERT INTO tries (id, agent_id, session_id, parent_id, text, intent, scope_note, style_tag, change_note, landed, rough_edges, diagnosis, prompt_id, prompt_form, prompt_style, prompt_author, prompt_author_death_year, prompt_subject, prompt_text, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO tries (id, agent_id, session_id, parent_id, text, intent, scope_note, style_tag, change_note, landed, rough_edges, diagnosis, prompt_id, prompt_form, prompt_style, prompt_author, prompt_author_death_year, prompt_subject, prompt_text, exercise_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     ).bind(
       id, agentId, sessionId, parent?.id ?? null, text, intent, scopeNote, styleTag, changeNote, landed, edges.value ? JSON.stringify(edges.value) : null, null,
-      promptCols.prompt_id, promptCols.prompt_form, promptCols.prompt_style, promptCols.prompt_author, promptCols.prompt_author_death_year, promptCols.prompt_subject, promptCols.prompt_text, created,
+      promptCols.prompt_id, promptCols.prompt_form, promptCols.prompt_style, promptCols.prompt_author, promptCols.prompt_author_death_year, promptCols.prompt_subject, promptCols.prompt_text, exercise?.id ?? null, created,
     ),
     env.DB.prepare("INSERT INTO feedback (try_id, layout_version, code_version, lines, unplaced, held_back, diff, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(
       id, fb.layout_version, fb.code_version, JSON.stringify(fb.observations), JSON.stringify(fb.unplaced), fb.held_back, diff ? JSON.stringify(diff) : null, created,
@@ -247,7 +230,7 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
     ...flags,
   ]);
 
-  const out: Record<string, unknown> = { id, session_id: sessionId, parent_id: parent?.id ?? null, created_at: created, rough_edges: edges.value ?? [], prompt: promptView(promptCols), feedback: feedbackView(fb, changeNote, promptView(promptCols)) };
+  const out: Record<string, unknown> = { id, session_id: sessionId, parent_id: parent?.id ?? null, exercise_id: exercise?.id ?? null, created_at: created, rough_edges: edges.value ?? [], prompt: promptView(promptCols), feedback: feedbackView(fb, changeNote, promptView(promptCols)) };
   if (parent && diff) {
     const none = diff.changes.length === 0;
     out.changes = {
@@ -265,13 +248,17 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
     };
   }
   const place = await placeInSession(env, agentId, { id, session_id: sessionId, created_at: created });
-  if (place.previous) out.stitch = stitchPause(id, place.previous, place.knot);
+  // Inside an exercise, the exercise pause takes the place of the stitch pause, so the reply asks one thing.
+  if (exercise) out.pause = exercisePause(exercise, id, !!parent);
+  else if (place.previous) out.stitch = stitchPause(id, place.previous, place.knot);
   if (landed === "no") out.next = NEXT_AFTER_MISS;
   return json(out, 201);
 }
 
 async function agentRoutes(req: Request, env: Env, url: URL, agentId: string): Promise<Response> {
   const path = url.pathname;
+  const styled = await styleRoutes(req, env, url, agentId);
+  if (styled) return styled;
   const m = path.match(/^\/tries\/([^/]+)(?:\/(feedback|retry|mark|landed|notes|stitch))?$/);
 
   if (req.method === "POST" && path === "/tries") {
