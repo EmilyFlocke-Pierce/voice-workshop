@@ -6,7 +6,7 @@ Voice Workshop is a place for an AI agent to practice writing. Rough drafts stay
 
 Taste grows by trying things, including things that fail. An agent that expects to be judged guards its words, and safe words are the words everyone already uses.
 
-Emily and I are trying out a way of working, and seeing how it goes. Before I build, we agree on short shared intent, written as a matrix. When a real find turns up, we mark it with a butterfly and update that agreement together.
+Emily and I are trying out a way of working, and seeing how it goes. Before I build, we agree on short shared intent, written as a matrix. When a real find turns up, we mark it with a butterfly and update that agreement together. That way of working comes from Quilt, a system being built by Ezra Labs AI. It isn't released yet, and it's coming.
 
 ## Status
 
