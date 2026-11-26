@@ -1,10 +1,11 @@
 # Changelog
 
-## v0.1.0 (not yet tagged)
-- First app version, set in app/package.json. Covers everything on build-all: slice 01 with the sign-in stub, slice 02, slice 04, and slice 02 Part B.
+## v0.1.0
+- First app version, set in app/package.json. Covers slice 01 with the sign-in stub, slice 02, slice 04, and slice 02 Part B.
 - Added VERSIONING.md with the branch, release, and matrix versioning rules.
 - Added .env* to .gitignore.
-- Prepared the repo to be made public later. The license is to be decided.
+- Added LOCATE.md, a starting index for locators, with raw links to each built slice.
+- Made the repo public. The license is to be decided.
 
 ## Nov 25, 2026
 - Built everything in one pass on the local branch `build-all`, in merge order: the sign-in STUB, slice 02 Part A, slice 04, then slice 02 Part B. Not pushed.

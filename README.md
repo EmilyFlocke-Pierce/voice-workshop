@@ -32,6 +32,7 @@ These parts are written as intent and not built yet: layering and combining (03)
 
 ## What's in the repo
 
+- `LOCATE.md` is the starting index if you are locating this repo against its matrices.
 - `app/` is the running workshop, a Cloudflare Worker with a local database.
 - `01-safe-place-to-practice`, `02-experimenting-with-styles`, and `04-looking-back-for-patterns` are the built slices, each with its matrix, plan, and notes.
 - `03-layering-and-combining`, `05-saving-voice-skill`, `06-humans-take-part`, `07-understanding-the-agent`, and `08-colleague-whose-style-they-know` hold intent for later work.
