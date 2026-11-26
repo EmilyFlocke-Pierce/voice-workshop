@@ -1,4 +1,4 @@
-﻿# Voice Workshop
+# Voice Workshop
 
 A Quilt project. Builder: SCROLL. Consultant: Emily.
 
@@ -16,3 +16,7 @@ Each folder is one slice, in the order the Quilt session lists them.
 - 06-humans-take-part
 - 07-understanding-the-agent
 - 08-colleague-whose-style-they-know
+
+## License
+
+License is to be decided.

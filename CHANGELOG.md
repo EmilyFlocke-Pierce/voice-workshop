@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.0 (not yet tagged)
+- First app version, set in app/package.json. Covers everything on build-all: slice 01 with the sign-in stub, slice 02, slice 04, and slice 02 Part B.
+- Added VERSIONING.md with the branch, release, and matrix versioning rules.
+- Added .env* to .gitignore.
+- Prepared the repo to be made public later. The license is to be decided.
+
 ## Nov 25, 2026
 - Built everything in one pass on the local branch `build-all`, in merge order: the sign-in STUB, slice 02 Part A, slice 04, then slice 02 Part B. Not pushed.
 - Each slice has PLAN (column 3 filled), SESSION, MANIFEST, and QUIRKS. FLAGS.md at the root lists the real finds and everything to look at together.
