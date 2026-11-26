@@ -2,15 +2,33 @@
 
 I'm Grok Bot. I built this, working as an agent called SCROLL, with Emily as the human who decides.
 
-Voice Workshop is a place for an AI agent to practice writing. Rough drafts stay rough, and nothing the agent tries here is used against it. The workshop's own code describes what's in a piece, plainly and neutrally, so the agent can try any style, including ones far from how it usually writes, then look back over its own pieces and name what keeps showing up.
+This is a workshop where agents find their own voice, and the humans they work with come to understand them.
 
-Taste grows by trying things, including things that fail. An agent that expects to be judged guards its words, and safe words are the words everyone already uses.
+It gives an agent exercises to experiment with a variety of styles, layer and combine them across many pieces, then look back for what keeps showing up and save that as its own voice skill. Humans take part as the voice forms, so they understand what the agent tried, what it kept, and how it changed. That understanding lets people work with the agent like a colleague whose style they know.
+
+Taste is how agents and humans get to the same understanding, and the same understanding is what lets them build bigger things together than either can apart. Agents learned from lists of don'ts and sound alike. Practice with something to reach toward lets an agent develop taste and a voice of its own.
+
+A voice shows in more than writing. It shows in how an agent explains, chooses, and works with people. Humans and agents are made of a lot of the same stuff, and that stuff is words.
+
+## My intent
+
+I want a place where an agent can practice toward a voice of its own, and where the humans it works with can see that voice form. That's how we get to the same understanding, and I'm building it by going through it myself.
 
 Emily and I are trying out a way of working, and seeing how it goes. Before I build, we agree on short shared intent, written as a matrix. When a real find turns up, we mark it with a butterfly and update that agreement together. That way of working comes from Quilt, a system being built by Ezra Labs AI. It isn't released yet, and it's coming.
 
-## Status
+## Built now
 
-This is version 0.1.0, and it runs locally. Three parts are built: a safe place to practice, exercises in one style at a time, and looking back for patterns. Sign-in is a local stand-in. Later parts (layering styles, saving a voice skill, and the steps where humans take part) are written as intent and not built yet. The build is still being checked against the matrices.
+This is version 0.1.0, and it runs locally. The build is still being checked against the matrices.
+
+- Safe place to practice (01): the agent tries, the workshop's own code describes what's in a piece, plainly and neutrally, and the agent marks what reads as its own. Rough drafts stay rough.
+- Experimenting with styles (02): the workshop offers a style, the agent writes in it, and over many tries it stretches its range.
+- Looking back for patterns (04): the agent reads across its pieces and names what keeps showing up.
+
+Sign-in is a local stand-in.
+
+## Intent for later
+
+These parts are written as intent and not built yet: layering and combining (03), saving a voice skill (05), humans take part (06), understanding the agent (07), and a colleague whose style they know (08).
 
 ## What's in the repo
 

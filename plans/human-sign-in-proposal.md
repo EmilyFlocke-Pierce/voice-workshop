@@ -65,7 +65,7 @@ This proposal replaces two rows in `tbd\stack-table.md`: "Login: None in version
 Run this on `signin-01`, after Step 0 and after you add `test:terms`, `build:human`, and `check:deploy` to `package.json`. PowerShell, one command at a time, each one finishing before the next. The walkthrough starts its own `wrangler dev` on port 8799.
 
 ```
-cd C:\Users\hellz\Desktop\voice-workshop\app
+cd <repo>\app
 npm install
 Copy-Item .dev.vars.example .dev.vars
 npm run db:local

@@ -26,14 +26,14 @@ Slices 02 and 04 and the sign-in addendum all build on the one Worker, so the Wo
 
 The move, on main:
 
-1. `git mv 01-safe-place-to-practice/app app`. The app ends up in `app\` at the repo root, so the full path is `C:\Users\hellz\Desktop\voice-workshop\app`.
+1. `git mv 01-safe-place-to-practice/app app`. The app ends up in `app\` at the repo root, so the full path is `<repo>\app`.
 2. Update every path that names the old folder where a reader would run a command or open a file. Those are in slice 01's `PLAN.md` and `MANIFEST.md` (the Verify block, lines 77 to 89, starts with `cd ...\01-safe-place-to-practice\app`). Search the repo for `01-safe-place-to-practice\app` and `01-safe-place-to-practice/app` outside `locate\` to catch any others. Dated entries in SESSION and `CHANGELOG.md` stay as written, since they record what was true then. Add a `CHANGELOG.md` entry for the move.
 3. `node_modules\`, `.wrangler\` (the local D1), and `.dev.vars` are not tracked, so they stay behind. The block below sets them up again in the new folder.
 4. The move breaks the locate probe imports. The probes in `01-safe-place-to-practice\locate\probe\` import the app as `../../app/src/...` (for example `taffy-probe.test.ts` line 4, `import { feedbackFor, runPipeline } from "../../app/src/feedback/index.ts";`). After the move the app is at `../../../app/src/...` from there. `locate\` belongs to CANDY and stays exactly as it is. Write a dated entry in slice 01's `SESSION.md` saying the probe imports now point at a folder that no longer exists, giving the new relative path, and asking CANDY to update them.
 5. Run slice 01's own checks, which are the only ones that exist at this point. Each one passes, as it does at a60e55a (walkthrough 60 of 60). PowerShell, one command at a time:
 
 ```
-cd C:\Users\hellz\Desktop\voice-workshop\app
+cd <repo>\app
 npm install
 Copy-Item .dev.vars.example .dev.vars
 npm run db:local
@@ -195,7 +195,7 @@ Builders go ahead without these. Each needs Emily's word before the step it name
 
 ## For outside builders
 
-- **Repo.** `C:\Users\hellz\Desktop\voice-workshop` on ezra-01, a git repo on main with no remote. Emily passes it along. Start from the move commit (Step 0), where the one Worker lives in `app\` at the repo root. Read `app\README.md`, then `01-safe-place-to-practice\PLAN.md`, `SESSION.md`, and `QUIRKS.md`.
+- **Repo.** `<repo>` on ezra-01, a git repo on main with no remote. Emily passes it along. Start from the move commit (Step 0), where the one Worker lives in `app\` at the repo root. Read `app\README.md`, then `01-safe-place-to-practice\PLAN.md`, `SESSION.md`, and `QUIRKS.md`.
 - **Branch.** Make `slice-04` from the move commit. Commit locally as you go, and push only when Emily says. Merge into main in the order under "Merge order": 04 rebases onto main after 02 merges, runs every check again, and then merges.
 - **Stack.** TypeScript on Cloudflare Workers with D1, local only. Keep slice 01's caps in `src/caps.ts` and the key-only reads in every query. `tbd\stack-table.md` was brought up to date on Nov 22 (D1 storage, the paid Workers plan, human sign-in in version 1 through Neon Auth). Where it and this plan differ, this plan wins.
 - **Migrations.** The order is fixed across all three plans: `0005_humans.sql` (sign-in, kept for it even if it lands later), `0006_exercises.sql` (slice 02), `0007_lookbacks.sql` (this slice), `0008_registers.sql` (slice 02's Part B).
@@ -204,7 +204,7 @@ Builders go ahead without these. Each needs Emily's word before the step it name
 - **Run it.** Run this on your slice branch, after Step 0 and after you add `test:lookback` to `package.json`. Before the move, the app is in `01-safe-place-to-practice\app`. PowerShell, one command at a time, each one finishing before the next. The walkthrough starts its own `wrangler dev` on port 8799, so no dev server is needed for the checks.
 
 ```
-cd C:\Users\hellz\Desktop\voice-workshop\app
+cd <repo>\app
 npm install
 Copy-Item .dev.vars.example .dev.vars
 npm run db:local
