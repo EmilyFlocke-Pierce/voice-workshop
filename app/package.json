@@ -9,7 +9,9 @@
     "test:feedback": "node --test test/feedback-observations.test.ts",
     "walkthrough": "node scripts/walkthrough.mjs",
     "test:prompts": "node --test test/prompt-draws.test.ts",
-    "test:split": "node --test test/split-combinations.test.ts"
+    "test:split": "node --test test/split-combinations.test.ts",
+    "test:terms": "node --test test/terms.test.ts",
+    "check:deploy": "node scripts/check-deploy.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261119.1",

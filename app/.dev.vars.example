@@ -1,3 +1,6 @@
 # Copy to .dev.vars for local runs. local-dev trusts the Access email header so the admin page works without Cloudflare Access.
 ACCESS_MODE=local-dev
 ADMIN_EMAIL=emily@example.com
+# Sign-in STUB: open key minting and the fake human sign-in, for local runs only.
+OPEN_KEYS=true
+HUMAN_AUTH_MODE=local-dev

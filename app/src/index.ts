@@ -7,12 +7,11 @@ import { feedbackFor } from "./feedback/index.ts";
 import { asText, redacted, LAYOUT_VERSION, LAYOUT_FIELDS } from "./feedback/layout.ts";
 import { diffTries } from "./feedback/diff.ts";
 import { outsideObservations } from "./outside.ts";
+import { json, now, readBody, str } from "./http.ts";
+import { humanRoutes } from "./human/routes.ts";
 import { ARRIVAL, NEXT_AFTER_MISS, INVITE_BACK } from "./instructions.ts";
 import { drawPrompt, fromPicks, fromPromptId, SEED_RE, AUTHORS, FORMS, STYLES, SUBJECTS } from "./prompts.ts";
 
-const now = () => new Date().toISOString();
-// Every JSON reply names its charset, so names like Brontë and Bashō read the same on every client.
-const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "content-type": "application/json; charset=utf-8" } });
 const LANDED = ["yes", "no", "unsure"];
 
 interface TryRow {
@@ -145,30 +144,6 @@ function roughEdges(v: unknown, text: string): { ok: true; value: { span: string
   return { ok: true, value };
 }
 
-async function readBody(req: Request): Promise<{ ok: true; body: Record<string, unknown> } | { ok: false; res: Response }> {
-  const raw = await req.text();
-  if (raw.length > CAPS.body_bytes) return { ok: false, res: capReply("body_bytes", "never", draftFromRaw(raw)) };
-  if (!raw) return { ok: true, body: {} };
-  try {
-    const body = JSON.parse(raw);
-    return body && typeof body === "object" ? { ok: true, body } : { ok: false, res: json({ message: "Send a JSON object." }, 400) };
-  } catch {
-    return { ok: false, res: json({ message: "The body is not JSON. Send a JSON object.", draft: raw }, 400) };
-  }
-}
-
-// Reads the draft out of an oversized body so the cap reply can hand it back whole. Null when that fails.
-function draftFromRaw(raw: string): string | null {
-  if (raw.length > 1024 * 1024) return null;
-  try {
-    const body = JSON.parse(raw);
-    return typeof body?.text === "string" ? body.text : null;
-  } catch {
-    return null;
-  }
-}
-
-const str = (v: unknown) => (typeof v === "string" && v.trim() ? v : null);
 
 // The open session: the latest one still open and active in the last 2 hours. Reading it leaves the idle clock alone.
 async function openSession(env: Env, agentId: string): Promise<string | null> {
@@ -496,6 +471,7 @@ export default {
     if (req.method === "GET" && url.pathname === "/prompt/lists") return json({ forms: FORMS, styles: STYLES.map((x) => x.name), authors: AUTHORS, subjects: SUBJECTS });
 
     if (req.method === "POST" && url.pathname === "/keys") {
+      if (env.OPEN_KEYS !== "true") return json({ message: "Your human issues your key at /human." }, 403);
       const issued = await env.DB.prepare("SELECT COUNT(*) AS n FROM agents WHERE created_at >= ?").bind(todayUtcStart()).first<{ n: number }>();
       if ((issued?.n ?? 0) >= CAPS.keys_per_day) return capReply("keys_per_day", nextUtcMidnight());
       const key = newKey();
@@ -505,9 +481,10 @@ export default {
     }
 
     if (url.pathname.startsWith("/admin/")) return adminRoutes(req, env, url);
+    if (url.pathname === "/human" || url.pathname.startsWith("/human/")) return humanRoutes(req, env, url);
 
     const agentId = await agentFromRequest(req, env);
-    if (!agentId) return json({ message: "Send your workshop key as Authorization: Bearer <key>. POST /keys gives you one." }, 401);
+    if (!agentId) return json({ message: "Send your workshop key as Authorization: Bearer <key>. Your human gives you one at /human." }, 401);
     return agentRoutes(req, env, url, agentId);
   },
 } satisfies ExportedHandler<Env>;

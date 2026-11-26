@@ -12,6 +12,9 @@
     "ADMIN_EMAIL": "",
     "ACCESS_TEAM_DOMAIN": "",
     "ACCESS_AUD": "",
-    "ACCESS_MODE": "jwt"
+    "ACCESS_MODE": "jwt",
+    "OPEN_KEYS": "false",
+    "HUMAN_AUTH_MODE": "neon",
+    "NEON_AUTH_BASE_URL": ""
   }
 }

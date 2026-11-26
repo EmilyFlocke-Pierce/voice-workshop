@@ -5,6 +5,9 @@ export const CAPS = {
   feedback_cpu_ms: 50,
   d1_rows_per_agent: 5000,
   keys_per_day: 200,
+  // Sign-in STUB caps, from the proposal; Emily's numbers to confirm.
+  keys_per_human: 3,
+  keys_per_human_per_day: 3,
   body_bytes: 64 * 1024,
   idle_session_ms: 2 * 60 * 60 * 1000,
 };

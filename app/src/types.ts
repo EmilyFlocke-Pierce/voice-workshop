@@ -5,6 +5,10 @@ export interface Env {
   ACCESS_TEAM_DOMAIN: string;
   ACCESS_AUD: string;
   ACCESS_MODE: string;
+  // Sign-in STUB: OPEN_KEYS=true keeps POST /keys open for local runs. HUMAN_AUTH_MODE is local-dev or neon.
+  OPEN_KEYS?: string;
+  HUMAN_AUTH_MODE?: string;
+  NEON_AUTH_BASE_URL?: string;
 }
 
 export interface Quote {

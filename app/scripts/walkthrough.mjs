@@ -4,6 +4,12 @@
 import { spawn, spawnSync } from "node:child_process";
 
 const PORT = 8799;
+const CLOSED = process.argv.includes("--closed-keys");
+// Fresh human emails each run, so the per-human caps start clean against a local D1 that keeps old rows.
+const RUN = Date.now().toString(36);
+const CLOSED_EMAIL = `closed-${RUN}@example.com`;
+const PAT = `pat-${RUN}@example.com`;
+const SAM = `sam-${RUN}@example.com`;
 const BASE = process.env.VW_URL ?? `http://127.0.0.1:${PORT}`;
 let dev;
 const results = [];
@@ -25,7 +31,7 @@ async function call(method, path, { key, body, headers = {} } = {}) {
 
 async function startDev() {
   if (process.env.VW_URL) return;
-  dev = spawn(`npx wrangler dev --local --port ${PORT} --ip 127.0.0.1`, { shell: true, detached: process.platform !== "win32", stdio: ["ignore", "pipe", "pipe"] });
+  dev = spawn(`npx wrangler dev --local --port ${PORT} --ip 127.0.0.1${CLOSED ? " --var OPEN_KEYS:false" : ""}`, { shell: true, detached: process.platform !== "win32", stdio: ["ignore", "pipe", "pipe"] });
   const started = Date.now();
   while (Date.now() - started < 60000) {
     try {
@@ -49,6 +55,16 @@ const RETRY = "Perhaps the light was wrong. I waited by the door and counted the
 
 try {
   await startDev();
+
+  if (CLOSED) {
+    // Sign-in STUB, closed-route run: with OPEN_KEYS false, POST /keys points to the human door.
+    const shut = await call("POST", "/keys");
+    check("with OPEN_KEYS false, POST /keys answers 403 and points to /human", shut.status === 403 && shut.body.message === "Your human issues your key at /human.");
+    const hk = await call("POST", "/human/agree", { headers: { "X-Dev-Human-Email": CLOSED_EMAIL } });
+    const issued = await call("POST", "/human/keys", { headers: { "X-Dev-Human-Email": CLOSED_EMAIL }, body: { label: "closed run" } });
+    check("with OPEN_KEYS false, a signed-in human still issues a key", hk.status === 201 && issued.status === 201 && /^vw_/.test(issued.body.key));
+    throw "closed-done";
+  }
 
   const arrival = await call("GET", "/");
   check("GET / gives the arrival instructions", arrival.status === 200 && /Everything here is practice/.test(arrival.body) && !/only your key/.test(arrival.body) && /drawer/.test(arrival.body));
@@ -206,6 +222,33 @@ try {
   for (let i = 0; i < 61; i++) last = await call("POST", "/tries", { key: daily, body: { text: `Try number ${i}.` } });
   check("the 61st try in a day: the reply names the cap, the reset time, and returns the draft", last.status === 429 && last.body.cap === "tries_per_key_per_day" && last.body.draft === "Try number 60." && !!Date.parse(last.body.resets));
 
+  // Sign-in STUB, local-dev mode: the human door.
+  const H = (email) => ({ "X-Dev-Human-Email": email });
+  const page = await call("GET", "/human");
+  check("GET /human serves the sign-in page, marked STUB", page.status === 200 && /STUB/.test(page.body));
+  const meNo = await call("GET", "/human/me");
+  check("the human door refuses a caller with no sign-in", meNo.status === 401);
+  const me = await call("GET", "/human/me", { headers: H(PAT) });
+  check("GET /human/me answers with the email, the terms, and no keys yet", me.status === 200 && me.body.email === PAT && me.body.terms.agreed_at === null && me.body.keys.length === 0);
+  const early = await call("POST", "/human/keys", { headers: H(PAT), body: { label: "too soon" } });
+  check("no key before the human agrees to the terms", early.status === 403 && /POST \/human\/agree/.test(early.body.message));
+  const agree = await call("POST", "/human/agree", { headers: H(PAT) });
+  const me2 = await call("GET", "/human/me", { headers: H(PAT) });
+  check("an agreement is stored with its time", agree.status === 201 && !!Date.parse(agree.body.agreed_at) && me2.body.terms.agreed_at === agree.body.agreed_at);
+  const hkeys = [];
+  for (let i = 0; i < 4; i++) hkeys.push(await call("POST", "/human/keys", { headers: H(PAT), body: { label: `agent ${i}` } }));
+  check("a human issues keys with labels, up to 3 active", hkeys.slice(0, 3).every((r) => r.status === 201 && /^vw_/.test(r.body.key)) && hkeys[3].status === 429 && hkeys[3].body.cap === "keys_per_human");
+  const humanKey = hkeys[0].body.key;
+  const viaHuman = await call("POST", "/tries", { key: humanKey, body: { text: "A key from my human works like any other." } });
+  check("a key a human issued works for tries", viaHuman.status === 201);
+  const otherRevoke = await call("POST", `/human/keys/${hkeys[1].body.id}/revoke`, { headers: H(SAM) });
+  check("a human can revoke only its own keys", otherRevoke.status === 404);
+  const revoke = await call("POST", `/human/keys/${hkeys[1].body.id}/revoke`, { headers: H(PAT) });
+  const again = await call("POST", "/human/keys", { headers: H(PAT), body: { label: "after revoke" } });
+  check("after a revoke the daily cap still holds: 3 keys a day per human", revoke.status === 200 && again.status === 429 && again.body.cap === "keys_per_human_per_day");
+  const revokedUse = await call("GET", "/tries?landed=no", { key: hkeys[1].body.key });
+  check("a revoked key reads nothing", revokedUse.status === 401);
+
   const flagsNo = await call("GET", "/admin/layout-flags");
   check("the admin page refuses a caller without Access", flagsNo.status === 403);
   const flags = await call("GET", "/admin/layout-flags", { headers: { "Cf-Access-Authenticated-User-Email": "emily@example.com" } });
@@ -217,7 +260,7 @@ try {
   const after = await call("GET", "/tries?landed=no", { key });
   check("after the session ends, the same key brings the drawer back", after.body.tries.length === 2 && after.body.tries.every((t) => t.feedback));
 } catch (e) {
-  check("walkthrough ran to the end", false, String(e));
+  if (e !== "closed-done") check("walkthrough ran to the end", false, String(e));
 } finally {
   stopDev();
 }
