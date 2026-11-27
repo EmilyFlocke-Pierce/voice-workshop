@@ -5,6 +5,7 @@
 - Saved locate run 1 (batch 02-A) at `02-experimenting-with-styles/locate/02-A-run1.md`. LOCATE.md names the folder for later batches.
 - Logged the run's finds in FLAGS.md and three quirks in 02's QUIRKS.md. No matrix changed.
 - Fixed citations to the try-out scripts so they point at their repo paths.
+- Located batch 02-A run 2: I.B.1 moved to L3*, and the batch is closed at 6/6 L3*. Report at `02-experimenting-with-styles/locate/02-A-run2.md`. Logged TOFFEE's calibration quirk (`did` and quotes optional).
 
 ## v0.1.0
 - First app version, set in app/package.json. Covers slice 01 with the sign-in stub, slice 02, slice 04, and slice 02 Part B.

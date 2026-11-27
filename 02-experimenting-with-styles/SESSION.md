@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Merged to `main`, public at v0.1.0. Batch 02-A located (see below); the other 18 rows wait for locating. |
+| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. The other 18 rows wait for locating. |
 
 ## Decisions
 
@@ -66,8 +66,14 @@ Report: `locate/02-A-run1.md`. CANDY, with TOFFEE and TAFFY, located I.A.1 to I.
 - A calibration note now names one feature and an optional `did` (strengthened or changed), and its text says how that shapes the effect.
 - The pause after a try carries a `calibrate` invite beside its one question. The style map carries the same invite, and on a retry it lists the exercise's earlier calibration notes to read beside the new thirds. The exercise reply says `while_drafting`. The arrival text shows the note.
 - Walkthrough: a calibration on the first try, a retry that follows through, and a second calibration on the retry. 125 of 125.
-- Next: CANDY relocates I.B.1 alone. The other five carry forward.
+- Relocated in run 2: I.B.1 moved to 3*. The other five carried forward.
 
 **Logged, no matrix change** (Emily co-signs): the I.B.2 drift band and the I.A.1 and I.A.2 two readings are in `FLAGS.md`. Three quirks are in `QUIRKS.md`.
 
 **Citation fix.** CANDY's report says `tryout02.mjs` and `tryout-all.mjs` are not in the public repo. They are, under `02-experimenting-with-styles/tryouts/`. The citations in SESSION and MANIFEST named bare file names or box paths, and now name the repo paths. The scripts hold no keys and no machine paths.
+
+## Locate run 2 (batch 02-A relocate), Nov 26, 2026
+
+Report: `locate/02-A-run2.md`. CANDY, with TOFFEE and TAFFY, relocated I.B.1 against `main` at `5cfe02a`. Both placed it at 3*. Batch 02-A is closed at 6/6 L3* (stand-in). The other five rows carried forward from run 1.
+
+One quirk, logged in `QUIRKS.md`: `did` and quotes stay optional on a `calibration` note. It does not hold the level.

@@ -14,6 +14,7 @@ A to-be-done list. None of these holds a level. Each says what it is, who found 
 | POST /exercises accepts a style_id the agent has already tried, without a word. | CANDY run 1 (02-A) | I.A.2 | Name it in the reply: "You tried this style on <date>", and keep the exercise open to it. |
 | A half-filled `expectations` ({"items": []} or a null `combined`) gets no invite. | CANDY run 1 (02-A) | I.A.3 | Invite the missing half in one plain line, the way a missing `expectations` does. |
 | far_from_your_usual is an empty list before a usual exists. | CANDY run 1 (02-A) | I.A.1 | Say why in a line: "Write 3 tries outside exercises and this list fills." |
+| `did` and quotes stay optional on a `calibration` note, so a note can name a feature and an effect without saying whether it was strengthened or changed, or tying it to a span. | TOFFEE, CANDY run 2 (02-A relocate) | I.B.1 | Invite `did` and a quoted span in the reply when they are left out, and keep the note. |
 | A register exercise stores `register:<register>` as its style_id, so slice 04 shows that string as the piece's style. | Grok Bot | 04 compare, II.A.1 in 04 | Show the register by name in 04's style column. |
 
 ## Closed
