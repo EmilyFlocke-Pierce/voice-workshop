@@ -6,7 +6,7 @@ export const CALIBRATION_DID = ["strengthened", "changed"] as const;
 export interface KindRule {
   try: "required" | "none";
   quotes: "optional" | "required" | "none";
-  extra?: "move" | "feature" | "readers" | "effects" | "calibration";
+  extra?: "move" | "feature" | "readers" | "effects" | "calibration" | "shift";
   serves: string;
 }
 
@@ -14,8 +14,9 @@ export const NOTE_KINDS: Record<string, KindRule> = {
   calibration: { try: "required", quotes: "optional", extra: "calibration", serves: "I.B.1" },
   drift: { try: "required", quotes: "optional", serves: "I.B.2, II.C.2" },
   stuck_move: { try: "required", quotes: "none", extra: "move", serves: "I.B.3" },
-  unusual: { try: "required", quotes: "optional", serves: "I.C.2" },
-  hard_passage: { try: "required", quotes: "required", serves: "I.C.3" },
+  // unusual and hard_passage take an optional "shift": a short phrase naming the change in approach. Both anchor the note in exact words of the piece.
+  unusual: { try: "required", quotes: "required", extra: "shift", serves: "I.C.2" },
+  hard_passage: { try: "required", quotes: "required", extra: "shift", serves: "I.C.3" },
   effects: { try: "required", quotes: "optional", extra: "feature", serves: "II.A.1 to II.A.4" },
   reader_impressions: { try: "required", quotes: "none", extra: "readers", serves: "II.B.1" },
   style_vs_speaker: { try: "required", quotes: "optional", serves: "II.B.2" },
@@ -76,6 +77,11 @@ export function checkNote(kind: string, body: Record<string, unknown>): { ok: tr
     const did = body.did === undefined || body.did === null ? null : s(body.did);
     if (body.did !== undefined && body.did !== null && (!did || !(CALIBRATION_DID as readonly string[]).includes(did))) return { ok: false, message: `did takes ${CALIBRATION_DID.join(" or ")}.` };
     extra = did ? { feature, did } : { feature };
+  }
+  if (rule.extra === "shift") {
+    const shift = body.shift === undefined || body.shift === null ? null : s(body.shift);
+    if (body.shift !== undefined && body.shift !== null && !shift) return { ok: false, message: 'shift is a short phrase in your words: the change in your usual approach, for example "hold each sentence open until its verb".' };
+    extra = shift ? { shift } : null;
   }
   if (rule.extra === "effects") {
     const effects = body.effects === undefined ? [] : body.effects;

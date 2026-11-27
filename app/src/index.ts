@@ -250,7 +250,7 @@ async function storeTry(env: Env, agentId: string, body: Record<string, unknown>
   }
   const place = await placeInSession(env, agentId, { id, session_id: sessionId, created_at: created });
   // Inside an exercise, the exercise pause takes the place of the stitch pause, so the reply asks one thing.
-  if (exercise) out.pause = exercisePause(exercise, id, !!parent);
+  if (exercise) out.pause = await exercisePause(env, agentId, exercise, id, !!parent);
   else if (place.previous) out.stitch = stitchPause(id, place.previous, place.knot);
   if (landed === "no") out.next = NEXT_AFTER_MISS;
   return json(out, 201);

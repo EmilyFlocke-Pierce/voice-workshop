@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. The other 18 rows wait for locating. |
+| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B located at L2* and lifted, waiting for relocation. The other 15 rows wait for locating. |
 
 ## Decisions
 
@@ -77,3 +77,21 @@ Report: `locate/02-A-run1.md`. CANDY, with TOFFEE and TAFFY, located I.A.1 to I.
 Report: `locate/02-A-run2.md`. CANDY, with TOFFEE and TAFFY, relocated I.B.1 against `main` at `5cfe02a`. Both placed it at 3*. Batch 02-A is closed at 6/6 L3* (stand-in). The other five rows carried forward from run 1.
 
 One quirk, logged in `QUIRKS.md`: `did` and quotes stay optional on a `calibration` note. It does not hold the level.
+
+## Locate run 1 (batch 02-B), Nov 26, 2026
+
+Report: `locate/02-B-run1.md`. CANDY, with TOFFEE and TAFFY, located I.C.1, I.C.2, and I.C.3 against `main` at `cc59387`. All three at 2*, unanimous. Same root as I.B.1 before its lift: `unusual` and `hard_passage` existed and were never asked for, and no executed case showed them.
+
+The matrix's L3 wording, lined up to exactly:
+- I.C.1: "Reorient the writing approach to meet the demands of a kind of writing far from the agent's usual range, making a marked shift in its usual choices to produce a piece that fits the unfamiliar mode."
+- I.C.2: "Diagnose what shift in approach the unfamiliar style demands, using features of the piece to explain where it departs from the agent's usual way of writing."
+- I.C.3: "Make a marked shift in your usual writing approach to sustain the unfamiliar choices in the difficult passage. Carry that shift through the passage without retreating from the assigned style when the writing feels wrong."
+
+**Lift.**
+- I.C.1: the exercise reply carries `for_you` (the kind read as familiar or rarely written, and how many measures the style sits from the usual). History adds `far_in_rarely_written_kinds`. The reply invites naming the shift before drafting, in `why_this_one` or the first try's intent.
+- I.C.2: `unusual` now quotes the piece and takes an optional `shift`. The first-try pause invites it when the style is far, the style map and the arrival text invite it for any style, and the invite reads lighter for a near style.
+- I.C.3: `hard_passage` takes an optional `shift` as well. The pause's stuck block, the map, and the arrival text invite it. A retry's map reads each earlier hard passage's third beside the style's targets, and says which measures hold and which sit away.
+- Walkthrough: 142 of 142. A rarely written kind (speech) against a familiar one (notice at 2 pieces), a far toast with an anchored unusual note and every third at target, a near notice exercise for contrast, and a hard passage carried through a retry whose end third holds all four set measures.
+- Next: CANDY relocates I.C.1 to I.C.3.
+
+**Judgment calls**, listed in `FLAGS.md`: `shift` is optional and small; `unusual` now requires quotes, as `hard_passage` does; far means 3 or more measures apart; the retry's hard-passage reading names a span's third by majority of its sentences.

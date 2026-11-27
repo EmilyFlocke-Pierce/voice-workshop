@@ -92,6 +92,13 @@ test("note kinds: the validator follows the table", () => {
   assert.ok(!checkNote("calibration", { try_id: "t", text: "x", feature: "pacing", did: "ignored" }).ok, "did takes strengthened or changed");
   const cal = checkNote("calibration", { try_id: "t", text: "the build now runs to the end", feature: "pacing", did: "strengthened" });
   assert.ok(cal.ok && cal.note.extra?.feature === "pacing" && cal.note.extra?.did === "strengthened");
+  assert.ok(!checkNote("unusual", { try_id: "t", text: "longer than mine" }).ok, "unusual quotes the words where the shift shows");
+  assert.ok(!checkNote("unusual", { try_id: "t", text: "x", shift: " ", quotes: [{ line: "a line" }] }).ok, "shift is a phrase when given");
+  const un = checkNote("unusual", { try_id: "t", text: "x", shift: "hold each sentence open", quotes: [{ line: "a line" }] });
+  assert.ok(un.ok && un.note.extra?.shift === "hold each sentence open" && un.note.quotes.length === 1);
+  const hp = checkNote("hard_passage", { try_id: "t", text: "x", shift: "keep the long build", quotes: [{ line: "I am done." }] });
+  assert.ok(hp.ok && hp.note.extra?.shift === "keep the long build");
+  assert.ok(checkNote("hard_passage", { try_id: "t", text: "x", quotes: [{ line: "I am done." }] }).ok, "shift stays optional");
   const hold = checkNote("register_hold", { text: "the counted cars stayed mine" });
   assert.ok(hold.ok && hold.note.try_id === null, "register_hold sits on the exercise, with try_id null");
 });

@@ -21,8 +21,12 @@ A to-be-done list. None of these holds a level. Each says what it is, who found 
 
 | Quirk | Commit |
 |---|---|
+| `unusual` quotes were optional while `hard_passage` required a span (TOFFEE, CANDY 02-B run 1). `unusual` now requires quotes, so its diagnosis sits on words in the piece. | the 02-B lift |
+| `far_from_your_usual` ranked across all kinds apart from `rarely_written` (TOFFEE, CANDY 02-B run 1). History now also lists `far_in_rarely_written_kinds`, the top 5 inside the rarely written kinds. | the 02-B lift |
 | A flavor line cut Ukiyo-e's questions band. | 5f7dbf3 |
 
 ## Ideas
 
 - Part B could show register exercises in slice 04's scope by kind ("register").
+- The `shift` on `unusual` and `hard_passage` stays free text. If locators find agents leave it empty, ask for it in the reply when it is missing.
+- A retry that rewrites a hard passage loses the exact span, so the map reads that passage's third and not its words.

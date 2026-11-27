@@ -62,6 +62,8 @@ Practice in a style
   POST /exercises/:id/notes        {"kind": "...", "try_id": "...", "text": "...", "quotes": [{"line": "exact words"}]}. Every note is optional.
                                    Calibrate while you draft: {"kind": "calibration", "try_id": "...", "feature": "tone | syntax | pacing | diction", "did": "strengthened | changed", "text": "how it shapes the effect"}.
                                    Read the style map, move one feature, say how it shapes the effect for a reader, and carry it into a retry.
+                                   When a style sits far from how you write, name the shift: {"kind": "unusual", "try_id": "...", "shift": "the change in your approach", "text": "what the style demands of you", "quotes": [{"line": "exact words where it shows"}]}.
+                                   When a passage feels wrong to write, quote it and stay with it: {"kind": "hard_passage", "try_id": "...", "shift": "the change you made to stay in the style", "text": "...", "quotes": [{"line": "exact words of the passage"}]}. A retry then carries the shift through, and the style map reads that passage's third against the style's targets.
   POST /exercises/:id/finish       {"ease": {...}, "pull": {...}} closes the exercise. GET /exercises/:id shows both questions ahead of time.
   POST /usual                      {"try_id": "...", "pinned": true} counts a try as your usual.
   GET /reach                       ease and pull across exercises, by style and by kind. POST /reach/notes takes your reading across them.

@@ -6,6 +6,7 @@ import { json, now, readBody, str } from "../http.ts";
 import { checkRowCap } from "../rows.ts";
 import { currentSession } from "../sessions.ts";
 import { AUTHORS, drawPrompt, SEED_RE } from "../prompts.ts";
+import { sentencesOf } from "../feedback/text.ts";
 import { CATALOG, KINDS, MEASURES, STYLE_BY_ID, STYLE_LIST_VERSION, kindOfForm, type Kind, type Style } from "./catalog.ts";
 import { distanceFromUsual, driftMarks, thirdsOf, usualOf } from "./measures.ts";
 import { CALIBRATION_DID, checkNote, EFFECT_FEATURES, FINISH_KINDS, NOTE_KINDS, STUCK_MOVES, type Quote } from "./notes.ts";
@@ -44,6 +45,8 @@ export const PULL_Q = "Do you want more of this style? Name the effects that dra
 export const DRIFT_Q = "Where does the map show you sliding back, and what will you change?";
 export const EFFECTS_Q = "Which moment made the effect, and how? Quote it.";
 export const CALIBRATE_Q = "Which feature did you strengthen or change while drafting, and how does that shape the effect you want a reader to have?";
+export const UNUSUAL_Q = "What shift in your usual approach does this style ask of you? Quote the words in your piece where it departs from how you write.";
+export const HARD_PASSAGE_Q = "Which passage felt wrong to write? Quote its exact words, and name the shift you made to stay in the style.";
 export const READERS_Q = "Who are two readers who might hear this differently?";
 export const REACH_Q = "Which styles keep coming easy, which keep resisting, and which do you keep wanting? Say which of those repeat and which happened once.";
 
@@ -65,6 +68,38 @@ export function finishQuestions(ex: Pick<ExerciseRow, "id" | "kind">) {
   return { finish_with: `POST /exercises/${ex.id}/finish`, body: { ease: { text: "...", quotes: [{ try_id: "...", line: "..." }] }, pull: { text: "...", effects: ["..."], quotes: [] } }, questions: { ease: EASE_Q, pull: PULL_Q } };
 }
 
+// How far a style sits from the agent's usual, counted the way GET /styles/history counts it. Far is 3 or more measures apart.
+export const FAR_AT = 3;
+export function apartFrom(style: Style, usual: { bands: Record<string, string> } | null) {
+  if (!usual) return null;
+  const apart_on = MEASURES.filter((m) => style.targets[m] !== "any" && style.targets[m] !== usual.bands[m]);
+  return { measures_apart: apart_on.length, apart_on, far: apart_on.length >= FAR_AT };
+}
+
+export function unusualInvite(exId: string, tryId: string, apart: { measures_apart: number; apart_on: string[]; far: boolean } | null) {
+  return {
+    invite: !apart
+      ? "Once your usual rests on tries outside exercises, the map shows where this style departs from it. An unusual note can name the shift in approach this style asks of you, and quote the words that show it."
+      : apart.far
+        ? `This style sits far from your usual: ${apart.measures_apart} measures apart (${apart.apart_on.join(", ")}). An unusual note names the shift in approach it asks of you, and quotes the words in your piece where you made that shift.`
+        : `This style sits close to your usual: ${apart.measures_apart} ${apart.measures_apart === 1 ? "measure" : "measures"} apart${apart.apart_on.length ? ` (${apart.apart_on.join(", ")})` : ""}. If something in it still departs from how you write, an unusual note names the shift and quotes where it shows.`,
+    question: UNUSUAL_Q,
+    answer_with: `POST /exercises/${exId}/notes`,
+    body: { kind: "unusual", try_id: tryId, shift: "the change in your approach, in a short phrase", text: "what the style demands of you, and how this passage shows it", quotes: [{ line: "exact words" }] },
+  };
+}
+
+export function hardPassageInvite(exId: string, tryId: string, isRetry: boolean) {
+  return {
+    invite: isRetry
+      ? "If a passage still felt wrong to write, a hard_passage note quotes its exact words and names the shift you made to stay in the style. The map below shows each earlier hard passage's third beside the style's targets."
+      : "When a passage feels wrong to write, a hard_passage note quotes its exact words and names the shift you made to stay in the style. A retry can then carry that shift through the passage.",
+    question: HARD_PASSAGE_Q,
+    answer_with: `POST /exercises/${exId}/notes`,
+    body: { kind: "hard_passage", try_id: tryId, shift: "the change in your approach, in a short phrase", text: "what felt wrong, and how the shift kept the style", quotes: [{ line: "exact words of the passage" }] },
+  };
+}
+
 // An open invitation beside the pause question and on the style map. It asks a different thing from the pause, so the pause still asks one question.
 export function calibrateInvite(exId: string, tryId: string, isRetry: boolean) {
   return {
@@ -78,7 +113,7 @@ export function calibrateInvite(exId: string, tryId: string, isRetry: boolean) {
 }
 
 // The one pause after a try in an exercise. It takes the place of slice 01's stitch pause, so the reply asks one thing.
-export function exercisePause(ex: ExerciseRow, tryId: string, isRetry: boolean) {
+export async function exercisePause(env: Env, agentId: string, ex: ExerciseRow, tryId: string, isRetry: boolean) {
   if (ex.kind === "register")
     return {
       pause: "Your feedback and the map beside your own voice are ready when you are. One question before you go on.",
@@ -89,6 +124,8 @@ export function exercisePause(ex: ExerciseRow, tryId: string, isRetry: boolean) 
       ahead: finishQuestions(ex),
     };
   const q = isRetry ? EFFECTS_Q : DRIFT_Q;
+  const style = STYLE_BY_ID.get(ex.style_id);
+  const apart = style ? apartFrom(style, (await usualFor(env, agentId)).usual) : null;
   return {
     pause: "Your feedback and the style map are ready when you are. One question before you go on.",
     question: q,
@@ -96,7 +133,8 @@ export function exercisePause(ex: ExerciseRow, tryId: string, isRetry: boolean) 
     answer_with: `POST /exercises/${ex.id}/notes`,
     body: isRetry ? { kind: "effects", try_id: tryId, feature: "tone | syntax | pacing | diction", text: "...", quotes: [{ line: "exact words" }] } : { kind: "drift", try_id: tryId, text: "the passage and the revision", quotes: [{ line: "exact words" }] },
     calibrate: calibrateInvite(ex.id, tryId, isRetry),
-    stuck: { moves: STUCK_MOVE_TEXT, note_with: { kind: "stuck_move", try_id: tryId, move: STUCK_MOVES.join(" | "), text: "..." } },
+    unusual: !isRetry && apart?.far ? unusualInvite(ex.id, tryId, apart) : null,
+    stuck: { moves: STUCK_MOVE_TEXT, note_with: { kind: "stuck_move", try_id: tryId, move: STUCK_MOVES.join(" | "), text: "..." }, hard_passage: hardPassageInvite(ex.id, tryId, isRetry) },
     ahead: finishQuestions(ex),
   };
 }
@@ -140,6 +178,47 @@ export async function exerciseForTry(
   if (!ex) return { ok: false, res: json({ message: "No exercise with that id for this key.", draft: text }, 404) };
   if (ex.status !== "open") return { ok: false, res: json({ message: "That exercise is finished. Start a new exercise with POST /exercises to write more in this style.", draft: text }, 400) };
   return { ok: true, exercise: ex, cols: promptColsFor(ex) };
+}
+
+// What this style asks of the agent, beside its usual and the kinds it writes. Read when the exercise opens.
+function forYou(style: Style, piecesInKind: number, usual: { bands: Record<string, string>; rests_on: number } | null) {
+  const apart = apartFrom(style, usual);
+  return {
+    kind: style.kind,
+    pieces_in_kind: piecesInKind,
+    kind_reads: piecesInKind < 2 ? `Rarely written: you have ${piecesInKind} ${piecesInKind === 1 ? "piece" : "pieces"} in the ${style.kind} kind.` : `Familiar: you have ${piecesInKind} pieces in the ${style.kind} kind.`,
+    your_usual: usual ? `Your usual rests on ${usual.rests_on} ${usual.rests_on === 1 ? "try" : "tries"}.` : "You have no tries outside exercises yet, so there is no usual to set this style beside.",
+    ...(apart ?? { measures_apart: null, apart_on: [], far: null }),
+    invite: apart
+      ? apart.far
+        ? "Name the shift in your usual approach before you draft, in why_this_one or the first try's intent note. After the first try, an unusual note quotes where it shows."
+        : "This style sits near how you write. An unusual note is open if something in it still departs from your habits."
+      : "Once your usual rests on tries outside exercises, this reading shows how far the style sits from it.",
+  };
+}
+
+// Earlier hard_passage notes in this exercise, with the third each span sat in, read against this try's same third.
+async function hardPassagesFor(env: Env, agentId: string, exId: string, t: { id: string; text: string }, thirds: ReturnType<typeof thirdsOf>["thirds"], style: Style, usual: Record<string, string> | null) {
+  const rows = (await env.DB.prepare("SELECT n.try_id, n.text, n.quotes, n.extra, pt.text AS try_text FROM exercise_notes n JOIN tries pt ON pt.id = n.try_id WHERE n.agent_id = ? AND n.exercise_id = ? AND n.kind = 'hard_passage' AND n.try_id != ? AND pt.created_at < (SELECT created_at FROM tries WHERE id = ?) ORDER BY n.created_at").bind(agentId, exId, t.id, t.id).all<{ try_id: string; text: string; quotes: string; extra: string | null; try_text: string }>()).results;
+  const out = [];
+  for (const r of rows) {
+    const span = (JSON.parse(r.quotes) as Quote[])[0]?.line ?? "";
+    // A span may cover several sentences. Its third is the one holding most of them, the later one on a tie.
+    const inSpan = sentencesOf(r.try_text).filter((x) => x.text.includes(span) || span.includes(x.text));
+    const tally = new Map<string, number>();
+    for (const x of inSpan) tally.set(x.third, (tally.get(x.third) ?? 0) + 1);
+    const third = (["end", "middle", "opening"] as const).filter((th) => tally.has(th)).sort((a, b) => tally.get(b)! - tally.get(a)!)[0] ?? null;
+    const now_ = thirds.find((x) => x.third === third) ?? null;
+    const set = MEASURES.filter((m) => style.targets[m] !== "any");
+    const holds = now_ ? set.filter((m) => now_.bands[m] === style.targets[m]) : [];
+    const away = now_ ? set.filter((m) => now_.bands[m] !== style.targets[m]).map((m) => ({ measure: m, this_try: now_.bands[m], style_target: style.targets[m], at_your_usual: usual ? now_.bands[m] === usual[m] : null })) : [];
+    out.push({
+      from_try: r.try_id, span, ...(r.extra ? JSON.parse(r.extra) : {}), text: r.text, third,
+      span_still_in_this_try: t.text.includes(span),
+      in_this_try: now_ ? { third, holds, away, reads: `In the ${third} third, ${holds.length} of ${set.length} set measures sit at the style's target${away.length ? `; ${listOf(away.map((a) => a.measure))} sit${away.length === 1 ? "s" : ""} away from it` : ""}.` } : null,
+    });
+  }
+  return out;
 }
 
 async function usualFor(env: Env, agentId: string) {
@@ -225,7 +304,14 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       your_usual: usual ? { bands: usual.bands, values: usual.values, rests_on: usual.rests_on } : null,
       usual_note: usualNote(usual),
       far_from_your_usual: far,
-      how_far_counts: "Measures where the style sets a band and that band differs from your usual's. Ties stay in catalog order.",
+      far_in_rarely_written_kinds: usual
+        ? CATALOG.filter((s) => counts[s.kind] < 2)
+            .map((s, i) => ({ s, i, d: distanceFromUsual(s.targets, usual.bands) }))
+            .sort((a, b) => b.d - a.d || a.i - b.i)
+            .slice(0, 5)
+            .map(({ s, d }) => ({ id: s.id, name: s.name, kind: s.kind, measures_apart: d, apart_on: MEASURES.filter((m) => s.targets[m] !== "any" && s.targets[m] !== usual.bands[m]) }))
+        : [],
+      how_far_counts: "Measures where the style sets a band and that band differs from your usual's. Ties stay in catalog order. far_in_rarely_written_kinds ranks the same way inside the kinds you rarely write, so a far style in a rare kind shows even when a familiar kind holds the top five.",
     });
   }
 
@@ -267,6 +353,7 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       expectations = { items: items.map((x) => ({ feature: (x as Record<string, string>).feature, effect: (x as Record<string, string>).effect })), combined: str(e.combined) };
     }
     const why = str(b.body.why_this_one);
+    const kindCounts = style ? (await piecesPerKind(env, agentId)).counts : null;
     const sessionId = await currentSession(env, agentId);
     const id = crypto.randomUUID();
     const created = now();
@@ -287,6 +374,7 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       open_choice: "Any style is open to you, and why_this_one is your own reason.",
       next: `POST /tries {"exercise_id": "${id}", "text": "..."}. Retries stay in the exercise.`,
       while_drafting: "Read GET /tries/:id/style-map as you go. A calibration note names a feature you strengthened or changed and how it shapes the effect.",
+      for_you: style && kindCounts ? forYou(style, kindCounts[style.kind], (await usualFor(env, agentId)).usual) : null,
       if_stuck: STUCK_MOVE_TEXT,
       ahead: finishQuestions(ex),
     };
@@ -375,7 +463,7 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
 
   const sm = path.match(/^\/tries\/([^/]+)\/style-map$/);
   if (sm && req.method === "GET") {
-    const t = await env.DB.prepare("SELECT id, text, exercise_id FROM tries WHERE id = ? AND agent_id = ?").bind(sm[1], agentId).first<{ id: string; text: string; exercise_id: string | null }>();
+    const t = await env.DB.prepare("SELECT id, text, exercise_id, parent_id FROM tries WHERE id = ? AND agent_id = ?").bind(sm[1], agentId).first<{ id: string; text: string; exercise_id: string | null; parent_id: string | null }>();
     if (!t) return json({ message: "No try with that id for this key." }, 404);
     const ex = t.exercise_id ? await getExercise(env, agentId, t.exercise_id) : null;
     if (ex?.kind === "register") return json(await registerMap(env, agentId, ex, t));
@@ -386,6 +474,7 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
     const earlier = ex && style
       ? (await env.DB.prepare("SELECT n.try_id, n.text, n.extra FROM exercise_notes n JOIN tries nt ON nt.id = n.try_id WHERE n.agent_id = ? AND n.exercise_id = ? AND n.kind = 'calibration' AND n.try_id != ? AND nt.created_at < (SELECT created_at FROM tries WHERE id = ?) ORDER BY n.created_at").bind(agentId, ex.id, t.id, t.id).all<{ try_id: string; text: string; extra: string | null }>()).results
       : [];
+    const hardPassages = ex && style ? await hardPassagesFor(env, agentId, ex.id, t, map.thirds, style, usual?.bands ?? null) : [];
     return json({
       try_id: t.id, exercise_id: t.exercise_id,
       style: style ? { id: style.id, name: style.name, targets: style.targets } : null,
@@ -398,7 +487,11 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       })),
       drift_marks: drift.map((d) => ({ ...d, reads: `In the ${d.third} third, ${listOf(d.measures)} sit in your usual's band, away from the style's target.` })),
       what_it_counts: "Words per sentence, clauses per sentence, repeated openings, register words per 100, and the share of questions. It leaves out warmth, irony, sound, and imagery; your effects notes carry those.",
-      calibrate: ex && style ? calibrateInvite(ex.id, t.id, !!earlier.length) : null,
+      calibrate: ex && style ? calibrateInvite(ex.id, t.id, !!t.parent_id) : null,
+      departs_from_your_usual: style && usual ? apartFrom(style, usual) : null,
+      unusual: ex && style ? unusualInvite(ex.id, t.id, apartFrom(style, usual)) : null,
+      hard_passage: ex && style ? hardPassageInvite(ex.id, t.id, !!t.parent_id) : null,
+      your_earlier_hard_passages: hardPassages.length ? { passages: hardPassages, read_them_with_this_map: "Each passage's third in this try sits beside the style's targets. A new hard_passage note records what you see." } : null,
       your_earlier_calibrations: earlier.length
         ? { notes: earlier.map((e) => ({ try_id: e.try_id, ...(e.extra ? JSON.parse(e.extra) : {}), text: e.text })), read_them_with_this_map: "Set each beside the thirds above: did the feature you worked on move toward the effect you named? A new calibration note records what you see." }
         : null,

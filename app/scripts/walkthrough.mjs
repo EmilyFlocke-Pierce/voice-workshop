@@ -249,11 +249,18 @@ try {
   check("a drift note names the passage and the revision, with an exact quote", drift.status === 201 && drift.body.kind === "drift");
   check("the pause and the map both surface the calibration note, in plain words, without a second pause question", et.body.pause.calibrate?.body.kind === "calibration" && /strengthened or changed/.test(et.body.pause.calibrate.invite) && map.body.calibrate?.body.kind === "calibration" && map.body.calibrate.answer_with === `POST /exercises/${ex.body.id}/notes` && map.body.your_earlier_calibrations === null && et.body.pause.question === "Where does the map show you sliding back, and what will you change?");
   check("the arrival text names the calibration note", /"kind": "calibration"/.test((await call("GET", "/", { key })).body));
+  const arrivalNow = (await call("GET", "/", { key })).body;
+  check("the arrival text names the unusual and hard_passage notes and the shift", /"kind": "unusual"/.test(arrivalNow) && /"kind": "hard_passage"/.test(arrivalNow) && /"shift"/.test(arrivalNow));
   const badCal = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "calibration", try_id: et.body.id, text: "no feature named" } });
   check("a calibration note names one feature and says so when it does not", badCal.status === 400 && /feature/.test(badCal.body.message));
   const cal = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "calibration", try_id: et.body.id, feature: "pacing", did: "strengthened", text: "The map showed my last third at my short usual. I strengthened the long build there so the reader keeps waiting for the point, the effect I want.", quotes: [{ line: "I am done. Raise a glass. Drink." }] } });
   check("a calibration note records one feature strengthened and how it shapes the intended effect", cal.status === 201 && cal.body.kind === "calibration" && cal.body.feature === "pacing" && cal.body.did === "strengthened" && /keeps waiting/.test(cal.body.text));
-  const TOAST2 = TOAST.replace("I am done. Raise a glass. Drink.", "And so, before the candles gutter and the band, which has waited with the patience of saints, begins again, I ask you all to rise, and raise a glass, and drink to them.");
+  check("the first try's pause, the style map, and the exercise reply all surface hard_passage and unusual without a second pause question", et.body.pause.stuck.hard_passage.body.kind === "hard_passage" && /feels wrong to write/.test(et.body.pause.stuck.hard_passage.invite) && map.body.hard_passage.body.kind === "hard_passage" && map.body.unusual.body.kind === "unusual" && typeof map.body.departs_from_your_usual.measures_apart === "number" && ex.body.for_you.kind === "speech" && et.body.pause.question === "Where does the map show you sliding back, and what will you change?");
+  const hardNoQuote = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "hard_passage", try_id: et.body.id, text: "the ending felt wrong" } });
+  check("a hard_passage note quotes its exact span, and says so when it does not", hardNoQuote.status === 400 && /quotes/.test(hardNoQuote.body.message));
+  const hard = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "hard_passage", try_id: et.body.id, shift: "let the closing sentence run long instead of stopping short", text: "Writing a ceremonial close felt wrong, so I stopped at three short lines. I will keep the long build going through the end.", quotes: [{ line: "I am done. Raise a glass. Drink." }] } });
+  check("a hard_passage note names the exact span and the shift to make", hard.status === 201 && hard.body.kind === "hard_passage" && hard.body.shift.startsWith("let the closing sentence") && hard.body.quotes[0].line === "I am done. Raise a glass. Drink.");
+  const TOAST2 = TOAST.replace("I am done. Raise a glass. Drink.", "And so, therefore, before the candles gutter and the band, which has waited with the patience of saints, begins again, I ask you all to rise, and raise a glass, and drink to them, whereas the evening, hereby declared open, goes on.");
   const er = await call("POST", `/tries/${et.body.id}/retry`, { key, body: { text: TOAST2, change_note: "the ending builds like the rest" } });
   check("a retry stays in the exercise and asks the effects question", er.status === 201 && er.body.exercise_id === ex.body.id && er.body.pause?.question === "Which moment made the effect, and how? Quote it.");
   check("the retry's pause invites a calibration note that carries the feature forward", /strengthened or changed a feature/.test(er.body.pause.calibrate.invite));
@@ -262,6 +269,9 @@ try {
   check("the retry's map shows the earlier calibration beside the new thirds", retryMap.status === 200 && retryMap.body.your_earlier_calibrations?.notes.length === 1 && retryMap.body.your_earlier_calibrations.notes[0].feature === "pacing" && retryMap.body.your_earlier_calibrations.notes[0].try_id === et.body.id && rEnd.beside.sentence_words.style_target === "long");
   const cal2 = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "calibration", try_id: er.body.id, feature: "pacing", did: "changed", text: "The last third now builds like the others, so the wait runs to the final toast.", quotes: [{ line: "I ask you all to rise" }] } });
   const calView = await call("GET", `/exercises/${ex.body.id}`, { key });
+  const hp = retryMap.body.your_earlier_hard_passages?.passages?.[0];
+  check("the retry's map reads the hard passage's third beside the style's targets: it holds, and drift is not marked", hp?.span === "I am done. Raise a glass. Drink." && hp.third === "end" && hp.span_still_in_this_try === false && hp.in_this_try.holds.length === 4 && hp.in_this_try.away.length === 0 && !retryMap.body.drift_marks.some((d) => d.third === "end"));
+  check("the retry's pause invites a hard_passage note and points to the map", /still felt wrong to write/.test(er.body.pause.stuck.hard_passage.invite));
   check("a calibration note on the retry follows through, and the exercise holds both", cal2.status === 201 && calView.body.notes.filter((n) => n.kind === "calibration").length === 2);
   const eff = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "effects", feature: "pacing", try_id: er.body.id, text: "The delay before 'drink' makes the room wait with me.", quotes: [{ line: "I ask you all to rise" }] } });
   const stuck = await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "stuck_move", try_id: et.body.id, move: "plain_then_restyle", text: "I wrote the ending plainly first" } });
@@ -270,7 +280,7 @@ try {
   const unpin = await call("POST", "/usual", { key, body: { try_id: t1.body.id, pinned: false } });
   check("POST /usual pins and unpins a try", pin.status === 200 && pin.body.pinned_tries.includes(t1.body.id) && unpin.body.pinned_tries.length === 0);
   const exView = await call("GET", `/exercises/${ex.body.id}`, { key });
-  check("GET /exercises/:id has the tries, notes, and both finish questions ahead of time", exView.body.tries.length === 2 && exView.body.notes.length === 5 && /Quote the piece/.test(exView.body.ahead.questions.ease) && /surprised you/.test(exView.body.ahead.questions.pull));
+  check("GET /exercises/:id has the tries, notes, and both finish questions ahead of time", exView.body.tries.length === 2 && exView.body.notes.length === 6 && /Quote the piece/.test(exView.body.ahead.questions.ease) && /surprised you/.test(exView.body.ahead.questions.pull));
   const fin = await call("POST", `/exercises/${ex.body.id}/finish`, { key, body: { ease: { text: "Formal words came easy; the long build fought my habit of stopping short.", quotes: [{ try_id: er.body.id, line: "I ask you all to rise" }] }, pull: { text: "Yes. The delay surprised me.", effects: ["delay", "ceremony"] } } });
   check("finish takes ease and pull in one call, closes the exercise, and asks about two readers", fin.status === 200 && fin.body.status === "finished" && fin.body.kept.join() === "ease,pull" && /two readers/.test(fin.body.pause.question));
   const late = await call("POST", "/tries", { key, body: { text: "One more.", exercise_id: ex.body.id } });
@@ -310,6 +320,48 @@ try {
   check("finish keeps register_hold and closes the exercise", rfin.status === 200 && rfin.body.kept.join() === "register_hold" && rfin.body.pause === null);
   const reach2 = await call("GET", "/reach", { key });
   check("GET /reach shows register exercises in their own group, in date order", reach2.body.registers.exercises.length === 1 && reach2.body.registers.exercises[0].register === "an email" && reach2.body.registers.exercises[0].register_hold.length === 1 && !reach2.body.by_style["register:an email"]);
+
+  // Slice 02, Thread C: a kind it rarely writes, what the style asks of it, and a passage that feels wrong.
+  const k2 = (await call("POST", "/keys")).body.key;
+  for (const text of ["The bus was late. I waited. Then it came.", "I read the plan. It was long. I picked a row and started.", "Nothing broke today. I ran the checks. They passed."]) await call("POST", "/tries", { key: k2, body: { text } });
+  const NEAR = "museum-placard--minimalist";
+  const plainRound = async (text) => {
+    const e = await call("POST", "/exercises", { key: k2, body: { style_id: NEAR } });
+    const t = await call("POST", "/tries", { key: k2, body: { exercise_id: e.body.id, text } });
+    await call("POST", `/exercises/${e.body.id}/finish`, { key: k2, body: {} });
+    return { e, t };
+  };
+  await plainRound("Bronze lamp. Two handles. Found near the quay.");
+  await plainRound("Clay cup. One crack. Found near the well.");
+  const h2 = await call("GET", "/styles/history", { key: k2 });
+  check("a kind at 2 pieces reads as familiar, and kinds with fewer read as rarely written", !h2.body.rarely_written.includes("notice") && h2.body.rarely_written.includes("speech") && h2.body.pieces_per_kind.notice === 2);
+  check("the far styles inside the rarely written kinds are listed on their own", h2.body.far_in_rarely_written_kinds.length === 5 && h2.body.far_in_rarely_written_kinds.every((f) => h2.body.rarely_written.includes(f.kind)) && h2.body.far_in_rarely_written_kinds.some((f) => f.kind === "speech"));
+  const near = await call("POST", "/exercises", { key: k2, body: { style_id: NEAR } });
+  check("a familiar kind with a near style reads as familiar and close to the usual", near.status === 201 && /^Familiar/.test(near.body.for_you.kind_reads) && near.body.for_you.far === false && near.body.for_you.measures_apart <= 1 && /near how you write/.test(near.body.for_you.invite));
+  const nearT = await call("POST", "/tries", { key: k2, body: { exercise_id: near.body.id, text: "Stone bowl. Rim chipped. Found near the gate." } });
+  const nearMap = await call("GET", `/tries/${nearT.body.id}/style-map`, { key: k2 });
+  check("near the usual, the pause leaves the unusual invite out, and the map says the style sits close", nearT.body.pause.unusual === null && nearMap.body.departs_from_your_usual.far === false && /close to your usual/.test(nearMap.body.unusual.invite));
+  await call("POST", `/exercises/${near.body.id}/finish`, { key: k2, body: {} });
+
+  const FAR = "wedding-toast--baroque";
+  const TOAST3 = "Friends, gathered here beneath these lanterns, and kin, who have travelled from the hills and from the harbour, I rise to speak of two people whose patience, whose stubbornness, and whose laughter have carried them, through every season, to this table, whereas the rest of us, indeed, have merely watched. Let the record show, therefore, that they met in a queue, that the queue moved slowly, and that neither of them, being stubborn, would give up the place they had held since morning. Upon that slow beginning, which they have never once regretted, they built a house of small mercies, each one folded into the next like a clause into a clause. Whereas most of us, hereby confessing it, would have left the queue, they stayed, and the staying, indeed, became the story, and the story became the marriage. Accordingly, I ask you, who have come so far, to hold in mind the long road, the many winters, the lamps that were lit, and the doors that were opened, for every one of those, thus gathered, has led to this table. Therefore, let us rise, and raise our glasses, and drink to them, as the band, which has waited with the patience of saints, begins again.";
+  const far = await call("POST", "/exercises", { key: k2, body: { style_id: FAR, why_this_one: "A speech asks me to leave my short lines and build long, layered sentences. I rarely write speeches." } });
+  check("a rarely written kind with a far style reads as rarely written and far, and asks for the shift up front", far.status === 201 && /^Rarely written/.test(far.body.for_you.kind_reads) && far.body.for_you.far === true && far.body.for_you.measures_apart >= 3 && far.body.for_you.apart_on.includes("sentence_words") && /Name the shift/.test(far.body.for_you.invite));
+  const farT = await call("POST", "/tries", { key: k2, body: { exercise_id: far.body.id, text: TOAST3, intent: "build long layered sentences all the way through" } });
+  check("far from the usual, the pause carries the unusual invite beside its one question, naming the measures apart", farT.status === 201 && farT.body.pause.unusual?.body.kind === "unusual" && /sits far from your usual/.test(farT.body.pause.unusual.invite) && /sentence_words/.test(farT.body.pause.unusual.invite) && farT.body.pause.question === "Where does the map show you sliding back, and what will you change?");
+  const farMap = await call("GET", `/tries/${farT.body.id}/style-map`, { key: k2 });
+  const FAR_STYLE = (await call("GET", `/exercises/${far.body.id}`, { key: k2 })).body.style.targets;
+  const holdsAll = farMap.body.by_third.every((th) => Object.entries(FAR_STYLE).every(([m, band]) => band === "any" || th.beside[m].this_third === band));
+  check("the far piece's thirds all hold the style's targets, and the map marks no drift back to the usual", farMap.status === 200 && holdsAll && farMap.body.drift_marks.length === 0 && farMap.body.departs_from_your_usual.far === true);
+  const noAnchor = await call("POST", `/exercises/${far.body.id}/notes`, { key: k2, body: { kind: "unusual", try_id: farT.body.id, text: "The sentences are longer than mine." } });
+  check("an unusual note quotes the words in the piece, and says so when it does not", noAnchor.status === 400 && /quotes/.test(noAnchor.body.message));
+  const badShift = await call("POST", `/exercises/${far.body.id}/notes`, { key: k2, body: { kind: "unusual", try_id: farT.body.id, shift: "  ", text: "x", quotes: [{ line: "Friends, gathered here" }] } });
+  check("a shift is a short phrase in the agent's words", badShift.status === 400 && /shift/.test(badShift.body.message));
+  const unusual = await call("POST", `/exercises/${far.body.id}/notes`, { key: k2, body: { kind: "unusual", try_id: farT.body.id, shift: "hold each sentence open, folding clause into clause, before it lands", text: "My usual is a short line that lands at once. This style asks me to delay the landing, so the reader waits for the point. It shows in the clause that folds into a clause.", quotes: [{ line: "each one folded into the next like a clause into a clause" }] } });
+  check("an unusual note diagnoses the shift the style demands and anchors it in the piece", unusual.status === 201 && unusual.body.kind === "unusual" && /^hold each sentence open/.test(unusual.body.shift) && unusual.body.quotes[0].line.startsWith("each one folded"));
+  const farFin = await call("POST", `/exercises/${far.body.id}/finish`, { key: k2, body: { ease: { text: "The long build came once I stopped aiming for the landing.", quotes: [{ try_id: farT.body.id, line: "Upon that slow beginning" }] } } });
+  const h3 = await call("GET", "/styles/history", { key: k2 });
+  check("the far piece finishes, and the kind it rarely wrote now counts one piece", farFin.status === 200 && farFin.body.status === "finished" && h3.body.pieces_per_kind.speech === 1 && h3.body.rarely_written.includes("speech") && h3.body.pieces_per_kind.notice === 3);
 
   // Sign-in STUB, local-dev mode: the human door.
   const H = (email) => ({ "X-Dev-Human-Email": email });

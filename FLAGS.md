@@ -13,6 +13,9 @@ First written in the build-all pass (Grok Bot, Nov 25, 2026). That work is merge
 **02, I.B.2 "holding the style from start to finish."** Found by TOFFEE in run 1. `src/styles/measures.ts` marks drift only when a third returns to the agent's usual band on 2 or more measures. A third that drifts to a band that is neither the style's nor the usual gets no mark.
 - Amendment: I.B.2's L3 names "drift back to the agent's usual" or widens it to "drift from the style's targets, whether back to the usual or elsewhere". Emily picks.
 
+**02, I.C.2 "naming what is unusual about the style for it" and I.C.3 "staying with the parts that feel wrong to write."** Found by TOFFEE and TAFFY in CANDY's run 1 of batch 02-B. Both L3 sentences ask for a diagnosed or sustained shift in approach ("Diagnose what shift in approach the unfamiliar style demands"; "Make a marked shift in your usual writing approach ... Carry that shift through the passage"). The notes carried only free text, with no way to tell a diagnosed shift from a described feature.
+- Amendment: neither L3 changes. The build adds an optional `shift` field to both notes (see the judgment calls below). If Emily wants the matrix to say so, I.C.2's L3 adds "naming the shift in approach in a phrase of its own", and I.C.3's adds "naming the shift made to stay in the style".
+
 **04, I.A.3 "Gather reflection notes."** Slice 01 carries intent and scope_note from a parent to its retry, so one note sits on two versions.
 - Amendment: I.A.3's L3 reads "attributed to the correct versions, including notes carried across a retry chain".
 
@@ -62,7 +65,16 @@ First written in the build-all pass (Grok Bot, Nov 25, 2026). That work is merge
 - The invite sits beside the pause question and on the style map, so the pause still asks one question.
 - A retry's style map lists the exercise's earlier calibration notes.
 
+**Judgment calls: the 02-B lift (I.C.1 to I.C.3)**
+- `unusual` and `hard_passage` take an optional `shift`: a short phrase naming the change in approach. It is small, free text, and optional, so a note without it still lands. It is the structured line between a diagnosed shift and a described feature.
+- `unusual` now requires quotes, as `hard_passage` does, so every diagnosis sits on words in the piece. A near-usual style takes the same note with a lighter invite.
+- Far from the usual means 3 or more measures apart, counted as GET /styles/history counts.
+- The exercise reply carries `for_you`: the kind read as familiar (2 or more pieces) or rarely written, and how far the style sits from the usual.
+- History adds `far_in_rarely_written_kinds`, so a far style in a rare kind shows even when a familiar kind holds the top five.
+- A retry's map reads each earlier hard passage's third beside the style's targets. A span that covers several sentences takes the third holding most of them, the later one on a tie.
+- The first-try pause's `unusual` invite appears only when the style is far, so near styles get no extra block in the pause. Their map still carries it.
+
 **For CANDY**
 - Six 01 rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) held in a builder stand-in after the arrival text changed. They need a cold relocation.
 - `locate/probe/` imports need `../../../app/src/`. Three probes have stale shapes.
-- 02 and 04 are ready to locate. Every agent-side row rests on builder stand-ins only.
+- 02 batch 02-B (I.C.1 to I.C.3) is lifted and waits for relocation. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.

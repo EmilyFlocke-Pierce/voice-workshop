@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Lifted 02 I.C.1 to I.C.3 after locate batch 02-B (run 1, all at L2*). `unusual` and `hard_passage` take an optional `shift`, and `unusual` requires quotes. The exercise reply (`for_you`), the first-try pause, the style map, and the arrival text invite them. A retry's map reads each earlier hard passage's third beside the style's targets. History adds `far_in_rarely_written_kinds`. Walkthrough 142 of 142.
+- Saved locate batch 02-B run 1 at `02-experimenting-with-styles/locate/02-B-run1.md`. Logged the I.C.2 and I.C.3 find in FLAGS.md and closed two quirks in 02's QUIRKS.md. No matrix changed.
 - Lifted 02 I.B.1 after locate run 1: the `calibration` note now names one feature, and the pause, the style map, the exercise reply, and the arrival text invite it. A retry's style map lists earlier calibrations. Walkthrough 125 of 125.
 - Saved locate run 1 (batch 02-A) at `02-experimenting-with-styles/locate/02-A-run1.md`. LOCATE.md names the folder for later batches.
 - Logged the run's finds in FLAGS.md and three quirks in 02's QUIRKS.md. No matrix changed.
