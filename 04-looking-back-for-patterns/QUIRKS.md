@@ -13,12 +13,15 @@ A to-be-done list. None of these holds a level.
 | The full-length timing check ran at 0.84 s against the 1 s cap on the box. | Grok Bot | test:lookback | If it fails on a slower machine, lower lookback_chars, not the cap. |
 | The misplaced/ambiguous audit inspects `free_text` only and requires a double-quoted span of 3 words or more. (CANDY, 04-A run 1) | I.A.3 | Leave it. The audit looks for a quoted span the agent set against another version. Short spans and unquoted words would flag ordinary language. A later move can widen it if a locator finds a misplaced note the audit missed. |
 | A mark note's assembled `text` adds field prefixes (`why back:`, `less familiar:`). (CANDY, 04-A run 1) | I.A.3 | Leave the prefixes so the assembled line still names which field each part came from when it is shown as one note. The audit uses `what_tried` as `free_text`, without those prefixes. A later move can drop the prefixes if they get in the way of reading. |
+| `COMPARE_MEASURES` and `SHAPE_NAMES` overlap only on closing length (`closing_words` / `short_landing`). (CANDY, 04-B run 1) | I.B.1, II.B.4 | Leave both. One is a word count on /compare; the other is a shape flag (a last sentence of 6 words or fewer) on /recurring. They answer different questions. A later move can point from one to the other if a locator wants them side by side. |
 
 ## Closed
 
 | Quirk | Commit |
 |---|---|
-| `04/MANIFEST.md` (and SESSION) still said "walkthrough 118 of 118" after the walkthrough had grown (CANDY, 04-A run 1). The count is now 171 of 171, matching the current walkthrough. | this commit |
+| `measureOf` / `COMPARE_MEASURES` were not unit-tested in `lookback.test.ts` (CANDY, 04-B run 1). They have a unit check now, on a known piece. | the 04-B lift |
+| `breaks_after_first` in `timeline()` was computed and never asserted (CANDY, 04-B run 1). A unit check now names the pieces that break after the first appearance. | the 04-B lift |
+| `04/MANIFEST.md` (and SESSION) still said "walkthrough 118 of 118" after the walkthrough had grown (CANDY, 04-A run 1). The count is now 171 of 171, matching the current walkthrough. | the 04-A close |
 
 ## Ideas
 

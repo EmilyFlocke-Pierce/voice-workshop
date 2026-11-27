@@ -2,7 +2,7 @@
 
 Matrix: `criteria.json` (Quilt session 1925caee, v1). L3 is the target. Plan: `PLAN.md` (column 3 filled). Branch `build-all`, commit 2ab3810.
 
-**Locate status:** batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1 (`locate/04-A-run1.md`). The other rows wait for locating. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
+**Locate status:** batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1 (`locate/04-A-run1.md`). Batch 04-B (I.B.1, I.B.2, I.C.1) was located in run 1 at 2/3 L3* (`locate/04-B-run1.md`); I.B.2 and I.C.1 carry forward, and I.B.1 is lifted below, waiting for relocation. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
 
 Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "test:lookback" a test in `npm run test:lookback`, with fixtures in `test/lookback-corpus.json`.
 
@@ -14,9 +14,9 @@ Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "te
 | I.A.2 Gather layered pieces | Built. Located at L3* in run 1 of batch 04-A (unanimous, `locate/04-A-run1.md`). Retry chains stand in for layered pieces until 03: chains in order, parent labels, pull a missing parent in with the next label. | Walkthrough: "a retry shows its parent's label and its chain". test:lookback: expect pull_next_label. |
 | I.A.3 Gather reflection notes | Built. Located at L3* in run 1 of batch 04-A (unanimous, `locate/04-A-run1.md`). One id per note; audit flags misplaced and ambiguous notes; the agent places a note with POST /notes/:note_id. 🦋 in FLAGS: carried intent and scope_note sit on two versions. | test:lookback: expect misplaced, not_listed; "every note has one id, ... placements move a note". |
 | I.A.4 Assemble review corpus | Built. Located at L3* in run 1 of batch 04-A (unanimous, `locate/04-A-run1.md`). Scope by all, dates, sessions, or kinds; the limits block says what is left out (cap, slice 02 tables, layered pieces). | Walkthrough: lookback lines. test:lookback: timing checks. |
-| I.B.1 Compare across pieces | Built. GET /compare?measure= gives one number per piece in order, with style and session. | Walkthrough: "compare shows one measure per piece". |
-| I.B.2 Track repeated choices | Built. Pattern view timeline: first appearance, gaps, returns. | test:lookback: "counts: ..." (first appearance t12, return t15). |
-| I.C.1 Name recurring choices | Built. Recurring wording exact and near; patterns take several wordings under one move. | test:lookback: expect near. |
+| I.B.1 Compare across pieces | Built, lifted after run 1 of batch 04-B (recorded L2*: values and style tags, no reflection notes). GET /compare?measure= now gives one number per piece in order, names how the value holds, rises, or falls along the sequence, and carries every reflection-note kind that belongs to the piece (not only intent). | Walkthrough: "compare shows how a feature holds or shifts across the sequence, with reflection notes beside the pieces". test:lookback: compareAlong. |
+| I.B.2 Track repeated choices | Built. Located at L3* in run 1 of batch 04-B (unanimous, `locate/04-B-run1.md`). Pattern view timeline: first appearance, gaps, returns, and breaks after the first appearance. | test:lookback: "counts: ..." (first appearance t12, return t15), "timeline names the pieces that break after the first appearance". |
+| I.C.1 Name recurring choices | Built. Located at L3* in run 1 of batch 04-B (unanimous, `locate/04-B-run1.md`). Recurring wording exact and near; patterns take several wordings under one move, with word-for-word quote checking and versioned revisions. | Walkthrough: "a named pattern counts against the latest version of each chain by default". test:lookback: expect near. |
 | II.A.1 cross-reference intent notes | Built. Pattern view lines up intent notes against where the pattern appears, grouped by style. | Walkthrough: pattern lines. |
 | II.A.2 find the friction point where a repeat began | Built. Timeline first appearance with the piece's style and notes beside it. | test:lookback: "counts: ...". |
 | II.B.1 identify baseline phrases | Built. Recurring wording, 3 to 6 words, exact and near. | Walkthrough: "recurring and dropped answer with candidates, not verdicts". |
@@ -50,7 +50,7 @@ npm run test:lookback
 npm run walkthrough
 ```
 
-Expect test:lookback 16 of 16 and the walkthrough 171 of 171. The full-length timing check ran at about 0.84 s on the box against the 1 s cap; a slower machine may need a second look.
+Expect test:lookback 19 of 19 and the walkthrough 174 of 174. The full-length timing check ran at about 0.84 s on the box against the 1 s cap; a slower machine may need a second look.
 
 ## Files
 

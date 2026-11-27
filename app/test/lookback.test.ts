@@ -2,10 +2,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { audit, buildCorpus, type Rows } from "../src/lookback/corpus.ts";
+import { audit, buildCorpus, type Rows, type TryIn } from "../src/lookback/corpus.ts";
 import { recurring } from "../src/lookback/recurring.ts";
 import { dropped, removedRuns } from "../src/lookback/dropped.ts";
-import { countPattern, rankPatterns, timeline } from "../src/lookback/patterns.ts";
+import { COMPARE_MEASURES, compareAlong, countPattern, measureOf, rankPatterns, timeline } from "../src/lookback/patterns.ts";
 import { putChunked, CHUNK_BYTES } from "../src/lookback/store.ts";
 import { isNear } from "../src/lookback/near.ts";
 import { diffTries } from "../src/feedback/diff.ts";
@@ -89,6 +89,81 @@ test("counts: per piece apart from the total, the default denominator is the lat
   assert.equal(tl.first_appearance, label(full, "t12"));
   assert.ok(tl.returns.includes(label(full, "t15")));
 });
+
+test("measureOf gives a number for every COMPARE_MEASURES on a known piece", () => {
+  const text = "Hello there, friend. How are you today? I am fine.";
+  assert.equal(measureOf(text, "sentence_count"), 3);
+  assert.equal(measureOf(text, "sentence_words"), 3.33);
+  assert.ok(COMPARE_MEASURES.every((m) => typeof measureOf(text, m) === "number"));
+  assert.equal(measureOf(text, "question_share"), Math.round((1 / 3) * 100) / 100);
+  assert.equal(measureOf(text, "closing_words"), 3);
+  assert.equal(measureOf(text, "opening_repeat"), 0);
+  assert.equal(measureOf("", "sentence_count"), 0);
+  const repeated = "The kettle sang. The window fogged. I left.";
+  assert.ok(measureOf(repeated, "opening_repeat") > 0);
+});
+
+test("compareAlong lines up reflection notes of every kind and names how the measure holds or shifts", () => {
+  const shortA = "The kettle sang. I poured a cup. The window fogged.";
+  const shortB = "The lantern burned. I took a seat. The hallway quieted.";
+  const longC = "Friends gathered here beneath these lanterns I rise to speak of two people whose patience has carried them through every season to this table.";
+  const longD = "Beloved friends who have crossed weather and water I rise again to speak of a marriage built in the quiet returns of many days.";
+  const rows: Rows = {
+    tries: [
+      tryRow("a", shortA, { intent: "keep the lines short and land at once" }),
+      tryRow("b", shortB, { scope_note: "same short landing as the first sitting" }),
+      tryRow("c", longC, { diagnosis: "the sentence now holds the whole toast in one build" }),
+      tryRow("d", longD, { intent: "stay with the long build" }),
+    ],
+    marks: [{ id: "m1", try_id: "c", what_tried: "long ceremonial build", why_back: "to see the sentence_words rise", own_lines: null, less_familiar: null }],
+    stitches: [],
+    xnotes: null,
+    exercises: null,
+    placements: [],
+  };
+  const c = buildCorpus(rows, ["a", "b", "c", "d"]);
+  const along = compareAlong(c, "sentence_words");
+  assert.equal(along.pieces.length, 4);
+  assert.equal(along.pieces[0].shift, "first");
+  assert.equal(along.pieces[1].shift, "holds");
+  assert.equal(along.pieces[1].value, along.pieces[0].value);
+  assert.equal(along.pieces[2].shift, "rises");
+  assert.ok(along.pieces[2].value > along.pieces[1].value);
+  assert.equal(along.pieces[3].shift, "holds");
+  assert.equal(along.pieces[3].value, along.pieces[2].value);
+  assert.ok(along.pieces[0].notes.some((n) => n.kind === "intent" && /keep the lines short/.test(n.text)));
+  assert.ok(along.pieces[1].notes.some((n) => n.kind === "scope_note" && /same short landing/.test(n.text)));
+  assert.ok(along.pieces[2].notes.some((n) => n.kind === "diagnosis" && /one build/.test(n.text)));
+  assert.ok(along.pieces[2].notes.some((n) => n.kind === "mark" && /long ceremonial build/.test(n.text)));
+  assert.ok(along.pieces[3].notes.some((n) => n.kind === "intent" && /stay with the long build/.test(n.text)));
+  assert.ok(/P1 starts at/.test(along.along_the_sequence) && /P2 holds at/.test(along.along_the_sequence) && /P3 rises to/.test(along.along_the_sequence) && /P4 holds at/.test(along.along_the_sequence));
+});
+
+test("timeline names the pieces that break after the first appearance", () => {
+  const text = "The kettle sang. I poured a cup. The window fogged.";
+  const rows: Rows = {
+    tries: ["a", "b", "c", "d", "e"].map((id) => tryRow(id, text, {})),
+    marks: [],
+    stitches: [],
+    xnotes: null,
+    exercises: null,
+    placements: [],
+  };
+  const c = buildCorpus(rows, ["a", "b", "c", "d", "e"]);
+  const per: Record<string, number> = { P2: 1, P4: 1 };
+  const denom = c.pieces.map((p) => p.label);
+  const tl = timeline(c, per, denom);
+  assert.equal(tl.first_appearance, "P2");
+  assert.deepEqual(tl.gaps, [["P3"]]);
+  assert.deepEqual(tl.returns, ["P4"]);
+  assert.deepEqual(tl.breaks_after_first, ["P3", "P5"]);
+  assert.ok(!tl.breaks_after_first.includes("P1"), "a piece before the first appearance is not a break after first");
+});
+
+function tryRow(id: string, text: string, notes: { intent?: string | null; scope_note?: string | null; change_note?: string | null; diagnosis?: string | null }): TryIn {
+  const seq = "abcde".indexOf(id);
+  return { id, parent_id: null, session_id: "s1", text, intent: notes.intent ?? null, scope_note: notes.scope_note ?? null, change_note: notes.change_note ?? null, diagnosis: notes.diagnosis ?? null, rough_edges: null, landed: null, style_tag: "plain", prompt_form: null, prompt_style: null, prompt_author: null, exercise_id: null, created_at: `2026-11-01T00:00:0${seq}Z` };
+}
 
 function generated(n: number): Rows {
   const words = "river lantern window kettle harbor gate bread morning storm square road mill dog night light boats tide door hall cold".split(" ");

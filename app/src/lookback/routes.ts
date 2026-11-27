@@ -8,7 +8,7 @@ import { KINDS, STYLE_BY_ID, kindOfForm } from "../styles/catalog.ts";
 import { audit, buildCorpus, type Corpus, type Rows, type TryIn } from "./corpus.ts";
 import { recurring } from "./recurring.ts";
 import { dropped } from "./dropped.ts";
-import { checkInstances, COMPARE_MEASURES, countPattern, denominatorLabels, measureOf, rankPatterns, timeline, type CompareMeasure, type Denominator, type Instance } from "./patterns.ts";
+import { checkInstances, COMPARE_MEASURES, compareAlong, countPattern, denominatorLabels, rankPatterns, timeline, type CompareMeasure, type Denominator, type Instance } from "./patterns.ts";
 import { putChunked } from "./store.ts";
 
 export const CORPUS_Q = "What is missing from this set, and what does that limit?";
@@ -296,9 +296,11 @@ export async function lookbackRoutes(req: Request, env: Env, url: URL, agentId: 
     if (section === "compare") {
       const measure = url.searchParams.get("measure") as CompareMeasure | null;
       if (!measure || !(COMPARE_MEASURES as readonly string[]).includes(measure)) return json({ message: `measure takes one of: ${COMPARE_MEASURES.join(", ")}.` }, 400);
+      const along = compareAlong(corpus, measure);
       return json({
-        id: lb.id, measure,
-        pieces: corpus.pieces.map((p) => ({ label: p.label, value: measureOf(corpus.byTry.get(p.try_id)!.text, measure), style: p.style.value, style_from: p.style.source, session_id: p.session_id })),
+        id: lb.id, measure: along.measure,
+        pieces: along.pieces,
+        along_the_sequence: along.along_the_sequence,
         style_order: "exercise style_id when slice 02 is here, then prompt_style, then prompt_author, then your style_tag",
       });
     }

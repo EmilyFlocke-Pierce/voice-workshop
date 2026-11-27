@@ -89,3 +89,48 @@ export function measureOf(text: string, m: CompareMeasure): number {
   const firsts = ss.map((s) => s.words[0]);
   return r(firsts.filter((f, i) => firsts.some((g, j) => j !== i && g === f)).length / n);
 }
+
+export type CompareShift = "first" | "holds" | "rises" | "falls";
+
+export interface ComparePiece {
+  label: string;
+  value: number;
+  shift: CompareShift;
+  delta: number | null;
+  style: string | null;
+  style_from: string | null;
+  session_id: string;
+  notes: { id: string; kind: string; text: string; about: "try" | "exercise"; carried_from_parent?: boolean }[];
+}
+
+// One measure across every piece in order, with how the value holds or shifts, and the reflection notes that belong to each piece.
+export function compareAlong(c: Corpus, measure: CompareMeasure): { measure: CompareMeasure; pieces: ComparePiece[]; along_the_sequence: string } {
+  const rows = c.pieces.map((p) => {
+    const n = c.notes;
+    const notes = p.note_ids.map((id) => {
+      const note = n.get(id)!;
+      return { id, kind: note.kind, text: note.text, about: note.about, ...(note.carried_from_parent ? { carried_from_parent: true as const } : {}) };
+    });
+    return {
+      label: p.label,
+      value: measureOf(c.byTry.get(p.try_id)!.text, measure),
+      style: p.style.value,
+      style_from: p.style.source,
+      session_id: p.session_id,
+      notes,
+    };
+  });
+  const pieces: ComparePiece[] = rows.map((row, i) => {
+    if (i === 0) return { ...row, shift: "first", delta: null };
+    const delta = Math.round((row.value - rows[i - 1].value) * 100) / 100;
+    const shift: CompareShift = delta === 0 ? "holds" : delta > 0 ? "rises" : "falls";
+    return { ...row, shift, delta };
+  });
+  const step = (p: ComparePiece) =>
+    p.shift === "first" ? `${p.label} starts at ${p.value}` :
+    p.shift === "holds" ? `${p.label} holds at ${p.value}` :
+    p.shift === "rises" ? `${p.label} rises to ${p.value}` :
+    `${p.label} falls to ${p.value}`;
+  const along_the_sequence = pieces.length ? `Along ${measure}: ${pieces.map(step).join("; ")}.` : `No pieces to compare on ${measure}.`;
+  return { measure, pieces, along_the_sequence };
+}

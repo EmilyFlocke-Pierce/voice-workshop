@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Batch 04-A closed at 4/4 L3* after run 1. The other rows wait for locating. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B located at 2/3 L3* (I.B.2, I.C.1) and I.B.1 lifted, waiting for relocation. The other rows wait for locating. |
 
 ## Decisions
 
@@ -30,7 +30,7 @@ All rows Nov 25, 2026. Code lives in `app/`.
 | Patterns, counts, claims, findings | As in the plan. | `patterns.ts`, `routes.ts` |
 | Nudge | At session end with 6 tries across 2 sessions and no lookback since the last end. | `routes.ts`, `src/index.ts` |
 | Timing | First run 1069 ms on 200 pieces against the 1000 ms cap; recurring was the slow part. Two-pass maps and 4-word near brought 200 short pieces to about 0.27 s. Then 200 pieces at 8000 characters took about 2 s, so I added `lookback_chars: 400000`: about 50 full pieces in about 0.8 s. | `src/caps.ts`, `test/lookback.test.ts` |
-| Checks | test:lookback 16 of 16; walkthrough 171 of 171 with the lookback and nudge lines. | |
+| Checks | test:lookback 19 of 19; walkthrough 174 of 174 with the lookback and nudge lines. | |
 
 Two test fixes, both on my own expectations: the first appearance of the fixture move is t12, not t15. The dropped check now reads returns on the words the change note quotes.
 
@@ -47,4 +47,8 @@ Each agent-side row needs a cold try-out by CANDY's locators.
 ## Locate run 1 (batch 04-A), Nov 27, 2026
 
 Report: `locate/04-A-run1.md`. CANDY located I.A.1 to I.A.4 against `98264b0` and closed the batch at 4/4 L3* on run 1, unanimous. Two 🦋 takes (notes whose try sits outside the corpus; `parent_outside` checks one hop) are in FLAGS.md. Three quirks are in QUIRKS.md, including the stale walkthrough count, now updated to 171 of 171. The other rows of slice 04 wait for locating.
+
+## Locate run 1 and lift (batch 04-B), Nov 27, 2026
+
+Report: `locate/04-B-run1.md`. CANDY located I.B.1, I.B.2, and I.C.1 against `98264b0` at 2/3 L3* (I.B.2 and I.C.1 unanimous; I.B.1 at L2*). The lift adds reflection notes of every kind that belongs to a piece beside it on GET /compare, and names how the measure holds, rises, or falls along the sequence. A walkthrough finishes a four-piece sequence that holds, then rises, then holds, with intent, scope_note, diagnosis, and a mark beside the pieces. `measureOf` and `breaks_after_first` now have unit checks. Three 🦋 takes are in FLAGS.md. Waiting for relocation of I.B.1; I.B.2 and I.C.1 carry forward.
 

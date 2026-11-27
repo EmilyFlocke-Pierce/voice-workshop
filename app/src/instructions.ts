@@ -86,7 +86,7 @@ Look back for patterns
   GET /lookbacks/:id/audit         pieces with no notes, identical pieces, parents outside the scope, notes that may belong to another version.
   POST /lookbacks/:id/pull         {"try_id": "..."} brings a missing piece in. POST /lookbacks/:id/limits {"limits_note": "..."} says what the set leaves out.
   GET /lookbacks/:id/recurring     wording, openings, and shapes that repeat across your pieces. /dropped shows what retries left out and what came back.
-  GET /lookbacks/:id/compare       ?measure=sentence_words | sentence_count | closing_words | opening_repeat | question_share, one number per piece.
+  GET /lookbacks/:id/compare       ?measure=sentence_words | sentence_count | closing_words | opening_repeat | question_share, one number per piece, how it holds or shifts along the sequence, and the reflection notes beside each piece.
   POST /lookbacks/:id/patterns     {"name", "inclusion_rule", "instances": [{"piece": "P3", "quote": "exact words"}]}. Revise with /patterns/:pid/revise.
   POST /lookbacks/:id/claims       {"pattern_id", "kind": "taste | default | mixture | unclear", "evidence", "interpretation", "counterexamples", "rejections", "qualifiers"}
   GET /lookbacks/:id/findings      your named patterns, their pieces, and your claims, as plain text to take with you.

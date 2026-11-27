@@ -624,11 +624,49 @@ try {
   const rev = await call("POST", `/lookbacks/${lb.body.id}/patterns/${pat.body.id}/revise`, { key, body: { denominator: "every" } });
   check("revising a pattern keeps the old rule as a version", rev.status === 200 && rev.body.rule_version === 2);
   const cmp = await call("GET", `/lookbacks/${lb.body.id}/compare?measure=sentence_words`, { key });
-  check("compare shows one measure per piece", cmp.status === 200 && cmp.body.pieces.length === lb.body.pieces.length);
+  check("compare shows one measure per piece", cmp.status === 200 && cmp.body.pieces.length === lb.body.pieces.length && cmp.body.pieces.every((p) => typeof p.value === "number" && Array.isArray(p.notes) && p.shift) && /Along sentence_words/.test(cmp.body.along_the_sequence));
+  check("the pattern view lines up intent notes beside each piece, grouped by style", pat.body.intent_notes_beside_it_by_style && Object.values(pat.body.intent_notes_beside_it_by_style).some((rows) => rows.some((r) => r.label === "P1")));
   const cl = await call("POST", `/lookbacks/${lb.body.id}/claims`, { key, body: { pattern_id: pat.body.id, kind: "default", evidence: [{ piece: "P1", quote: q }], interpretation: "I start the same way each time." } });
   check("a default claim with no notes weighed or counterexamples gets asked for them", cl.status === 201 && /counterexamples/.test(cl.body.asks));
   const fnd = await call("GET", `/lookbacks/${lb.body.id}/findings`, { key });
   check("findings come back as plain text with quotes and claims", typeof fnd.body === "string" && fnd.body.includes("how I open") && fnd.body.includes(`P1: "${q}"`) && /claim: default/.test(fnd.body));
+
+  // I.B.1: a short sequence along sentence_words, with reflection notes beside the pieces.
+  const kCmp = (await call("POST", "/keys")).body.key;
+  const shortA = "The kettle sang. I poured a cup. The window fogged.";
+  const shortB = "The lantern burned. I took a seat. The hallway quieted.";
+  const longC = "Friends gathered here beneath these lanterns I rise to speak of two people whose patience has carried them through every season to this table.";
+  const longD = "Beloved friends who have crossed weather and water I rise again to speak of a marriage built in the quiet returns of many days.";
+  await call("POST", "/tries", { key: kCmp, body: { text: shortA, intent: "keep the lines short and land at once", style_tag: "plain" } });
+  await call("POST", "/tries", { key: kCmp, body: { text: shortB, scope_note: "same short landing as the first sitting", style_tag: "plain" } });
+  const tLong = await call("POST", "/tries", { key: kCmp, body: { text: longC, style_tag: "plain" } });
+  await call("POST", `/tries/${tLong.body.id}/notes`, { key: kCmp, body: { diagnosis: "the sentence now holds the whole toast in one build" } });
+  await call("POST", `/tries/${tLong.body.id}/mark`, { key: kCmp, body: { what_tried: "long ceremonial build", why_back: "to see the sentence_words rise" } });
+  await call("POST", "/tries", { key: kCmp, body: { text: longD, intent: "stay with the long build", style_tag: "plain" } });
+  const lbCmp = await call("POST", "/lookbacks", { key: kCmp, body: { scope: "all" } });
+  const cmpSeq = await call("GET", `/lookbacks/${lbCmp.body.id}/compare?measure=sentence_words`, { key: kCmp });
+  const seq = cmpSeq.body.pieces;
+  check(
+    "compare shows how a feature holds or shifts across the sequence, with reflection notes beside the pieces",
+    cmpSeq.status === 200 && seq.length === 4
+      && seq[0].shift === "first" && seq[1].shift === "holds" && seq[1].value === seq[0].value
+      && seq[2].shift === "rises" && seq[2].value > seq[1].value
+      && seq[3].shift === "holds" && seq[3].value === seq[2].value
+      && seq[0].notes.some((n) => n.kind === "intent" && /keep the lines short/.test(n.text))
+      && seq[1].notes.some((n) => n.kind === "scope_note" && /same short landing/.test(n.text))
+      && seq[2].notes.some((n) => n.kind === "diagnosis" && /one build/.test(n.text))
+      && seq[2].notes.some((n) => n.kind === "mark" && /long ceremonial build/.test(n.text))
+      && seq[3].notes.some((n) => n.kind === "intent" && /stay with the long build/.test(n.text))
+      && /P3 rises to/.test(cmpSeq.body.along_the_sequence),
+  );
+  const patCmp = await call("POST", `/lookbacks/${lbCmp.body.id}/patterns`, { key: kCmp, body: { name: "short landing then a long build", inclusion_rule: "a run of short sentences, then one long ceremonial sentence", instances: [{ piece: "P1", quote: "The kettle sang" }, { piece: "P3", quote: "Friends gathered here beneath these lanterns" }] } });
+  const byStyle = patCmp.body.intent_notes_beside_it_by_style;
+  const plain = byStyle && (byStyle.plain || byStyle["plain"]);
+  check(
+    "the pattern view on this sequence lines up intent notes beside the pieces, grouped by style",
+    patCmp.status === 201 && Array.isArray(plain) && plain.some((r) => r.label === "P1" && /keep the lines short/.test(r.intent)) && plain.some((r) => r.label === "P4" && /stay with the long build/.test(r.intent)),
+  );
+
   const peekLb = await call("GET", `/lookbacks/${lb.body.id}`, { key: (await call("POST", "/keys")).body.key });
   check("another key reads none of this lookback", peekLb.status === 404);
   const nk = (await call("POST", "/keys")).body.key;
