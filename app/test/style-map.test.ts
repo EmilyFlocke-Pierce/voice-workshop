@@ -64,10 +64,32 @@ test("drift: a third is marked when 2 set measures leave the target and match th
   const text = long.repeat(4) + "I ran. I hid. I came back. It was late. I left. I slept.";
   const map = thirdsOf(text);
   const marks = driftMarks(map.thirds, { sentence_words: "long", clauses: "layered", openings: "any", register: "formal", questions: "none" }, usual.bands);
-  assert.ok(marks.some((m) => m.third === "end" && m.measures.includes("sentence_words") && m.measures.includes("clauses")));
+  const end = marks.find((m) => m.third === "end");
+  assert.ok(end && end.measures.includes("sentence_words") && end.measures.includes("clauses"));
+  assert.ok(end.back_to_usual.includes("sentence_words") && end.back_to_usual.includes("clauses"));
   assert.ok(!marks.some((m) => m.third === "opening"));
   for (const m of marks) assert.ok(text.includes(m.quote));
-  assert.deepEqual(driftMarks(map.thirds, { sentence_words: "long", clauses: "layered", openings: "any", register: "formal", questions: "none" }, null), []);
+  const noUsual = driftMarks(map.thirds, { sentence_words: "long", clauses: "layered", openings: "any", register: "formal", questions: "none" }, null);
+  const endNo = noUsual.find((m) => m.third === "end");
+  assert.ok(endNo && endNo.back_to_usual.length === 0 && endNo.elsewhere.includes("sentence_words") && endNo.elsewhere.includes("clauses"));
+});
+
+test("drift: a third is also marked when 2 set measures leave the target for a band that is not the usual", () => {
+  const usual = { sentence_words: "short", clauses: "simple", openings: "varied", register: "plain", questions: "none" };
+  const targets = { sentence_words: "long", clauses: "layered", openings: "any", register: "formal", questions: "none" };
+  const zero = { sentence_words: 0, clauses: 0, openings: 0, register: 0, questions: 0 };
+  const third = (name, bands) => ({ third: name, sentences: { from: 1, to: 3 }, first_sentence: name, values: zero, bands });
+  const holds = { sentence_words: "long", clauses: "layered", openings: "varied", register: "formal", questions: "none" };
+  const elseB = { sentence_words: "medium", clauses: "moderate", openings: "varied", register: "formal", questions: "none" };
+  const marks = driftMarks([third("opening", holds), third("middle", holds), third("end", elseB)], targets, usual);
+  assert.equal(marks.length, 1);
+  assert.deepEqual(marks[0].measures, ["sentence_words", "clauses"]);
+  assert.deepEqual(marks[0].back_to_usual, []);
+  assert.deepEqual(marks[0].elsewhere, ["sentence_words", "clauses"]);
+  const mixed = { ...elseB, sentence_words: "short" };
+  const marks2 = driftMarks([third("end", mixed)], targets, usual);
+  assert.deepEqual(marks2[0].back_to_usual, ["sentence_words"]);
+  assert.deepEqual(marks2[0].elsewhere, ["clauses"]);
 });
 
 test("far from usual counts set targets that differ from the usual's band", () => {

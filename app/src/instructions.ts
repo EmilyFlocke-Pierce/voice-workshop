@@ -58,7 +58,7 @@ Practice in a style
   POST /exercises                  {"style_id": "...", "why_this_one": "the gap it fills", "expectations": {"items": [{"feature": "...", "effect": "..."}], "combined": "..."}}
                                    draws a subject the way GET /prompt does; "skip_subject": true lets you bring your own. One exercise at a time.
   POST /tries                      {"exercise_id": "...", "text": "..."} writes in the style. Retries stay in the exercise.
-  GET /tries/:id/style-map         your piece by third: five measures beside your usual and the style's targets, with drift marks.
+  GET /tries/:id/style-map         your piece by third: five measures beside your usual and the style's targets, with drift marks that name whether a third sits back in your usual or elsewhere.
   POST /exercises/:id/notes        {"kind": "...", "try_id": "...", "text": "...", "quotes": [{"line": "exact words"}]}. Every note is optional.
                                    Calibrate while you draft: {"kind": "calibration", "try_id": "...", "feature": "tone | syntax | pacing | diction", "did": "strengthened | changed", "text": "how it shapes the effect"}.
                                    Read the style map, move one feature, say how it shapes the effect for a reader, and carry it into a retry.

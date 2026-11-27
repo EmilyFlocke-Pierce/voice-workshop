@@ -42,7 +42,7 @@ interface PromptCols {
 
 export const EASE_Q = "Which features made this easy or hard, how did they work together, and which part came from the style and which from your habits? Quote the piece.";
 export const PULL_Q = "Do you want more of this style? Name the effects that draw you, and say if one surprised you.";
-export const DRIFT_Q = "Where does the map show you sliding back, and what will you change?";
+export const DRIFT_Q = "Where does the map show a third leaving the style's targets, back to your usual or elsewhere, and what will you change?";
 export const EFFECTS_Q = "Which moment made the effect, and how? Quote it.";
 export const CALIBRATE_Q = "Which feature did you strengthen or change while drafting, and how does that shape the effect you want a reader to have?";
 export const UNUSUAL_Q = "What shift in your usual approach does this style ask of you? Quote the words in your piece where it departs from how you write.";
@@ -511,7 +511,13 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
         ...th,
         beside: Object.fromEntries(MEASURES.map((m) => [m, { this_third: th.bands[m], your_usual: usual?.bands[m] ?? null, style_target: style?.targets[m] ?? null }])),
       })),
-      drift_marks: drift.map((d) => ({ ...d, reads: `In the ${d.third} third, ${listOf(d.measures)} sit in your usual's band, away from the style's target.` })),
+      drift_marks: drift.map((d) => {
+        const sit = (n: number) => (n === 1 ? "sits" : "sit");
+        const parts: string[] = [];
+        if (d.back_to_usual.length) parts.push(`${listOf(d.back_to_usual)} ${sit(d.back_to_usual.length)} in your usual's band, away from the style's target`);
+        if (d.elsewhere.length) parts.push(`${listOf(d.elsewhere)} ${sit(d.elsewhere.length)} away from the style's target${usual ? ", not in your usual's band" : ""}`);
+        return { ...d, reads: `In the ${d.third} third, ${parts.join("; ")}.` };
+      }),
       what_it_counts: "Words per sentence, clauses per sentence (commas, semicolons, colons, and joining words, with no reading of nesting), repeated openings, register words per 100, and the share of questions. It leaves out warmth, irony, sound, and imagery; your effects notes carry those.",
       calibrate: ex && style ? calibrateInvite(ex.id, t.id, !!t.parent_id) : null,
       effects: ex && style ? await effectsSoFar(env, agentId, ex.id, t.id, !!t.parent_id) : null,
@@ -522,7 +528,9 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       your_earlier_calibrations: earlier.length
         ? { notes: earlier.map((e) => ({ try_id: e.try_id, ...(e.extra ? JSON.parse(e.extra) : {}), text: e.text })), read_them_with_this_map: "Set each beside the thirds above: did the feature you worked on move toward the effect you named? A new calibration note records what you see." }
         : null,
-      drift_rule: "A third is marked when, on 2 or more measures the style sets, its band differs from the target and matches your usual.",
+      drift_rule: usual
+        ? "A third is marked when, on 2 or more measures the style sets, its band differs from the target. The mark names which of those sit in your usual's band and which sit elsewhere."
+        : "A third is marked when, on 2 or more measures the style sets, its band differs from the target. With no usual yet, the mark names the measures that sit away from the target.",
       no_style: style ? null : "This try is outside a style exercise, so the map shows the measures and your usual without targets.",
     });
   }

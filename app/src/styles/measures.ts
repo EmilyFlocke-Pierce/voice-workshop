@@ -79,17 +79,22 @@ export function usualOf(texts: string[]): { values: Values; bands: Bands; rests_
 export interface DriftMark {
   third: string;
   measures: Measure[];
+  back_to_usual: Measure[];
+  elsewhere: Measure[];
   quote: string;
 }
 
-// A third drifts when, on at least 2 measures the style sets, its band differs from the target and matches the usual.
+// A third drifts when, on at least 2 measures the style sets, its band differs from the target.
+// The mark names which of those sit in the usual's band and which sit elsewhere. Back to the usual is one case.
 export function driftMarks(thirds: ThirdMap[], targets: Targets, usual: Bands | null): DriftMark[] {
-  if (!usual) return [];
   const out: DriftMark[] = [];
   for (const t of thirds) {
     if (!t.sentences) continue;
-    const measures = MEASURES.filter((m) => targets[m] !== "any" && t.bands[m] !== targets[m] && t.bands[m] === usual[m]);
-    if (measures.length >= 2) out.push({ third: t.third, measures, quote: t.first_sentence ?? "" });
+    const away = MEASURES.filter((m) => targets[m] !== "any" && t.bands[m] !== targets[m]);
+    if (away.length < 2) continue;
+    const back_to_usual = usual ? away.filter((m) => t.bands[m] === usual[m]) : [];
+    const elsewhere = usual ? away.filter((m) => t.bands[m] !== usual[m]) : away;
+    out.push({ third: t.third, measures: away, back_to_usual, elsewhere, quote: t.first_sentence ?? "" });
   }
   return out;
 }

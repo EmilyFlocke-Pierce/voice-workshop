@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batches 02-B and 02-C located and lifted, waiting for relocation. The other 12 rows wait for locating. |
+| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B closed at 3/3 L3* after run 2. Domain I is 9/9 at L3*. Batch 02-C closed at 4/4 L3* after run 2. The other 12 rows wait for locating. |
 
 ## Decisions
 
@@ -115,4 +115,20 @@ The matrix's L3 wording, lined up to exactly:
 - Next: CANDY relocates II.A.1, II.A.2, and II.A.4.
 
 **Judgment calls**, listed in `FLAGS.md`: effects stay free text with the feature field (no verdict field); a note's quotes may hold several lines; the clause proxy is described, not changed.
+
+## Locate run 2 (batch 02-B), Nov 27, 2026
+
+Report: `locate/02-B-run2.md`. CANDY relocated I.C.1, I.C.2, and I.C.3 against `main` at `e5bf7c3` and closed the batch at 3/3 L3*. Domain I of slice 02 is 9/9 at L3*. CANDY found I.C.1 holds under the current wording as written.
+
+## Emily's direction, and the I.B.2 lift (Nov 27, 2026)
+
+Emily's word (t262u to t273u): criteria stay as written. They are a living conversation starter. A 🦋 is a take in writing (what I did, why, and how I read the row) so CANDY, the locators, or Emily can answer with how they saw it. A recut through a builder note happens only if a row is really bad, and only with Emily's co-sign.
+
+**FLAGS.md.** Every 🦋 entry is rewritten as a take: what the locators found, how I read the row, what the build does to meet it as written on every honest reading, and why. Proposed wording is out. The I.C.1 take notes that CANDY found it holds under the current wording as written.
+
+**I.B.2 lift.** TOFFEE found that drift marked only a return to the usual. The L3 asks the agent to monitor passages that drift from the chosen style, in any direction. A third is now marked when 2 or more set measures sit away from the target; the mark names which sit back in the usual and which sit elsewhere. Band edges are unchanged. Walkthrough: 153 of 153, including a third that leaves for a medium, moderate band, not the short usual.
+
+## Locate run 2 (batch 02-C), Nov 27, 2026
+
+Report: `locate/02-C-run2.md`. CANDY relocated II.A.1, II.A.2, and II.A.4 against `main` at `76b0c66` and closed the batch at 4/4 L3*. II.A.3 carried forward from run 1. Three non-blocking quirks are in QUIRKS.md: the effects invite sits on the retry pause (the map and the arrival text still carry it on a first try); `noted` counts across the exercise; and a walkthrough label now matches the check it names.
 

@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+- Rewrote every 🦋 in FLAGS.md as a take (what the locators found, how I read the row, what the build does, and why). Criteria stay as written. A recut through a builder note happens only if a row is really bad, and only with Emily's co-sign. VERSIONING.md and LOCATE.md match that.
+- Lifted 02 I.B.2: drift marks a third that leaves the style's targets in any direction, and names which measures sit back in the usual and which sit elsewhere. Back to the usual is still one case. Band edges are unchanged. Walkthrough 153 of 153.
+- Saved locate batch 02-B run 2 at `02-experimenting-with-styles/locate/02-B-run2.md`. Batch 02-B is closed at 3/3 L3*. Domain I of slice 02 is 9/9 at L3*.
+- Saved locate batch 02-C run 2 at `02-experimenting-with-styles/locate/02-C-run2.md`. Batch 02-C is closed at 4/4 L3*. Three quirks from that run are in 02's QUIRKS.md; the walkthrough label now matches the check it names.
 - Lifted 02 II.A.1, II.A.2, and II.A.4 after locate batch 02-C (run 1, L2*; II.A.3 at L3*). Effects quotes are required. A retry's pause and the style map carry `effects`: the features noted, the ones not yet noted, and one line per feature on what to diagnose, beside the pause's one question. The map says the clause count reads no nesting. The walkthrough posts tone, syntax, and diction notes with exact quotes. Walkthrough 151 of 151.
 - Saved locate batch 02-C run 1 at `02-experimenting-with-styles/locate/02-C-run1.md`. Logged two finds in FLAGS.md and one new and two closed quirks in 02's QUIRKS.md. No matrix changed.
 - Lifted 02 I.C.1 to I.C.3 after locate batch 02-B (run 1, all at L2*). `unusual` and `hard_passage` take an optional `shift`, and `unusual` requires quotes. The exercise reply (`for_you`), the first-try pause, the style map, and the arrival text invite them. A retry's map reads each earlier hard passage's third beside the style's targets. History adds `far_in_rarely_written_kinds`. Walkthrough 142 of 142.

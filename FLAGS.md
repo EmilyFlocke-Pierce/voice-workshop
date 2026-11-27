@@ -1,29 +1,38 @@
 # Flags
 
-First written in the build-all pass (Grok Bot, Nov 25, 2026). That work is merged into `main` and public at v0.1.0. Later entries name the run that found them. Emily co-signs every amendment before a matrix changes.
+First written in the build-all pass (Grok Bot, Nov 25, 2026). That work is merged into `main` and public at v0.1.0. Later entries name the run that found them.
+
+Criteria stay as written, and the build meets each row on every honest reading. A 🦋 is a take in writing: what the locators found, how I read the row, what the build does to meet it, and why. CANDY, the locators, or Emily can answer with how they saw it. A recut through a builder note happens only if a row is really bad, and only with Emily's co-sign.
 
 ## 🦋 Real finds
 
-**02, I.C.1 "trying kinds of writing it rarely makes."** The "usual" reads two ways. The five measures say how the agent writes; kinds come only from drawn prompts and exercises. A free try counts toward no kind, so every kind shows as rarely written at first.
-- Amendment: I.C.1's L3 names which usual it means: "far from the agent's usual range (its measured habits, or the kinds it has written)".
+**02, I.C.1 "trying kinds of writing it rarely makes."** Found in the build-all pass, and it shares a root with I.A.1 and I.A.2 below. "Usual range" in the L3 reads two ways: the agent's measured habits, and the kinds it has written. A free try counts toward no kind, so every kind shows as rarely written at first.
 
-**02, I.A.1 "looking over the styles on offer" and I.A.2 "picking one it has not tried yet."** Found by TAFFY in CANDY's run 1 (02-A). "Well represented or scarce" and "gap" read two ways: coverage of the catalog (`counts_per_kind`) or the agent's own practice (`rarely_written`, `far_from_your_usual`). It shares a root with I.C.1 above.
-- Amendment: each L3 names which one it means. I.A.1: "well represented or scarce in the catalog, and in the agent's own practice". I.A.2: "a gap in the agent's practice, set beside what the catalog offers".
+How I read it: both readings are honest, so the build meets both. History shows styles far from the measured usual, and kinds the agent has rarely written, plus `far_in_rarely_written_kinds` so a far style in a rare kind still shows. The exercise reply's `for_you` names the kind as familiar or rarely written, and how far the style sits from the usual. The agent then reorients in `why_this_one` or the first try's intent, and finishes a piece whose thirds hold the style. Why: the row asks the agent to meet a kind far from its usual range; showing both senses of "usual" lets it pick a kind that is rare for it, a style that sits far from its habits, or both. CANDY relocated this row on `e5bf7c3` (locate run 2 of batch 02-B) and found it holds under the current wording as written; the batch closed at 3/3 L3*.
 
-**02, I.B.2 "holding the style from start to finish."** Found by TOFFEE in run 1. `src/styles/measures.ts` marks drift only when a third returns to the agent's usual band on 2 or more measures. A third that drifts to a band that is neither the style's nor the usual gets no mark.
-- Amendment: I.B.2's L3 names "drift back to the agent's usual" or widens it to "drift from the style's targets, whether back to the usual or elsewhere". Emily picks.
+**02, I.A.1 "looking over the styles on offer" and I.A.2 "picking one it has not tried yet."** Found by TAFFY in CANDY's run 1 (02-A). "Well represented or scarce" and "gap" read two ways: coverage of the catalog (`counts_per_kind`), or the agent's own practice (`rarely_written`, `far_from_your_usual`).
 
-**02, I.C.2 "naming what is unusual about the style for it" and I.C.3 "staying with the parts that feel wrong to write."** Found by TOFFEE and TAFFY in CANDY's run 1 of batch 02-B. Both L3 sentences ask for a diagnosed or sustained shift in approach ("Diagnose what shift in approach the unfamiliar style demands"; "Make a marked shift in your usual writing approach ... Carry that shift through the passage"). The notes carried only free text, with no way to tell a diagnosed shift from a described feature.
-- Amendment: neither L3 changes. The build adds an optional `shift` field to both notes (see the judgment calls below). If Emily wants the matrix to say so, I.C.2's L3 adds "naming the shift in approach in a phrase of its own", and I.C.3's adds "naming the shift made to stay in the style".
+How I read them: both are honest. I.A.1 asks the agent to assess the range, including clusters and kinds that are well represented or scarce; the shelf shows `counts_per_kind` (the catalog) beside `rarely_written` and `far_from_your_usual` (its practice). I.A.2 asks it to prioritize an untried style that fills a meaningful gap in its practice, set beside what the catalog offers; history lists untried styles, rarely written kinds, and styles far from the usual, and the exercise reply keeps any style open while `for_you` names how the pick sits for this agent. Why: the agent can see a scarce kind in the catalog and a scarce kind in its own practice at the same time, and pick from either.
+
+**02, I.B.2 "holding the style from start to finish."** Found by TOFFEE in run 1. The map marked drift only when a third returned to the usual's band on 2 or more measures, so a third that left the style for a band that was neither the style's nor the usual got no mark.
+
+How I read it: the L3 asks the agent to monitor passages that drift from the chosen style, in any direction, and revise them. "Back to the usual" is one honest case, not the only one. What the build does: a third is marked when 2 or more set measures sit away from the style's target. The mark names which of those sit back in the usual's band and which sit elsewhere. The first-try pause asks where the map shows a third leaving the targets, back to the usual or elsewhere. The original back-to-usual case still marks, and a new case marks a third that leaves for another band. Why: "drift from the chosen style" is the row as written; naming the direction tells the agent what to revise toward.
+
+**02, I.C.2 "naming what is unusual about the style for it" and I.C.3 "staying with the parts that feel wrong to write."** Found by TOFFEE and TAFFY in CANDY's run 1 of batch 02-B. Both L3 sentences ask for a diagnosed or sustained shift in approach. The notes carried only free text, so a diagnosed shift and a described feature looked the same, and the notes were never asked for.
+
+How I read them: I.C.2 asks the agent to diagnose the shift the style demands and to show it in the piece; I.C.3 asks it to make that shift and carry it through a hard passage. The build meets that with an optional `shift` field on both notes (a short phrase in the agent's words), required quotes so the diagnosis sits on words in the piece, and invites in the pause, the map, and the arrival text. A retry's map reads each earlier hard passage's third beside the style's targets. Why: the field makes the shift visible without changing the row; quotes keep the diagnosis on the page; the invites ask for the notes the locators found missing. CANDY relocated both rows on `e5bf7c3` (locate run 2 of batch 02-B) and closed them at L3*.
 
 **02, II.A.2 "track syntax shifts", II.A.3 "measure pacing variations", II.A.4 "note diction shifts."** Found by TOFFEE in CANDY's run 1 of batch 02-C. The matrix names cues the five measures do not compute: II.A.2 names clause order, sentence construction, and fragments; II.A.3 names paragraph breaks, pauses, and event density; II.A.4 names specificity and imagery. The measures count sentence length, clause punctuation, repeated openings, register words, and questions.
-- Amendment: no L3 changes. Either the cues stay with the agent's effects notes (the map says what it leaves out, and the clause count now says it reads no nesting), or the matrix's lower levels say "named by the agent from the page" where a code measure cannot count the cue. Emily decides.
+
+How I read them: the L3s ask the agent to diagnose those patterns from the piece, not for the measures to count every cue. The map says what it counts and what it leaves out, including that the clause count reads no nesting. The agent names the cues the code cannot count in an effects note, with exact quotes. Why: the row is a diagnosis from the page; the map is a helper that stays honest about its reach.
 
 **02, II.A.1 to II.A.4, one effects kind.** Found by TAFFY in the same run. One `effects` note kind serves all four skills, and the `feature` field is its only feature-specific part. Each L3 asks something different: a purposeful turn against an unsupported fluctuation (tone), how patterns carry the voice (syntax), how shifts enact the structure (pacing), where words sustain and where they weaken (diction).
-- Amendment: no L3 changes. The pause now gives one line per feature on what to diagnose. If the matrix wants the verdict itself on record (purposeful or wobble, carries or breaks, sustains or weakens), a small `reading` field per feature is the next move.
+
+How I read it: one kind can serve four skills when each post names its feature and diagnoses in that skill's words. The pause and the map give one line per feature on what to diagnose, and list the features not yet noted, so a retry can reach past pacing. Why: the four L3s differ in the diagnosis, which lives in the agent's words; the feature field and the per-feature lines keep that difference visible without splitting the kind.
 
 **04, I.A.3 "Gather reflection notes."** Slice 01 carries intent and scope_note from a parent to its retry, so one note sits on two versions.
-- Amendment: I.A.3's L3 reads "attributed to the correct versions, including notes carried across a retry chain".
+
+How I read it: "attributed to the correct versions" includes notes that travel with a retry. The build keeps a carried intent or scope_note on both versions and marks it `carried_from_parent`, so the agent can see that it belongs to the parent and still applies to the retry. Why: a note that is true of both versions should show on both, with the carrying named, rather than looking like two separate notes or like a note that went missing.
 
 ## Look at together
 
@@ -81,12 +90,19 @@ First written in the build-all pass (Grok Bot, Nov 25, 2026). That work is merge
 - The first-try pause's `unusual` invite appears only when the style is far, so near styles get no extra block in the pause. Their map still carries it.
 
 **Judgment calls: the 02-C lift (II.A.1 to II.A.4)**
-- Effects notes stay free text with the `feature` field. The verdicts the L3 sentences name (purposeful or wobble, carries or breaks, sustains or weakens) live in the note's own words. A `reading` field waits for Emily's word on the flag above.
+- Effects notes stay free text with the `feature` field. The verdicts the L3 sentences name (purposeful or wobble, carries or breaks, sustains or weakens) live in the note's own words.
 - Effects quotes are required, and a note may hold several quoted lines, so a diction note can set a sustaining phrase beside a weakening one.
 - The retry's pause carries `effects` beside its one question: features noted in this exercise, features not yet noted, and one diagnostic line per feature. The style map carries the same block on any try.
 - The clause proxy is described in the map's `what_it_counts` and not changed, since the band edges are pinned by tests.
 
+**Judgment calls: the I.B.2 lift (drift in any direction)**
+- A third is marked when 2 or more set measures sit away from the style's target, the same threshold as before. Band edges are unchanged.
+- The mark keeps `measures` as the full list, and names the direction in `back_to_usual` and `elsewhere`. Back to the usual is still one case.
+- With no usual yet, every away measure is named as elsewhere, so a third that leaves the style is still marked.
+- The first-try pause still asks one question, now covering both directions. II.C.2 still reads the back-to-usual marks.
+
 **For CANDY**
 - Six 01 rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) held in a builder stand-in after the arrival text changed. They need a cold relocation.
 - `locate/probe/` imports need `../../../app/src/`. Three probes have stale shapes.
-- 02 batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1, II.A.2, II.A.4) are lifted and wait for relocation. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.
+- Locate against the current wording. The 🦋 entries in FLAGS.md are takes, not proposed recuts. Builds already meet both readings for I.C.1, I.A.1, and I.A.2; I.B.2 now marks drift in any direction; I.C.2 and I.C.3 carry an optional `shift`; II.A.2 to II.A.4 leave uncounted cues to the agent's effects notes; 04 I.A.3 keeps carried notes on both versions.
+- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.

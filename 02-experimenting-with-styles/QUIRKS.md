@@ -16,12 +16,15 @@ A to-be-done list. None of these holds a level. Each says what it is, who found 
 | far_from_your_usual is an empty list before a usual exists. | CANDY run 1 (02-A) | I.A.1 | Say why in a line: "Write 3 tries outside exercises and this list fills." |
 | `did` and quotes stay optional on a `calibration` note, so a note can name a feature and an effect without saying whether it was strengthened or changed, or tying it to a span. | TOFFEE, CANDY run 2 (02-A relocate) | I.B.1 | Invite `did` and a quoted span in the reply when they are left out, and keep the note. |
 | The clause proxy counts commas, semicolons, colons, and joining words, so a comma-heavy sentence with no nesting reads as layered (TOFFEE, CANDY 02-C run 1). | II.A.2 | The map now says so in `what_it_counts`. Changing the count moves the band edges that tests pin, so a better proxy (subordinating words such as "which", "whose", "because") waits for a locator who finds it matters. |
+| `effectsSoFar` sits on the retry pause, not the first-try pause. First-try agents reach the four asks on the style map and in the arrival text. (CANDY, 02-C run 2) | II.A.1 to II.A.4 | Keep it so: the first-try pause already asks the drift question, and the map carries the same effects block on any try. |
+| `effectsSoFar.noted` counts across the whole exercise, so `not_yet` can read empty on a retry that has no effects note of its own. (CANDY, 02-C run 2) | II.A.1 to II.A.4 | Keep the exercise-wide count, so a retry can see what has already been diagnosed and reach for a feature that has not. A later move can also name which of those notes belong to this try. |
 | A register exercise stores `register:<register>` as its style_id, so slice 04 shows that string as the piece's style. | Grok Bot | 04 compare, II.A.1 in 04 | Show the register by name in 04's style column. |
 
 ## Closed
 
 | Quirk | Commit |
 |---|---|
+| A walkthrough check was labeled as listing "the one not yet noted" while it asserted `not_yet.length === 0` (all four features already noted). (CANDY, 02-C run 2) The label now matches what it asserts. A separate check already covers the not-yet case. | this commit |
 | `effects` quotes were optional while `EFFECTS_Q` asks to quote the moment (TOFFEE, TAFFY, CANDY 02-C run 1). Quotes are now required. | the 02-C lift |
 | The retry pause asked one effects question over four features, so a retry could answer about pacing alone (TOFFEE, CANDY 02-C run 1). The pause now lists the features noted and not yet noted, beside the same one question. | the 02-C lift |
 | `unusual` quotes were optional while `hard_passage` required a span (TOFFEE, CANDY 02-B run 1). `unusual` now requires quotes, so its diagnosis sits on words in the piece. | the 02-B lift |
