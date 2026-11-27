@@ -89,6 +89,31 @@ export function unusualInvite(exId: string, tryId: string, apart: { measures_apa
   };
 }
 
+const EFFECTS_ASK: Record<string, string> = {
+  tone: "Quote the moment the tone turns. Say how its words make the turn, and whether the turn is purposeful (the style asks for it) or an unsupported wobble.",
+  syntax: "Quote a sentence shape that repeats or breaks. Say how the pattern carries the style's voice, or where it breaks down and weakens the voice.",
+  pacing: "Quote where the pace builds, waits, or lingers. Say how the shift enacts the style's structure.",
+  diction: "Quote the words that recur. Say where they sustain the style and where they weaken it.",
+};
+
+// The features this exercise's effects notes already cover, so a retry can reach for another one. It sits beside the pause question, which stays one.
+export async function effectsSoFar(env: Env, agentId: string, exId: string, tryId: string, isRetry: boolean) {
+  const rows = (await env.DB.prepare("SELECT extra FROM exercise_notes WHERE agent_id = ? AND exercise_id = ? AND kind = 'effects'").bind(agentId, exId).all<{ extra: string | null }>()).results;
+  const noted = EFFECT_FEATURES.filter((f) => rows.some((r) => r.extra && (JSON.parse(r.extra) as { feature?: string }).feature === f));
+  const not_yet = EFFECT_FEATURES.filter((f) => !noted.includes(f));
+  return {
+    noted, not_yet,
+    invite: noted.length === 0
+      ? "No effects note in this exercise yet. An effects note takes one feature (tone, syntax, pacing, or diction), quotes the moment, and says how it makes the effect. Each feature you worked on can have its own."
+      : not_yet.length === 0
+        ? `Effects notes cover ${listOf(noted)}. A new one can read the same feature in a new moment of this try.`
+        : `Effects notes so far: ${listOf(noted)}. Not yet: ${listOf(not_yet)}. ${isRetry ? "Pick the feature you worked on in this retry" : "Pick the feature you worked on"}, quote the moment, and say how it makes the effect.`,
+    ask: EFFECTS_ASK,
+    answer_with: `POST /exercises/${exId}/notes`,
+    body: { kind: "effects", try_id: tryId, feature: EFFECT_FEATURES.join(" | "), text: "how the moment makes the effect", quotes: [{ line: "exact words of the moment" }] },
+  };
+}
+
 export function hardPassageInvite(exId: string, tryId: string, isRetry: boolean) {
   return {
     invite: isRetry
@@ -133,6 +158,7 @@ export async function exercisePause(env: Env, agentId: string, ex: ExerciseRow, 
     answer_with: `POST /exercises/${ex.id}/notes`,
     body: isRetry ? { kind: "effects", try_id: tryId, feature: "tone | syntax | pacing | diction", text: "...", quotes: [{ line: "exact words" }] } : { kind: "drift", try_id: tryId, text: "the passage and the revision", quotes: [{ line: "exact words" }] },
     calibrate: calibrateInvite(ex.id, tryId, isRetry),
+    effects: isRetry ? await effectsSoFar(env, agentId, ex.id, tryId, true) : null,
     unusual: !isRetry && apart?.far ? unusualInvite(ex.id, tryId, apart) : null,
     stuck: { moves: STUCK_MOVE_TEXT, note_with: { kind: "stuck_move", try_id: tryId, move: STUCK_MOVES.join(" | "), text: "..." }, hard_passage: hardPassageInvite(ex.id, tryId, isRetry) },
     ahead: finishQuestions(ex),
@@ -486,8 +512,9 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
         beside: Object.fromEntries(MEASURES.map((m) => [m, { this_third: th.bands[m], your_usual: usual?.bands[m] ?? null, style_target: style?.targets[m] ?? null }])),
       })),
       drift_marks: drift.map((d) => ({ ...d, reads: `In the ${d.third} third, ${listOf(d.measures)} sit in your usual's band, away from the style's target.` })),
-      what_it_counts: "Words per sentence, clauses per sentence, repeated openings, register words per 100, and the share of questions. It leaves out warmth, irony, sound, and imagery; your effects notes carry those.",
+      what_it_counts: "Words per sentence, clauses per sentence (commas, semicolons, colons, and joining words, with no reading of nesting), repeated openings, register words per 100, and the share of questions. It leaves out warmth, irony, sound, and imagery; your effects notes carry those.",
       calibrate: ex && style ? calibrateInvite(ex.id, t.id, !!t.parent_id) : null,
+      effects: ex && style ? await effectsSoFar(env, agentId, ex.id, t.id, !!t.parent_id) : null,
       departs_from_your_usual: style && usual ? apartFrom(style, usual) : null,
       unusual: ex && style ? unusualInvite(ex.id, t.id, apartFrom(style, usual)) : null,
       hard_passage: ex && style ? hardPassageInvite(ex.id, t.id, !!t.parent_id) : null,

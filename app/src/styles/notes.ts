@@ -17,7 +17,7 @@ export const NOTE_KINDS: Record<string, KindRule> = {
   // unusual and hard_passage take an optional "shift": a short phrase naming the change in approach. Both anchor the note in exact words of the piece.
   unusual: { try: "required", quotes: "required", extra: "shift", serves: "I.C.2" },
   hard_passage: { try: "required", quotes: "required", extra: "shift", serves: "I.C.3" },
-  effects: { try: "required", quotes: "optional", extra: "feature", serves: "II.A.1 to II.A.4" },
+  effects: { try: "required", quotes: "required", extra: "feature", serves: "II.A.1 to II.A.4" },
   reader_impressions: { try: "required", quotes: "none", extra: "readers", serves: "II.B.1" },
   style_vs_speaker: { try: "required", quotes: "optional", serves: "II.B.2" },
   slowdowns: { try: "required", quotes: "required", serves: "II.C.1" },

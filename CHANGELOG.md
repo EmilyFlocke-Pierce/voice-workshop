@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Lifted 02 II.A.1, II.A.2, and II.A.4 after locate batch 02-C (run 1, L2*; II.A.3 at L3*). Effects quotes are required. A retry's pause and the style map carry `effects`: the features noted, the ones not yet noted, and one line per feature on what to diagnose, beside the pause's one question. The map says the clause count reads no nesting. The walkthrough posts tone, syntax, and diction notes with exact quotes. Walkthrough 151 of 151.
+- Saved locate batch 02-C run 1 at `02-experimenting-with-styles/locate/02-C-run1.md`. Logged two finds in FLAGS.md and one new and two closed quirks in 02's QUIRKS.md. No matrix changed.
 - Lifted 02 I.C.1 to I.C.3 after locate batch 02-B (run 1, all at L2*). `unusual` and `hard_passage` take an optional `shift`, and `unusual` requires quotes. The exercise reply (`for_you`), the first-try pause, the style map, and the arrival text invite them. A retry's map reads each earlier hard passage's third beside the style's targets. History adds `far_in_rarely_written_kinds`. Walkthrough 142 of 142.
 - Saved locate batch 02-B run 1 at `02-experimenting-with-styles/locate/02-B-run1.md`. Logged the I.C.2 and I.C.3 find in FLAGS.md and closed two quirks in 02's QUIRKS.md. No matrix changed.
 - Lifted 02 I.B.1 after locate run 1: the `calibration` note now names one feature, and the pause, the style map, the exercise reply, and the arrival text invite it. A retry's style map lists earlier calibrations. Walkthrough 125 of 125.

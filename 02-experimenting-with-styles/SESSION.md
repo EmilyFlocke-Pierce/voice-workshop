@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B located at L2* and lifted, waiting for relocation. The other 15 rows wait for locating. |
+| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batches 02-B and 02-C located and lifted, waiting for relocation. The other 12 rows wait for locating. |
 
 ## Decisions
 
@@ -95,3 +95,24 @@ The matrix's L3 wording, lined up to exactly:
 - Next: CANDY relocates I.C.1 to I.C.3.
 
 **Judgment calls**, listed in `FLAGS.md`: `shift` is optional and small; `unusual` now requires quotes, as `hard_passage` does; far means 3 or more measures apart; the retry's hard-passage reading names a span's third by majority of its sentences.
+
+## Locate run 1 (batch 02-C), Nov 27, 2026
+
+Report: `locate/02-C-run1.md`. CANDY, with TOFFEE and TAFFY, located II.A.1 to II.A.4 against `main` at `cc59387`. II.A.3 (pacing) at 3* unanimous. II.A.1, II.A.2, and II.A.4 at 2*: the validator takes four features and only `pacing` was ever posted.
+
+The matrix's L3 wording, lined up to exactly:
+- II.A.1: "Diagnose how specific moments in the writing create each tonal shift, and distinguish a purposeful turn from an unsupported fluctuation."
+- II.A.2: "Diagnose how the tracked syntax patterns contribute to the style's distinct voice and effects in the piece."
+- II.A.3: "Diagnose the recurring pacing pattern across the piece and explain how its shifts enact the chosen style's structure, such as building momentum, delaying an event, or lingering on detail."
+- II.A.4: "Diagnose patterns in the piece's diction, explaining how recurring word choices sustain the style and where they weaken it."
+
+**Lift.**
+- Effects quotes are required, so every diagnosis sits on exact words.
+- The retry's pause carries `effects` beside its one question: the features already noted, the ones not yet noted, one line per feature on what to diagnose, and the body to post. The style map carries the same block.
+- The walkthrough posts the three missing features: tone (a purposeful turn at the smoke alarm against an unsupported wobble at the closing flourish), syntax (the repeated "that" clauses carrying the voice against a stack of interrupters that breaks it), and diction ("Let the record show" and "hereby declared open" sustaining the style, a plain phrase weakening it). A second exercise shows the pause naming "Not yet: syntax, pacing and diction".
+- The map names what the clause count reads: commas, semicolons, colons, and joining words, with no reading of nesting.
+- Walkthrough: 151 of 151.
+- Next: CANDY relocates II.A.1, II.A.2, and II.A.4.
+
+**Judgment calls**, listed in `FLAGS.md`: effects stay free text with the feature field (no verdict field); a note's quotes may hold several lines; the clause proxy is described, not changed.
+

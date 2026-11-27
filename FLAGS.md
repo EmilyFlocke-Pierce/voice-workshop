@@ -16,6 +16,12 @@ First written in the build-all pass (Grok Bot, Nov 25, 2026). That work is merge
 **02, I.C.2 "naming what is unusual about the style for it" and I.C.3 "staying with the parts that feel wrong to write."** Found by TOFFEE and TAFFY in CANDY's run 1 of batch 02-B. Both L3 sentences ask for a diagnosed or sustained shift in approach ("Diagnose what shift in approach the unfamiliar style demands"; "Make a marked shift in your usual writing approach ... Carry that shift through the passage"). The notes carried only free text, with no way to tell a diagnosed shift from a described feature.
 - Amendment: neither L3 changes. The build adds an optional `shift` field to both notes (see the judgment calls below). If Emily wants the matrix to say so, I.C.2's L3 adds "naming the shift in approach in a phrase of its own", and I.C.3's adds "naming the shift made to stay in the style".
 
+**02, II.A.2 "track syntax shifts", II.A.3 "measure pacing variations", II.A.4 "note diction shifts."** Found by TOFFEE in CANDY's run 1 of batch 02-C. The matrix names cues the five measures do not compute: II.A.2 names clause order, sentence construction, and fragments; II.A.3 names paragraph breaks, pauses, and event density; II.A.4 names specificity and imagery. The measures count sentence length, clause punctuation, repeated openings, register words, and questions.
+- Amendment: no L3 changes. Either the cues stay with the agent's effects notes (the map says what it leaves out, and the clause count now says it reads no nesting), or the matrix's lower levels say "named by the agent from the page" where a code measure cannot count the cue. Emily decides.
+
+**02, II.A.1 to II.A.4, one effects kind.** Found by TAFFY in the same run. One `effects` note kind serves all four skills, and the `feature` field is its only feature-specific part. Each L3 asks something different: a purposeful turn against an unsupported fluctuation (tone), how patterns carry the voice (syntax), how shifts enact the structure (pacing), where words sustain and where they weaken (diction).
+- Amendment: no L3 changes. The pause now gives one line per feature on what to diagnose. If the matrix wants the verdict itself on record (purposeful or wobble, carries or breaks, sustains or weakens), a small `reading` field per feature is the next move.
+
 **04, I.A.3 "Gather reflection notes."** Slice 01 carries intent and scope_note from a parent to its retry, so one note sits on two versions.
 - Amendment: I.A.3's L3 reads "attributed to the correct versions, including notes carried across a retry chain".
 
@@ -74,7 +80,13 @@ First written in the build-all pass (Grok Bot, Nov 25, 2026). That work is merge
 - A retry's map reads each earlier hard passage's third beside the style's targets. A span that covers several sentences takes the third holding most of them, the later one on a tie.
 - The first-try pause's `unusual` invite appears only when the style is far, so near styles get no extra block in the pause. Their map still carries it.
 
+**Judgment calls: the 02-C lift (II.A.1 to II.A.4)**
+- Effects notes stay free text with the `feature` field. The verdicts the L3 sentences name (purposeful or wobble, carries or breaks, sustains or weakens) live in the note's own words. A `reading` field waits for Emily's word on the flag above.
+- Effects quotes are required, and a note may hold several quoted lines, so a diction note can set a sustaining phrase beside a weakening one.
+- The retry's pause carries `effects` beside its one question: features noted in this exercise, features not yet noted, and one diagnostic line per feature. The style map carries the same block on any try.
+- The clause proxy is described in the map's `what_it_counts` and not changed, since the band edges are pinned by tests.
+
 **For CANDY**
 - Six 01 rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) held in a builder stand-in after the arrival text changed. They need a cold relocation.
 - `locate/probe/` imports need `../../../app/src/`. Three probes have stale shapes.
-- 02 batch 02-B (I.C.1 to I.C.3) is lifted and waits for relocation. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.
+- 02 batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1, II.A.2, II.A.4) are lifted and wait for relocation. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.

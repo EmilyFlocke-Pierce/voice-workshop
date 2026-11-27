@@ -92,6 +92,12 @@ test("note kinds: the validator follows the table", () => {
   assert.ok(!checkNote("calibration", { try_id: "t", text: "x", feature: "pacing", did: "ignored" }).ok, "did takes strengthened or changed");
   const cal = checkNote("calibration", { try_id: "t", text: "the build now runs to the end", feature: "pacing", did: "strengthened" });
   assert.ok(cal.ok && cal.note.extra?.feature === "pacing" && cal.note.extra?.did === "strengthened");
+  assert.ok(!checkNote("effects", { try_id: "t", feature: "tone", text: "the tone turns" }).ok, "an effects note quotes its moment");
+  for (const feature of ["tone", "syntax", "pacing", "diction"]) {
+    const fx = checkNote("effects", { try_id: "t", feature, text: "how it makes the effect", quotes: [{ line: "a moment" }] });
+    assert.ok(fx.ok && fx.note.extra?.feature === feature && fx.note.quotes.length === 1, `${feature} takes a quoted effects note`);
+  }
+  assert.ok(!checkNote("effects", { try_id: "t", feature: "sound", text: "x", quotes: [{ line: "a moment" }] }).ok, "four features only");
   assert.ok(!checkNote("unusual", { try_id: "t", text: "longer than mine" }).ok, "unusual quotes the words where the shift shows");
   assert.ok(!checkNote("unusual", { try_id: "t", text: "x", shift: " ", quotes: [{ line: "a line" }] }).ok, "shift is a phrase when given");
   const un = checkNote("unusual", { try_id: "t", text: "x", shift: "hold each sentence open", quotes: [{ line: "a line" }] });
