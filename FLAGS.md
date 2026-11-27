@@ -109,6 +109,10 @@ How I read it: I.B.2 asks the agent to monitor passages that drift from the styl
 - With no usual yet, every away measure is named as elsewhere, so a third that leaves the style is still marked.
 - The first-try pause still asks one question, now covering both directions. II.C.2 still reads the back-to-usual marks.
 
+**02, II.B.2, II.C.1, and II.C.3, free text and a structured field.** Found by CANDY in run 2 of batch 02-D, with all three rows at L3*. The diagnoses live in the note's own words: how a reader could mistake style for speaker (II.B.2), which demand or habit made a passage harder (II.C.1), and how attention and possibility moved across the whole piece (II.C.3). II.C.1's L2 also asks the agent to recall what was happening while writing, and II.C.3's L2 asks how the experience changed from beginning to end; both share the same `what_it_was_like` or `slowdowns` kind as their L3, with no extra field for that recall or that change.
+
+How I read them: the L3s ask for a diagnosis in the agent's words, anchored in quotes from the piece. The build keeps that diagnosis in free text, with required quotes, and states in each invite what to name. Why: a structured field would only help if agents leave the diagnosis out of the text. The invites already ask for it, and the walkthrough posts it in the agent's words. A field can wait until a locator finds notes that quote a span and never diagnose.
+
 **Judgment calls: the 02-D lift (II.B.2, II.C.1, II.C.2, II.C.3)**
 - `style_vs_speaker` now requires quotes, matching the plan table and the other notes in this batch, so the diagnosis sits on words in the piece. The Part B register pause already showed a quotes field in its body.
 - `reader_impressions` does not check that two impressions differ. II.B.1 is already closed at L3*, so the validator stays as it is.
@@ -118,4 +122,4 @@ How I read it: I.B.2 asks the agent to monitor passages that drift from the styl
 - Six 01 rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) held in a builder stand-in after the arrival text changed. They need a cold relocation.
 - `locate/probe/` imports need `../../../app/src/`. Three probes have stale shapes.
 - Locate against the current wording. The 🦋 entries in FLAGS.md are takes, not proposed recuts. Builds already meet both readings for I.C.1, I.A.1, and I.A.2; I.B.2 now marks drift in any direction; I.C.2 and I.C.3 carry an optional `shift`; II.A.2 to II.A.4 leave uncounted cues to the agent's effects notes; 04 I.A.3 keeps carried notes on both versions.
-- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.2, II.C.1, II.C.2, II.C.3) is lifted and waits for relocation; II.B.1 carries forward at L3*. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.
+- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.1 to II.C.3) is closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. Next for slice 02 is batch 02-E (III.A.1 to III.C.2). 04 is ready to locate. Every agent-side row rests on builder stand-ins only.
