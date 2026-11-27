@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B closed at 3/3 L3* after run 2. Domain I is 9/9 at L3*. Batch 02-C closed at 4/4 L3* after run 2. Batch 02-D closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. CANDY kept I.B.2 at L3* after a spot-check of ece898c, with no relocation round. The other rows wait for locating (02-E and slice 04). |
+| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B closed at 3/3 L3* after run 2. Domain I is 9/9 at L3*. Batch 02-C closed at 4/4 L3* after run 2. Batch 02-D closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. CANDY kept I.B.2 at L3* after a spot-check of ece898c, with no relocation round. Batch 02-E located at 0/6 L3* and lifted, waiting for relocation. Slice 04 waits for locating. |
 
 ## Decisions
 
@@ -157,4 +157,8 @@ The matrix's L3 wording, lined up to exactly:
 ## Locate run 2 (batch 02-D), Nov 27, 2026
 
 Report: `locate/02-D-run2.md`. CANDY relocated II.B.2, II.C.1, II.C.2, and II.C.3 against `main` at `98264b0` and closed the batch at 5/5 L3*. II.B.1 carried forward from run 1. Domain II of slice 02 is 9/9 at L3*. Four non-blocking quirks are in QUIRKS.md. A 🦋 take on free text vs a structured field, for II.B.2, II.C.1, and II.C.3, is in FLAGS.md. Next batch for slice 02 is 02-E (III.A.1 to III.C.2).
+
+## Locate run 1 and lift (batch 02-E), Nov 27, 2026
+
+Report: `locate/02-E-run1.md`. CANDY located III.A.1 to III.C.2 against `98264b0` at 0/6 L3* (machinery already built; the main gap was a walkthrough with only one finished style exercise). The lift adds a multi-style walkthrough on a fresh key: a far style that stays easy across two pieces, a near style that felt easy only once, a style that consistently resists, a style that was hard only in one piece, a return for sustained pull, and a one-off spark. Ease and pull now require quotes. GET /reach reports whether each style sits near or far from the usual. Reach notes take optional `style_ids`. Four quirks and two 🦋 takes are in QUIRKS.md and FLAGS.md. Waiting for relocation.
 

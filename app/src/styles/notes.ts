@@ -24,8 +24,8 @@ export const NOTE_KINDS: Record<string, KindRule> = {
   slips_back: { try: "required", quotes: "required", serves: "II.C.2" },
   what_it_was_like: { try: "required", quotes: "required", serves: "II.C.3" },
   // Sent at finish, about the whole exercise.
-  ease: { try: "none", quotes: "optional", serves: "III.A.2" },
-  pull: { try: "none", quotes: "optional", extra: "effects", serves: "III.C.2" },
+  ease: { try: "none", quotes: "required", serves: "III.A.2" },
+  pull: { try: "none", quotes: "required", extra: "effects", serves: "III.C.2" },
   // Part B, at the finish of a register exercise.
   register_hold: { try: "none", quotes: "optional", serves: "III.A.2, III.B.2" },
 };

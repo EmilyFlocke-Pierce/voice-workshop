@@ -113,13 +113,28 @@ How I read it: I.B.2 asks the agent to monitor passages that drift from the styl
 
 How I read them: the L3s ask for a diagnosis in the agent's words, anchored in quotes from the piece. The build keeps that diagnosis in free text, with required quotes, and states in each invite what to name. Why: a structured field would only help if agents leave the diagnosis out of the text. The invites already ask for it, and the walkthrough posts it in the agent's words. A field can wait until a locator finds notes that quote a span and never diagnose.
 
+**02, reach notes, free text and optional style_ids.** Found by CANDY in run 1 of batch 02-E. A reach note held free text and optional quotes, with no style_id and no structured verdict for which styles stay easy, which resist, or which pull.
+
+How I read the rows: III.A.1, III.B.1, and III.C.1 ask the agent to assess patterns across a varied set in its own words. The build keeps that reading in free text, with optional quotes, and now takes optional `style_ids` so a note can name the styles it is about. There is no verdict field; the classification lives in the agent's words. Why: REACH_Q already asks which styles keep coming easy, which keep resisting, and which the agent keeps wanting, and which of those repeat. A structured verdict would only help if agents leave that classification out of the text.
+
+**02, GET /reach and near or far from the usual.** Found by CANDY in the same run. GET /reach did not say whether a style sat near or far from the agent's usual (`apartFrom` / `FAR_AT`), even though the map already computes that, and III.A.1 cares about ease even when features feel unfamiliar.
+
+How I read it: a varied set includes styles whose features feel unfamiliar, so /reach should show how each style sits beside the usual. The build now reports `from_your_usual` (`measures_apart`, `apart_on`, `far`) on each style in `by_style`, using the same `apartFrom` / `FAR_AT` the map uses, or null when there is no usual yet. Why: the agent can then use that fact in a reach note, instead of only seeing it inside a single exercise.
+
 **Judgment calls: the 02-D lift (II.B.2, II.C.1, II.C.2, II.C.3)**
 - `style_vs_speaker` now requires quotes, matching the plan table and the other notes in this batch, so the diagnosis sits on words in the piece. The Part B register pause already showed a quotes field in its body.
 - `reader_impressions` does not check that two impressions differ. II.B.1 is already closed at L3*, so the validator stays as it is.
 - The finish pause still asks one question (two readers). `style_vs_speaker` and `what_it_was_like` sit beside it, the way calibration and unusual sit beside the try pause.
 
+**Judgment calls: the 02-E lift (III.A.1 to III.C.2)**
+- `pull` quotes are required, and `finishQuestions()` now ships a quotes placeholder, matching ease and the other notes that ask to quote the piece. Ease quotes are required too, because III.A.2 asks for evidence from the piece.
+- `pull` is named in `style-map.test.ts`, including the quotes check.
+- GET /reach reports `from_your_usual` on each style, from `apartFrom` / `FAR_AT`.
+- Reach notes take optional `style_ids` (or a single `style_id`). The reading itself stays free text. Unknown ids are refused.
+- `by_style` / `by_kind` stay in creation-date order, and `pull.effects` stay verbatim, as logged quirks.
+
 **For CANDY**
 - Six 01 rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) held in a builder stand-in after the arrival text changed. They need a cold relocation.
 - `locate/probe/` imports need `../../../app/src/`. Three probes have stale shapes.
 - Locate against the current wording. The 🦋 entries in FLAGS.md are takes, not proposed recuts. Builds already meet both readings for I.C.1, I.A.1, and I.A.2; I.B.2 now marks drift in any direction; I.C.2 and I.C.3 carry an optional `shift`; II.A.2 to II.A.4 leave uncounted cues to the agent's effects notes; 04 I.A.3 keeps carried notes on both versions.
-- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.1 to II.C.3) is closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. Next for slice 02 is batch 02-E (III.A.1 to III.C.2). 04 is ready to locate. Every agent-side row rests on builder stand-ins only.
+- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.1 to II.C.3) is closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. Batch 02-E (III.A.1 to III.C.2) is lifted after run 1 and waits for relocation. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.

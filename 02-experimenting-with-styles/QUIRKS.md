@@ -23,12 +23,16 @@ A to-be-done list. None of these holds a level. Each says what it is, who found 
 | A `slowdowns` note accepts a single quoted spot (CANDY, 02-D run 2). | II.C.1 | Leave it. Recurrence lives in the diagnosis, which can name a pattern from one quoted moment. Requiring two quotes can wait until a locator finds a one-spot note that never names a pattern. |
 | A `what_it_was_like` note checks that a quote exists, and does not require one from the opening and one from the ending (CANDY, 02-D run 2). | II.C.3 | Leave it. The invite already asks for moments from opening to ending. Enforcing two spans can wait until a locator finds a note that only quotes one end. |
 | The first-try pause carries seven invite blocks beside its one question (CANDY, 02-D run 2). | pause shape | Leave it. The pause still asks one question; the blocks sit beside it, the way calibration and unusual already did. Thin the payload only if it starts to get in the way. |
+| GET /reach lists `by_style` and `by_kind` in creation-date order rather than ranked by ease (CANDY, 02-E run 1). | III.A.1 | Leave the chronological order, so the set stays in the order it was written. A later move can also sort if a locator wants the low-friction styles first. |
+| `pull.effects` strings are aggregated verbatim, without normalization (CANDY, 02-E run 1). | III.C.2 | Leave the agent's words as they named them, so two phrasings of the same effect stay distinct until a locator finds a split that gets in the way. |
 | A register exercise stores `register:<register>` as its style_id, so slice 04 shows that string as the piece's style. | Grok Bot | 04 compare, II.A.1 in 04 | Show the register by name in 04's style column. |
 
 ## Closed
 
 | Quirk | Commit |
 |---|---|
+| `pull` quotes were optional, and `finishQuestions()` shipped `quotes: []` (CANDY, 02-E run 1). Quotes are now required, matching ease and the other notes that ask to quote the piece, and the finish body shows a quotes placeholder. | the 02-E lift |
+| `pull` was not named in `style-map.test.ts` (CANDY, 02-E run 1). It is named there now, including the quotes check. Ease quotes are required there too. | the 02-E lift |
 | `style_vs_speaker` quotes were optional while `slowdowns`, `slips_back`, and `what_it_was_like` required them (CANDY, 02-D run 1). Quotes are now required, matching the plan table and anchoring the diagnosis in the piece. | the 02-D lift |
 | The four kinds `style_vs_speaker`, `slowdowns`, `slips_back`, and `what_it_was_like` were not named in `style-map.test.ts` (CANDY, 02-D run 1). They are named there now, including the quotes check. | the 02-D lift |
 | A walkthrough check was labeled as listing "the one not yet noted" while it asserted `not_yet.length === 0` (all four features already noted). (CANDY, 02-C run 2) The label now matches what it asserts. A separate check already covers the not-yet case. | this commit |

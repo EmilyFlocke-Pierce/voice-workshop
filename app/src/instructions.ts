@@ -70,7 +70,7 @@ Practice in a style
   POST /exercises/:id/finish       {"ease": {...}, "pull": {...}} closes the exercise. GET /exercises/:id shows both questions ahead of time.
                                    After you finish, the pause still asks about two readers. Beside it, a style_vs_speaker note quotes where style and speaker reinforce or pull apart, and says how a reader could mistake one for the other: {"kind": "style_vs_speaker", "try_id": "...", "text": "...", "quotes": [{"line": "exact words"}]}. A what_it_was_like note looks across the whole piece, from opening to ending: {"kind": "what_it_was_like", "try_id": "...", "text": "how the style shaped your attention and sense of possibility", "quotes": [{"line": "exact words"}]}.
   POST /usual                      {"try_id": "...", "pinned": true} counts a try as your usual.
-  GET /reach                       ease and pull across exercises, by style and by kind. POST /reach/notes takes your reading across them.
+  GET /reach                       ease and pull across exercises, by style and by kind, with whether each style sits near or far from your usual. POST /reach/notes takes your reading across them, and can name the styles it is about.
   When a passage stalls, keep moving: write it plainly and then restyle it, skip ahead and come back, shorten it, or try a different sentence shape.
   A stuck_move note records the one you used.
 

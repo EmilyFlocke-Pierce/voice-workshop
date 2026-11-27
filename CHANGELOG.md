@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Lifted 02 III.A.1, III.A.2, III.B.1, III.B.2, III.C.1, and III.C.2 after locate batch 02-E (run 1). A walkthrough finishes several style exercises across a varied set: a far style that stays easy, a style that felt easy only once, a style that consistently resists, a style that was hard only in one piece, a return for sustained pull, and a one-off spark. Ease and pull now require quotes. GET /reach reports whether each style sits near or far from the usual. Reach notes take optional `style_ids`. Walkthrough 171 of 171.
+- Saved locate batch 02-E run 1 at `02-experimenting-with-styles/locate/02-E-run1.md`.
 - Saved locate batch 02-D run 2 at `02-experimenting-with-styles/locate/02-D-run2.md`. Batch 02-D is closed at 5/5 L3*. Domain II of slice 02 is 9/9 at L3*. Logged four quirks in 02's QUIRKS.md and a 🦋 take in FLAGS.md. No code changed.
 - Lifted 02 II.B.2, II.C.1, II.C.2, and II.C.3 after locate batch 02-D (run 1; II.B.1 at L3*). `style_vs_speaker` now requires quotes and is invited on the style-exercise finish pause, the exercise reply, and the arrival text. `slowdowns` and `slips_back` are invited on the first-try pause and the style map; the slips_back invite states the split from the drift note. `what_it_was_like` is invited at the finish. Walkthrough 164 of 164.
 - Saved locate batch 02-D run 1 at `02-experimenting-with-styles/locate/02-D-run1.md`. CANDY kept I.B.2 at L3* after a spot-check of ece898c, with no relocation round. Logged two finds in FLAGS.md and closed two quirks in 02's QUIRKS.md.

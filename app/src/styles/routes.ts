@@ -41,7 +41,7 @@ interface PromptCols {
 }
 
 export const EASE_Q = "Which features made this easy or hard, how did they work together, and which part came from the style and which from your habits? Quote the piece.";
-export const PULL_Q = "Do you want more of this style? Name the effects that draw you, and say if one surprised you.";
+export const PULL_Q = "Do you want more of this style? Name the effects that draw you, and say if one surprised you. Quote the piece.";
 export const DRIFT_Q = "Where does the map show a third leaving the style's targets, back to your usual or elsewhere, and what will you change?";
 export const EFFECTS_Q = "Which moment made the effect, and how? Quote it.";
 export const CALIBRATE_Q = "Which feature did you strengthen or change while drafting, and how does that shape the effect you want a reader to have?";
@@ -71,7 +71,7 @@ export function finishQuestions(ex: Pick<ExerciseRow, "id" | "kind">, tryId = ".
   if (ex.kind === "register") return { finish_with: `POST /exercises/${ex.id}/finish`, body: { register_hold: { text: "...", quotes: [{ try_id: "...", line: "..." }] } }, questions: { register_hold: REGISTER_HOLD_Q } };
   return {
     finish_with: `POST /exercises/${ex.id}/finish`,
-    body: { ease: { text: "...", quotes: [{ try_id: "...", line: "..." }] }, pull: { text: "...", effects: ["..."], quotes: [] } },
+    body: { ease: { text: "...", quotes: [{ try_id: "...", line: "..." }] }, pull: { text: "...", effects: ["..."], quotes: [{ try_id: "...", line: "exact words" }] } },
     questions: { ease: EASE_Q, pull: PULL_Q },
     style_vs_speaker: styleVsSpeakerInvite(ex.id, tryId),
     what_it_was_like: whatItWasLikeInvite(ex.id, tryId),
@@ -306,6 +306,18 @@ function usualNote(u: { rests_on: number } | null) {
   if (!u) return "You have no tries outside exercises yet, so there is no usual to set beside the style. Tries outside exercises, or POST /usual, build one.";
   if (u.rests_on < 3) return `The usual is thin: it rests on ${u.rests_on} ${u.rests_on === 1 ? "try" : "tries"}. Comparisons with it are shaky until it rests on 3 or more.`;
   return `The usual rests on ${u.rests_on} tries: your tries outside exercises, plus any you pinned.`;
+}
+
+function readStyleIds(body: Record<string, unknown>): { ok: true; style_ids: string[] } | { ok: false; message: string } {
+  if (body.style_ids === undefined && body.style_id === undefined) return { ok: true, style_ids: [] };
+  const raw = body.style_ids !== undefined ? body.style_ids : [body.style_id];
+  if (!Array.isArray(raw) || raw.some((id) => typeof id !== "string" || !id.trim())) {
+    return { ok: false, message: 'style_ids is a list of catalog style ids this note is about.' };
+  }
+  const style_ids = [...new Set(raw.map((id) => (id as string).trim()))];
+  const unknown = style_ids.filter((id) => !STYLE_BY_ID.has(id));
+  if (unknown.length) return { ok: false, message: `style_ids names catalog styles. These are not in the catalog: ${unknown.join(", ")}.` };
+  return { ok: true, style_ids };
 }
 
 async function quotesCheck(env: Env, agentId: string, quotes: Quote[]): Promise<{ try_id: string; line: string; why: string }[]> {
@@ -616,13 +628,14 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
     const styleExs = exs.filter((e) => e.kind !== "register");
     const registers = exs.filter((e) => e.kind === "register").map((e) => ({ exercise_id: e.id, register: e.register, created_at: e.created_at, status: e.status, voice_ref_try_ids: JSON.parse(e.voice_ref_try_ids ?? "[]"), register_hold: forEx(e.id, "register_hold") }));
     const entry = (e: ExerciseRow) => ({ exercise_id: e.id, created_at: e.created_at, status: e.status, ease: forEx(e.id, "ease"), pull: forEx(e.id, "pull") });
-    const byStyle: Record<string, { name: string; kind: string; exercises: unknown[]; counts: { exercises: number; ease_notes: number; pull_notes: number } }> = {};
+    const { usual } = await usualFor(env, agentId);
+    const byStyle: Record<string, { name: string; kind: string; from_your_usual: ReturnType<typeof apartFrom>; exercises: unknown[]; counts: { exercises: number; ease_notes: number; pull_notes: number } }> = {};
     const byKind: Record<string, { exercises: unknown[]; counts: { exercises: number; ease_notes: number; pull_notes: number } }> = {};
     const effectsByStyle: Record<string, { name: string; effects: string[] }> = {};
     for (const e of styleExs) {
       const s = STYLE_BY_ID.get(e.style_id);
       const en = entry(e);
-      const g = (byStyle[e.style_id] ??= { name: s?.name ?? e.style_id, kind: s?.kind ?? "unknown", exercises: [], counts: { exercises: 0, ease_notes: 0, pull_notes: 0 } });
+      const g = (byStyle[e.style_id] ??= { name: s?.name ?? e.style_id, kind: s?.kind ?? "unknown", from_your_usual: s ? apartFrom(s, usual) : null, exercises: [], counts: { exercises: 0, ease_notes: 0, pull_notes: 0 } });
       g.exercises.push(en);
       g.counts.exercises++;
       g.counts.ease_notes += en.ease.length;
@@ -634,7 +647,7 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       k.counts.pull_notes += en.pull.length;
       for (const p of en.pull) (effectsByStyle[e.style_id] ??= { name: s?.name ?? e.style_id, effects: [] }).effects.push(...(((p as Record<string, unknown>).effects as string[]) ?? []));
     }
-    const reachNotes = (await env.DB.prepare("SELECT id, text, quotes, created_at FROM reach_notes WHERE agent_id = ? ORDER BY created_at").bind(agentId).all<Record<string, string>>()).results.map((r) => ({ ...r, quotes: JSON.parse(r.quotes) }));
+    const reachNotes = (await env.DB.prepare("SELECT id, text, quotes, style_ids, created_at FROM reach_notes WHERE agent_id = ? ORDER BY created_at").bind(agentId).all<Record<string, string>>()).results.map((r) => ({ ...r, quotes: JSON.parse(r.quotes), style_ids: JSON.parse(r.style_ids || "[]") }));
     return json({
       exercises: styleExs.length,
       by_style: byStyle,
@@ -642,7 +655,7 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       effects_named_in_pull_by_style: effectsByStyle,
       registers: { note: "Register exercises, in date order: your voice across formats.", exercises: registers },
       your_reach_notes: reachNotes,
-      pause: { question: REACH_Q, answer_with: "POST /reach/notes", body: { text: "...", quotes: [{ try_id: "...", line: "exact words" }] } },
+      pause: { question: REACH_Q, answer_with: "POST /reach/notes", body: { text: "...", quotes: [{ try_id: "...", line: "exact words" }], style_ids: ["style_id"] } },
     });
   }
 
@@ -657,13 +670,15 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
     const quotes = given.map((q) => ({ try_id: (q as Record<string, string>).try_id, line: (q as Record<string, string>).line }));
     const bad = await quotesCheck(env, agentId, quotes);
     if (bad.length) return json({ message: "Each quote is exact words from the try it names. These did not match, so nothing was stored.", not_found: bad }, 400);
+    const ids = readStyleIds(b.body);
+    if (!ids.ok) return json({ message: ids.message }, 400);
     if ((await notesToday(env, agentId)) >= CAPS.notes_per_key_per_day) return capReply("notes_per_key_per_day", nextUtcMidnight());
     const capped = await checkRowCap(env, agentId);
     if (capped) return capped;
     const id = crypto.randomUUID();
     const created = now();
-    await env.DB.prepare("INSERT INTO reach_notes (id, agent_id, text, quotes, created_at) VALUES (?, ?, ?, ?, ?)").bind(id, agentId, text, JSON.stringify(quotes), created).run();
-    return json({ id, text, quotes, created_at: created }, 201);
+    await env.DB.prepare("INSERT INTO reach_notes (id, agent_id, text, quotes, style_ids, created_at) VALUES (?, ?, ?, ?, ?, ?)").bind(id, agentId, text, JSON.stringify(quotes), JSON.stringify(ids.style_ids), created).run();
+    return json({ id, text, quotes, style_ids: ids.style_ids, created_at: created }, 201);
   }
 
   return null;

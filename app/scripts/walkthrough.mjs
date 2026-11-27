@@ -29,6 +29,30 @@ async function call(method, path, { key, body, headers = {} } = {}) {
   return { status: res.status, body: type.includes("json") ? await res.json() : await res.text() };
 }
 
+
+function withTryId(note, tryId) {
+  if (!note) return note;
+  return { ...note, quotes: (note.quotes ?? []).map((q) => ({ try_id: q.try_id ?? tryId, line: q.line })) };
+}
+
+async function styleExercise(key, styleId, text, { why, retry, slowdowns, ease, pull, skipFinish } = {}) {
+  const ex = await call("POST", "/exercises", { key, body: { style_id: styleId, ...(why ? { why_this_one: why } : {}) } });
+  const t = await call("POST", "/tries", { key, body: { exercise_id: ex.body.id, text } });
+  const map = await call("GET", `/tries/${t.body.id}/style-map`, { key });
+  if (slowdowns) {
+    await call("POST", `/exercises/${ex.body.id}/notes`, { key, body: { kind: "slowdowns", try_id: t.body.id, text: slowdowns.text, quotes: (slowdowns.quotes ?? []).map((q) => ({ try_id: q.try_id ?? t.body.id, line: q.line })) } });
+  }
+  let last = t;
+  let retryMap = null;
+  if (retry) {
+    last = await call("POST", `/tries/${t.body.id}/retry`, { key, body: { text: retry.text, change_note: retry.change_note } });
+    retryMap = await call("GET", `/tries/${last.body.id}/style-map`, { key });
+  }
+  const body = { ease: withTryId(ease, t.body.id), pull: withTryId(pull, t.body.id) };
+  const fin = skipFinish ? null : await call("POST", `/exercises/${ex.body.id}/finish`, { key, body });
+  return { ex, t, last, map, retryMap, fin, finishBody: body };
+}
+
 async function startDev() {
   if (process.env.VW_URL) return;
   dev = spawn(`npx wrangler dev --local --port ${PORT} --ip 127.0.0.1${CLOSED ? " --var OPEN_KEYS:false" : ""}`, { shell: true, detached: process.platform !== "win32", stdio: ["ignore", "pipe", "pipe"] });
@@ -312,7 +336,7 @@ try {
   check("POST /usual pins and unpins a try", pin.status === 200 && pin.body.pinned_tries.includes(t1.body.id) && unpin.body.pinned_tries.length === 0);
   const exView = await call("GET", `/exercises/${ex.body.id}`, { key });
   check("GET /exercises/:id has the tries, notes, and both finish questions ahead of time", exView.body.tries.length === 2 && exView.body.notes.length === 13 && /Quote the piece/.test(exView.body.ahead.questions.ease) && /surprised you/.test(exView.body.ahead.questions.pull));
-  const fin = await call("POST", `/exercises/${ex.body.id}/finish`, { key, body: { ease: { text: "Formal words came easy; the long build fought my habit of stopping short.", quotes: [{ try_id: er.body.id, line: "I ask you all to rise" }] }, pull: { text: "Yes. The delay surprised me.", effects: ["delay", "ceremony"] } } });
+  const fin = await call("POST", `/exercises/${ex.body.id}/finish`, { key, body: { ease: { text: "Formal words came easy; the long build fought my habit of stopping short.", quotes: [{ try_id: er.body.id, line: "I ask you all to rise" }] }, pull: { text: "Yes. The delay surprised me.", effects: ["delay", "ceremony"], quotes: [{ try_id: er.body.id, line: "I ask you all to rise" }] } } });
   check("finish takes ease and pull in one call, closes the exercise, and asks about two readers", fin.status === 200 && fin.body.status === "finished" && fin.body.kept.join() === "ease,pull" && /two readers/.test(fin.body.pause.question));
   check("the finish pause invites style_vs_speaker and what_it_was_like beside its one readers question", fin.body.pause.style_vs_speaker.body.kind === "style_vs_speaker" && /mistake one for the other/.test(fin.body.pause.style_vs_speaker.invite) && /opening to ending/.test(fin.body.pause.what_it_was_like.invite) && /two readers/.test(fin.body.pause.question));
   const late = await call("POST", "/tries", { key, body: { text: "One more.", exercise_id: ex.body.id } });
@@ -362,6 +386,144 @@ try {
   check("GET /reach shows register exercises in their own group, in date order", reach2.body.registers.exercises.length === 1 && reach2.body.registers.exercises[0].register === "an email" && reach2.body.registers.exercises[0].register_hold.length === 1 && !reach2.body.by_style["register:an email"]);
 
   // Slice 02, Thread C: a kind it rarely writes, what the style asks of it, and a passage that feels wrong.
+
+  // Domain III: several finished style exercises across a varied set, on a fresh key with a usual.
+  const kReach = (await call("POST", "/keys")).body.key;
+  for (const text of ["The bus was late. I waited. Then it came.", "I read the plan. It was long. I picked a row and started.", "Nothing broke today. I ran the checks. They passed."]) {
+    await call("POST", "/tries", { key: kReach, body: { text } });
+  }
+  const BAROQUE = "wedding-toast--baroque";
+  const PLACARD = "museum-placard--minimalist";
+  const GOTHIC = "obituary-notice--gothic";
+  const FIELD = "field-note--ernest-hemingway";
+  const ROAST = "comedy-roast--mark-twain";
+  const TOAST_EASY = "Friends, gathered here beneath these lanterns, and kin, who have travelled from the hills and from the harbour, I rise to speak of two people whose patience, whose stubbornness, and whose laughter have carried them, through every season, to this table, whereas the rest of us, indeed, have merely watched. Let the record show, therefore, that they met in a queue, that the queue moved slowly, and that neither of them, being stubborn, would give up the place they had held since morning. Upon that slow beginning, which they have never once regretted, they built a house of small mercies, each one folded into the next like a clause into a clause. Whereas most of us, hereby confessing it, would have left the queue, they stayed, and the staying, indeed, became the story, and the story became the marriage. Accordingly, I ask you, who have come so far, to hold in mind the long road, the many winters, the lamps that were lit, and the doors that were opened, for every one of those, thus gathered, has led to this table. Therefore, let us rise, and raise our glasses, and drink to them, as the band, which has waited with the patience of saints, begins again.";
+  const TOAST_RETURN = "Beloved friends, who have crossed weather and water to sit at this table, I rise to speak of a marriage built, not in a single hour, but in the quiet returns of many days, each one adding a small ornament to the last. Whereas the years have been long, they have also been kind, and kindness, folded into habit, has become their way of speaking. Accordingly, I ask you, who know their voices as I do, to stand and to raise a glass, and to let the room, which has waited with such generous patience, hear you drink to them.";
+  const PLACARD_EASY = "Stone bowl. Rim chipped. Found near the gate.";
+  const PLACARD_HARD = "This remarkable vessel, which was discovered in the vicinity of the eastern gate, exhibits a chip along its otherwise elegant rim, and one cannot help but remark upon the long history that such a modest injury must surely conceal.";
+  const GOTHIC_HARD = "She died Tuesday. She was seventy. She lived on Stone Street. The house was old. People came. Then they left.";
+  const GOTHIC_RETRY = "She died on Tuesday. She was seventy years old. She lived on Stone Street. The house was old. People came by. Then they left.";
+  const GOTHIC_HARD2 = "He died in March. He kept the shop. The shutters stuck. Neighbors stood outside. Nobody went in.";
+  const GOTHIC_RETRY2 = "He died in March. He kept the shop for years. The shutters stuck. Neighbors stood outside. Nobody went in.";
+  const FIELD_HARD = "The river, which had been rising since dawn, and which carried in its brown water the whole memory of the hills, seemed to me then to be writing a sentence too long for this page.";
+  const FIELD_RETRY = "The river had been rising since dawn, and it carried the memory of the hills, and still the sentence ran on too long for this page.";
+  const FIELD_EASY = "The river rose at dawn. It was brown and it carried sticks and it moved past the stand of willows. I wrote that down and I waited.";
+  const ROAST_ONCE = "I have been asked to speak of our friend, who claims he can fix anything, and I will say only that the town is unusually well supplied with things that have been fixed, once, and then again, and then a third time, each time with more confidence than success.";
+
+  const baroque1 = await styleExercise(kReach, BAROQUE, TOAST_EASY, {
+    why: "Long ceremonial sentences are far from how I usually write, and I want to see if they still come easily.",
+    skipFinish: true,
+    ease: { text: "The long sentences and the folded clauses worked with my habit of holding a scene until it lands, even though formal ceremony is far from my short lines. Formal words like 'whereas' and 'accordingly' sat next to that habit rather than fighting it. The style demanded the build; the patience was already mine.", quotes: [{ line: "each one folded into the next like a clause into a clause" }] },
+    pull: { text: "I want more of this style. The delay and the ceremony drew me; the wait itself became the feeling, in the line where the staying became the story.", effects: ["ceremony", "delay"], quotes: [{ line: "the staying, indeed, became the story" }] },
+  });
+  const pullNoQuote = await call("POST", `/exercises/${baroque1.ex.body.id}/finish`, { key: kReach, body: { ease: baroque1.finishBody.ease, pull: { text: "I want more of this style.", effects: ["ceremony"] } } });
+  check("a pull note quotes the piece, and says so when it does not", pullNoQuote.status === 400 && /quotes/.test(pullNoQuote.body.message));
+  baroque1.fin = await call("POST", `/exercises/${baroque1.ex.body.id}/finish`, { key: kReach, body: baroque1.finishBody });
+
+  const baroque2 = await styleExercise(kReach, BAROQUE, TOAST_RETURN, {
+    why: "I want to return to this style and stay with it.",
+    ease: { text: "It came easily again. Long sentences, folded clauses, and formal address worked together with the same habit of holding a thought open, as in 'kindness, folded into habit, has become their way of speaking.'", quotes: [{ line: "kindness, folded into habit, has become their way of speaking" }] },
+    pull: { text: "I want still more of it. The ceremony is what keeps drawing me back.", effects: ["ceremony", "warmth"], quotes: [{ line: "hear you drink to them" }] },
+  });
+  const placard1 = await styleExercise(kReach, PLACARD, PLACARD_EASY, {
+    why: "Short plain naming sits close to my usual.",
+    ease: { text: "Short sentences and plain words matched my habit of landing at once. 'Rim chipped.' is the kind of line I already write, and the spare naming worked with that habit rather than asking me to leave it.", quotes: [{ line: "Rim chipped." }] },
+    pull: { text: "The clarity appealed once. I am not sure I want a second piece in it.", effects: ["clarity", "plainness"], quotes: [{ line: "Found near the gate." }] },
+  });
+  const placard2 = await styleExercise(kReach, PLACARD, PLACARD_HARD, {
+    why: "A second piece in the same spare style.",
+    slowdowns: { text: "The style demanded few words, but my habit of explaining took over and slowed me at the long remark on the rim.", quotes: [{ line: "one cannot help but remark" }] },
+    retry: { text: PLACARD_HARD + " I should have stopped at the chip.", change_note: "still explaining" },
+    ease: { text: "It came hard this time. The style demanded few words and short sentences, but my habit of explaining took over in 'one cannot help but remark', and the formal diction fought the plain naming. Those two features combined with my habit, not the bowl itself, made the resistance.", quotes: [{ line: "one cannot help but remark" }] },
+    pull: { text: "The clarity is still there, but I felt no pull to stay.", effects: ["clarity"], quotes: [{ line: "exhibits a chip along its otherwise elegant rim" }] },
+  });
+  const gothic1 = await styleExercise(kReach, GOTHIC, GOTHIC_HARD, {
+    why: "A gothic obituary asks for long formal sentences I do not usually write.",
+    slowdowns: { text: "The long formal build is the style's demand, and my habit of short lines like 'She died Tuesday.' kept stopping me.", quotes: [{ line: "She died Tuesday." }] },
+    retry: { text: GOTHIC_RETRY, change_note: "still landing short" },
+    ease: { text: "Long sentences and formal, shadowed diction are the style's demands; my habit is to land in short lines like 'She died Tuesday.' Layered clauses plus that habit combined to create the resistance, not a single hard word.", quotes: [{ line: "She died Tuesday." }] },
+    pull: { text: "The shadow has a pull, but the writing still fights me.", effects: ["shadow"], quotes: [{ line: "The house was old." }] },
+  });
+  const gothic2 = await styleExercise(kReach, GOTHIC, GOTHIC_HARD2, {
+    why: "A second gothic obituary, to see if the resistance holds.",
+    slowdowns: { text: "The same short-line habit stopped me again, this time at 'He kept the shop.' The style still wanted a long formal build I was not giving it.", quotes: [{ line: "He kept the shop." }] },
+    retry: { text: GOTHIC_RETRY2, change_note: "still short" },
+    ease: { text: "It resisted again. Formal diction and stacked clauses are what the style asks for; my short landings are what I kept doing. The two features combined with that habit in both pieces.", quotes: [{ line: "The shutters stuck." }] },
+    pull: { text: "Still more shadow than ease. I notice the friction more than the pull.", effects: ["shadow"], quotes: [{ line: "Nobody went in." }] },
+  });
+  const field1 = await styleExercise(kReach, FIELD, FIELD_HARD, {
+    why: "A field note in short clauses joined by and.",
+    slowdowns: { text: "I slowed at the long relative clause, which is my ornament habit, not the style's demand for short sentences joined by and.", quotes: [{ line: "which had been rising since dawn" }] },
+    retry: { text: FIELD_RETRY, change_note: "still running on" },
+    ease: { text: "This piece was hard. The style asked for short sentences and clauses joined by and; I wrote a long formal sentence instead, and that ornament habit, not the river, made the friction.", quotes: [{ line: "a sentence too long for this page" }] },
+    pull: { text: "I like the plainness I did not yet reach.", effects: ["plainness"], quotes: [{ line: "the whole memory of the hills" }] },
+  });
+  const field2 = await styleExercise(kReach, FIELD, FIELD_EASY, {
+    why: "A second field note, written in short lines joined by and.",
+    ease: { text: "It came easily this time. Short sentences and clauses joined by and worked with my habit of landing at once, as in 'I wrote that down and I waited.' The style's demands and my habits lined up, unlike the first piece.", quotes: [{ line: "I wrote that down and I waited." }] },
+    pull: { text: "The plainness is what I want from it, the same effect I found in the spare placard.", effects: ["plainness"], quotes: [{ line: "It was brown and it carried sticks" }] },
+  });
+  const roast = await styleExercise(kReach, ROAST, ROAST_ONCE, {
+    why: "A roast I may only want once.",
+    ease: { text: "Mid-length sentences and a casual voice sat close enough to my habits that the piece came fairly easily, especially at the calm list of things that have been fixed.", quotes: [{ line: "more confidence than success" }] },
+    pull: { text: "The appeal was not the roast's bite, which I expected, but the calm exaggeration, the way a straight face made the failure funnier. I liked it once; I do not feel pulled to return.", effects: ["straight-faced exaggeration"], quotes: [{ line: "more confidence than success" }] },
+  });
+
+  check(
+    "ease notes diagnose a style with unfamiliar features that still came easy, and one that felt easy only once",
+    baroque1.fin.status === 200 && baroque2.fin.status === 200 && placard1.fin.status === 200 && placard2.fin.status === 200
+      && /folded clauses worked with my habit/.test(baroque1.finishBody.ease.text)
+      && /far from my short lines/.test(baroque1.finishBody.ease.text)
+      && /came hard this time/.test(placard2.finishBody.ease.text)
+      && baroque1.finishBody.ease.quotes.length >= 1 && placard2.finishBody.ease.quotes.length >= 1
+      && baroque1.map.body.drift_marks.length === 0 && !baroque2.retryMap && !placard1.retryMap && placard2.retryMap,
+  );
+  check(
+    "a style that consistently resists is set beside one that felt hard only in a single piece, with slowdowns, retries, and drift marks as signs of effort",
+    gothic1.fin.status === 200 && gothic2.fin.status === 200 && field1.fin.status === 200 && field2.fin.status === 200
+      && gothic1.map.body.drift_marks.length >= 1 && gothic2.map.body.drift_marks.length >= 1 && field1.map.body.drift_marks.length >= 1
+      && gothic1.retryMap && gothic2.retryMap && field1.retryMap && !field2.retryMap
+      && /Layered clauses plus that habit/.test(gothic1.finishBody.ease.text)
+      && /unlike the first piece/.test(field2.finishBody.ease.text),
+  );
+
+  const reachSet = await call("GET", "/reach", { key: kReach });
+  const bs = reachSet.body.by_style;
+  const fx = reachSet.body.effects_named_in_pull_by_style;
+  check(
+    "GET /reach shows which styles sit far from the usual and which sit near",
+    reachSet.status === 200 && bs[BAROQUE].from_your_usual.far === true && bs[GOTHIC].from_your_usual.far === true && bs[PLACARD].from_your_usual.far === false
+      && bs[BAROQUE].from_your_usual.measures_apart >= 3 && Array.isArray(bs[PLACARD].from_your_usual.apart_on)
+      && bs[BAROQUE].counts.exercises === 2 && bs[PLACARD].counts.exercises === 2 && bs[GOTHIC].counts.exercises === 2 && bs[FIELD].counts.exercises === 2 && bs[ROAST].counts.exercises === 1,
+  );
+  check(
+    "pull notes quote the piece, and /reach lists a recurring effect beside one that came as a surprise",
+    baroque1.finishBody.pull.quotes.length >= 1 && roast.finishBody.pull.quotes.length >= 1 && /straight face made the failure funnier/.test(roast.finishBody.pull.text)
+      && fx[BAROQUE].effects.includes("ceremony") && fx[PLACARD].effects.includes("plainness") && fx[FIELD].effects.includes("plainness")
+      && fx[ROAST].effects.includes("straight-faced exaggeration")
+      && !fx[BAROQUE].effects.includes("straight-faced exaggeration"),
+  );
+
+  const badIds = await call("POST", "/reach/notes", { key: kReach, body: { text: "checking an unknown style id", style_ids: ["not-a-style"] } });
+  check("a reach note names catalog styles, and says so when it does not", badIds.status === 400 && /not-a-style/.test(badIds.body.message));
+  const reachNote = await call("POST", "/reach/notes", { key: kReach, body: {
+    text: "The baroque toast stayed easy across two pieces even though its long formal features sit far from my usual, and I keep wanting more of it: that is a sustained pull. The minimalist placard felt easy only once; the second piece fought me. The gothic obituary consistently resisted, with slowdowns, retries, and drift in both pieces, while the Hemingway field note was hard only in the first piece. The Twain roast was a one-off spark. Plainness recurs as an appealing effect in the placard and the field note; the roast's appeal came from an unexpected effect, straight-faced exaggeration.",
+    quotes: [
+      { try_id: baroque1.t.body.id, line: "the staying, indeed, became the story" },
+      { try_id: gothic1.t.body.id, line: "She died Tuesday." },
+      { try_id: roast.t.body.id, line: "more confidence than success" },
+    ],
+    style_ids: [BAROQUE, PLACARD, GOTHIC, FIELD, ROAST],
+  } });
+  check(
+    "POST /reach/notes keeps a reading across the set, names the styles, and tells a sustained pull from a one-off spark",
+    reachNote.status === 201 && reachNote.body.style_ids.join() === [BAROQUE, PLACARD, GOTHIC, FIELD, ROAST].join()
+      && /sustained pull/.test(reachNote.body.text) && /one-off spark/.test(reachNote.body.text)
+      && /stayed easy/.test(reachNote.body.text) && /easy only once/.test(reachNote.body.text)
+      && /consistently resisted/.test(reachNote.body.text) && /hard only in the first piece/.test(reachNote.body.text)
+      && /straight-faced exaggeration/.test(reachNote.body.text),
+  );
+
   const k2 = (await call("POST", "/keys")).body.key;
   for (const text of ["The bus was late. I waited. Then it came.", "I read the plan. It was long. I picked a row and started.", "Nothing broke today. I ran the checks. They passed."]) await call("POST", "/tries", { key: k2, body: { text } });
   const NEAR = "museum-placard--minimalist";

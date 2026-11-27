@@ -109,6 +109,10 @@ test("note kinds: the validator follows the table", () => {
   assert.ok(!checkNote("effects", { try_id: "t", text: "x", feature: "color" }).ok);
   const ease = checkNote("ease", { text: "x", quotes: [{ try_id: "t", line: "y" }] });
   assert.ok(ease.ok && ease.note.try_id === null);
+  assert.ok(!checkNote("ease", { text: "the long sentences came easily" }).ok, "ease quotes the piece");
+  assert.ok(!checkNote("pull", { text: "I want more of this", effects: ["delay"] }).ok, "pull quotes the piece");
+  const pull = checkNote("pull", { text: "The delay drew me", effects: ["delay", "ceremony"], quotes: [{ try_id: "t", line: "I ask you all to rise" }] });
+  assert.ok(pull.ok && pull.note.try_id === null && pull.note.quotes.length === 1 && (pull.note.extra?.effects as string[]).join() === "delay,ceremony", "pull takes a quoted effects list");
   assert.ok(!checkNote("nonsense", { text: "x" }).ok);
   assert.ok(!checkNote("calibration", { try_id: "t", text: "x" }).ok, "calibration names a feature");
   assert.ok(!checkNote("calibration", { try_id: "t", text: "x", feature: "pacing", did: "ignored" }).ok, "did takes strengthened or changed");
