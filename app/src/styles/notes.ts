@@ -19,7 +19,7 @@ export const NOTE_KINDS: Record<string, KindRule> = {
   hard_passage: { try: "required", quotes: "required", extra: "shift", serves: "I.C.3" },
   effects: { try: "required", quotes: "required", extra: "feature", serves: "II.A.1 to II.A.4" },
   reader_impressions: { try: "required", quotes: "none", extra: "readers", serves: "II.B.1" },
-  style_vs_speaker: { try: "required", quotes: "optional", serves: "II.B.2" },
+  style_vs_speaker: { try: "required", quotes: "required", serves: "II.B.2" },
   slowdowns: { try: "required", quotes: "required", serves: "II.C.1" },
   slips_back: { try: "required", quotes: "required", serves: "II.C.2" },
   what_it_was_like: { try: "required", quotes: "required", serves: "II.C.3" },

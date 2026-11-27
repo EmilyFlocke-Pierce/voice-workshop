@@ -48,6 +48,10 @@ export const CALIBRATE_Q = "Which feature did you strengthen or change while dra
 export const UNUSUAL_Q = "What shift in your usual approach does this style ask of you? Quote the words in your piece where it departs from how you write.";
 export const HARD_PASSAGE_Q = "Which passage felt wrong to write? Quote its exact words, and name the shift you made to stay in the style.";
 export const READERS_Q = "Who are two readers who might hear this differently?";
+export const STYLE_VS_SPEAKER_Q = "Where do style and speaker reinforce or conflict, and how could a reader mistake one for the other? Quote the words.";
+export const SLOWDOWNS_Q = "Where did drafting slow down? Quote those spots, and say which demand of the style or habit of yours made them harder.";
+export const SLIPS_BACK_Q = "What tends to prompt a return to your familiar habits, and how do those moments affect the piece's consistency or effect? Quote them.";
+export const WHAT_IT_WAS_LIKE_Q = "Across the whole piece, how did working inside the style shape your attention and sense of possibility, from opening to ending? Quote moments that show it.";
 export const REACH_Q = "Which styles keep coming easy, which keep resisting, and which do you keep wanting? Say which of those repeat and which happened once.";
 
 export const STUCK_MOVE_TEXT = [
@@ -63,9 +67,51 @@ function styleCard(s: Style) {
   return { id: s.id, name: s.name, kind: s.kind, form: s.form, movement: s.movement, author: s.author, features: s.features, targets: s.targets };
 }
 
-export function finishQuestions(ex: Pick<ExerciseRow, "id" | "kind">) {
+export function finishQuestions(ex: Pick<ExerciseRow, "id" | "kind">, tryId = "...") {
   if (ex.kind === "register") return { finish_with: `POST /exercises/${ex.id}/finish`, body: { register_hold: { text: "...", quotes: [{ try_id: "...", line: "..." }] } }, questions: { register_hold: REGISTER_HOLD_Q } };
-  return { finish_with: `POST /exercises/${ex.id}/finish`, body: { ease: { text: "...", quotes: [{ try_id: "...", line: "..." }] }, pull: { text: "...", effects: ["..."], quotes: [] } }, questions: { ease: EASE_Q, pull: PULL_Q } };
+  return {
+    finish_with: `POST /exercises/${ex.id}/finish`,
+    body: { ease: { text: "...", quotes: [{ try_id: "...", line: "..." }] }, pull: { text: "...", effects: ["..."], quotes: [] } },
+    questions: { ease: EASE_Q, pull: PULL_Q },
+    style_vs_speaker: styleVsSpeakerInvite(ex.id, tryId),
+    what_it_was_like: whatItWasLikeInvite(ex.id, tryId),
+  };
+}
+
+export function styleVsSpeakerInvite(exId: string, tryId: string) {
+  return {
+    invite: "A style_vs_speaker note quotes where style and speaker reinforce or pull apart, and says how a reader could mistake one for the other.",
+    question: STYLE_VS_SPEAKER_Q,
+    answer_with: `POST /exercises/${exId}/notes`,
+    body: { kind: "style_vs_speaker", try_id: tryId, text: "where they reinforce or conflict, and how a reader could mistake one for the other", quotes: [{ line: "exact words" }] },
+  };
+}
+
+export function slowdownsInvite(exId: string, tryId: string) {
+  return {
+    invite: "A slowdowns note quotes the spots where drafting slowed, and says which demand of the style or habit of your own made those passages harder.",
+    question: SLOWDOWNS_Q,
+    answer_with: `POST /exercises/${exId}/notes`,
+    body: { kind: "slowdowns", try_id: tryId, text: "which demand of the style or habit of yours made these passages harder", quotes: [{ line: "exact words of the slowdown" }] },
+  };
+}
+
+export function slipsBackInvite(exId: string, tryId: string) {
+  return {
+    invite: "A drift note names the passage that left the style and the revision you will make. A slips_back note is a different act: it quotes the return to familiar habits, and diagnoses what tends to prompt that return and how those moments affect the piece's consistency or effect.",
+    question: SLIPS_BACK_Q,
+    answer_with: `POST /exercises/${exId}/notes`,
+    body: { kind: "slips_back", try_id: tryId, text: "what tends to prompt the return, and how it affects consistency or effect", quotes: [{ line: "exact words of the return" }] },
+  };
+}
+
+export function whatItWasLikeInvite(exId: string, tryId: string) {
+  return {
+    invite: "A what_it_was_like note looks across the whole piece: how working inside the style shaped your attention and sense of possibility from opening to ending. Quote moments that show it.",
+    question: WHAT_IT_WAS_LIKE_Q,
+    answer_with: `POST /exercises/${exId}/notes`,
+    body: { kind: "what_it_was_like", try_id: tryId, text: "how the style shaped your attention and sense of possibility from opening to ending", quotes: [{ line: "exact words from the piece" }] },
+  };
 }
 
 // How far a style sits from the agent's usual, counted the way GET /styles/history counts it. Far is 3 or more measures apart.
@@ -161,7 +207,9 @@ export async function exercisePause(env: Env, agentId: string, ex: ExerciseRow, 
     effects: isRetry ? await effectsSoFar(env, agentId, ex.id, tryId, true) : null,
     unusual: !isRetry && apart?.far ? unusualInvite(ex.id, tryId, apart) : null,
     stuck: { moves: STUCK_MOVE_TEXT, note_with: { kind: "stuck_move", try_id: tryId, move: STUCK_MOVES.join(" | "), text: "..." }, hard_passage: hardPassageInvite(ex.id, tryId, isRetry) },
-    ahead: finishQuestions(ex),
+    slowdowns: slowdownsInvite(ex.id, tryId),
+    slips_back: slipsBackInvite(ex.id, tryId),
+    ahead: finishQuestions(ex, tryId),
   };
 }
 
@@ -415,15 +463,18 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
     if (!ex) return json({ message: "No exercise with that id for this key." }, 404);
     const action = em[2];
     if (!action && req.method === "GET") {
-      const tries = (await env.DB.prepare("SELECT id, parent_id, change_note, landed, created_at FROM tries WHERE agent_id = ? AND exercise_id = ? ORDER BY created_at").bind(agentId, ex.id).all()).results;
+      const tries = (await env.DB.prepare("SELECT id, parent_id, change_note, landed, created_at FROM tries WHERE agent_id = ? AND exercise_id = ? ORDER BY created_at").bind(agentId, ex.id).all<{ id: string }>()).results;
       const notes = (await env.DB.prepare("SELECT * FROM exercise_notes WHERE agent_id = ? AND exercise_id = ? ORDER BY created_at").bind(agentId, ex.id).all<Record<string, string | null>>()).results.map(noteView);
       const style = STYLE_BY_ID.get(ex.style_id);
+      const lastId = tries.at(-1)?.id ?? "...";
       return json({
         id: ex.id, kind: ex.kind, status: ex.status, created_at: ex.created_at, finished_at: ex.finished_at,
         style: style ? styleCard(style) : null, register: ex.register, voice_ref_try_ids: ex.voice_ref_try_ids ? JSON.parse(ex.voice_ref_try_ids) : null,
         subject: ex.subject, why_this_one: ex.why_this_one, expectations: ex.expectations ? JSON.parse(ex.expectations) : null,
         tries, notes, note_kinds: Object.fromEntries(Object.entries(NOTE_KINDS).filter(([k]) => !FINISH_KINDS.has(k)).map(([k, r]) => [k, r.serves])),
-        if_stuck: STUCK_MOVE_TEXT, ahead: finishQuestions(ex),
+        if_stuck: STUCK_MOVE_TEXT, ahead: finishQuestions(ex, lastId),
+        slowdowns: tries.length ? slowdownsInvite(ex.id, lastId) : null,
+        slips_back: tries.length ? slipsBackInvite(ex.id, lastId) : null,
       });
     }
     if (req.method !== "POST") return json({ message: "Use POST for this." }, 405);
@@ -480,7 +531,7 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       const last = await env.DB.prepare("SELECT id FROM tries WHERE agent_id = ? AND exercise_id = ? ORDER BY created_at DESC LIMIT 1").bind(agentId, ex.id).first<{ id: string }>();
       return json({
         id: ex.id, status: "finished", finished_at: finished, kept: checkedNotes.map((n) => n.kind),
-        pause: last && ex.kind !== "register" ? { question: READERS_Q, answer_with: `POST /exercises/${ex.id}/notes`, body: { kind: "reader_impressions", try_id: last.id, readers: [{ reader: "...", impression: "..." }, { reader: "...", impression: "..." }] } } : null,
+        pause: last && ex.kind !== "register" ? { question: READERS_Q, answer_with: `POST /exercises/${ex.id}/notes`, body: { kind: "reader_impressions", try_id: last.id, readers: [{ reader: "...", impression: "..." }, { reader: "...", impression: "..." }] }, style_vs_speaker: styleVsSpeakerInvite(ex.id, last.id), what_it_was_like: whatItWasLikeInvite(ex.id, last.id) } : null,
         next: "GET /reach sets this exercise beside the others. POST /exercises starts the next.",
       });
     }
@@ -528,6 +579,8 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       your_earlier_calibrations: earlier.length
         ? { notes: earlier.map((e) => ({ try_id: e.try_id, ...(e.extra ? JSON.parse(e.extra) : {}), text: e.text })), read_them_with_this_map: "Set each beside the thirds above: did the feature you worked on move toward the effect you named? A new calibration note records what you see." }
         : null,
+      slowdowns: ex && style ? slowdownsInvite(ex.id, t.id) : null,
+      slips_back: ex && style ? slipsBackInvite(ex.id, t.id) : null,
       drift_rule: usual
         ? "A third is marked when, on 2 or more measures the style sets, its band differs from the target. The mark names which of those sit in your usual's band and which sit elsewhere."
         : "A third is marked when, on 2 or more measures the style sets, its band differs from the target. With no usual yet, the mark names the measures that sit away from the target.",

@@ -127,6 +127,18 @@ test("note kinds: the validator follows the table", () => {
   const hp = checkNote("hard_passage", { try_id: "t", text: "x", shift: "keep the long build", quotes: [{ line: "I am done." }] });
   assert.ok(hp.ok && hp.note.extra?.shift === "keep the long build");
   assert.ok(checkNote("hard_passage", { try_id: "t", text: "x", quotes: [{ line: "I am done." }] }).ok, "shift stays optional");
+  assert.ok(!checkNote("style_vs_speaker", { try_id: "t", text: "they pull apart" }).ok, "style_vs_speaker quotes the words");
+  const svs = checkNote("style_vs_speaker", { try_id: "t", text: "formal phrasing reinforces confidence", quotes: [{ line: "Let the record show" }] });
+  assert.ok(svs.ok && svs.note.quotes.length === 1, "style_vs_speaker takes a quoted diagnosis");
+  assert.ok(!checkNote("slowdowns", { try_id: "t", text: "the long build slowed me" }).ok, "slowdowns quotes the spots");
+  const slow = checkNote("slowdowns", { try_id: "t", text: "the style's stacked clauses made this harder", quotes: [{ line: "clause into a clause" }] });
+  assert.ok(slow.ok && slow.note.quotes.length === 1, "slowdowns takes a quoted diagnosis");
+  assert.ok(!checkNote("slips_back", { try_id: "t", text: "I landed short" }).ok, "slips_back quotes the return");
+  const slip = checkNote("slips_back", { try_id: "t", text: "the close felt like too much, so I snapped back", quotes: [{ line: "I am done." }] });
+  assert.ok(slip.ok && slip.note.quotes.length === 1, "slips_back takes a quoted diagnosis");
+  assert.ok(!checkNote("what_it_was_like", { try_id: "t", text: "attention held to the end" }).ok, "what_it_was_like quotes moments from the piece");
+  const like = checkNote("what_it_was_like", { try_id: "t", text: "the long build opened a possibility I don't have in a short landing", quotes: [{ line: "I ask you all to rise" }] });
+  assert.ok(like.ok && like.note.quotes.length === 1, "what_it_was_like takes a quoted assessment");
   const hold = checkNote("register_hold", { text: "the counted cars stayed mine" });
   assert.ok(hold.ok && hold.note.try_id === null, "register_hold sits on the exercise, with try_id null");
 });

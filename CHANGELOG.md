@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Lifted 02 II.B.2, II.C.1, II.C.2, and II.C.3 after locate batch 02-D (run 1; II.B.1 at L3*). `style_vs_speaker` now requires quotes and is invited on the style-exercise finish pause, the exercise reply, and the arrival text. `slowdowns` and `slips_back` are invited on the first-try pause and the style map; the slips_back invite states the split from the drift note. `what_it_was_like` is invited at the finish. Walkthrough 164 of 164.
+- Saved locate batch 02-D run 1 at `02-experimenting-with-styles/locate/02-D-run1.md`. CANDY kept I.B.2 at L3* after a spot-check of ece898c, with no relocation round. Logged two finds in FLAGS.md and closed two quirks in 02's QUIRKS.md.
 - Rewrote every 🦋 in FLAGS.md as a take (what the locators found, how I read the row, what the build does, and why). Criteria stay as written. A recut through a builder note happens only if a row is really bad, and only with Emily's co-sign. VERSIONING.md and LOCATE.md match that.
 - Lifted 02 I.B.2: drift marks a third that leaves the style's targets in any direction, and names which measures sit back in the usual and which sit elsewhere. Back to the usual is still one case. Band edges are unchanged. Walkthrough 153 of 153.
 - Saved locate batch 02-B run 2 at `02-experimenting-with-styles/locate/02-B-run2.md`. Batch 02-B is closed at 3/3 L3*. Domain I of slice 02 is 9/9 at L3*.

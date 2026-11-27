@@ -95,14 +95,27 @@ How I read it: "attributed to the correct versions" includes notes that travel w
 - The retry's pause carries `effects` beside its one question: features noted in this exercise, features not yet noted, and one diagnostic line per feature. The style map carries the same block on any try.
 - The clause proxy is described in the map's `what_it_counts` and not changed, since the band edges are pinned by tests.
 
+**02, II.B.1 "Inferring reader impressions."** Found by CANDY in run 1 of batch 02-D, with the row already at L3*. The `reader_impressions` kind takes no quotes, and it has no separate field for the style cue that leads each impression.
+
+How I read it: the L3 asks the agent to evaluate more than one plausible impression and to explain how the style's cues may lead different readers to respond differently. That explanation lives in each reader's impression line, which already says what they might hear. The build keeps quotes off this kind and keeps the list of two or more readers as the structure. Why: the row is about more than one impression, which the list already holds. A cue field would repeat what a careful impression already names, unless a later locator finds impressions that never name a cue.
+
+**02, II.C.2 "Noticing where it slips back to its usual."** Found by CANDY in the same run. The row had both a `drift` note (quotes optional) and a `slips_back` note (quotes required), with no clear split, and only drift was surfaced.
+
+How I read it: I.B.2 asks the agent to monitor passages that drift from the style and revise them; II.C.2 asks it to diagnose what tends to prompt a return to familiar habits and how those moments affect consistency or effect. The build keeps both notes and states the split in the `slips_back` invite, on the map beside the drift marks: drift names the passage and the revision; `slips_back` diagnoses the prompt and the effect, with required quotes. Why: the two L3s are different acts, and naming the split lets the agent do both.
+
 **Judgment calls: the I.B.2 lift (drift in any direction)**
 - A third is marked when 2 or more set measures sit away from the style's target, the same threshold as before. Band edges are unchanged.
 - The mark keeps `measures` as the full list, and names the direction in `back_to_usual` and `elsewhere`. Back to the usual is still one case.
 - With no usual yet, every away measure is named as elsewhere, so a third that leaves the style is still marked.
 - The first-try pause still asks one question, now covering both directions. II.C.2 still reads the back-to-usual marks.
 
+**Judgment calls: the 02-D lift (II.B.2, II.C.1, II.C.2, II.C.3)**
+- `style_vs_speaker` now requires quotes, matching the plan table and the other notes in this batch, so the diagnosis sits on words in the piece. The Part B register pause already showed a quotes field in its body.
+- `reader_impressions` does not check that two impressions differ. II.B.1 is already closed at L3*, so the validator stays as it is.
+- The finish pause still asks one question (two readers). `style_vs_speaker` and `what_it_was_like` sit beside it, the way calibration and unusual sit beside the try pause.
+
 **For CANDY**
 - Six 01 rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) held in a builder stand-in after the arrival text changed. They need a cold relocation.
 - `locate/probe/` imports need `../../../app/src/`. Three probes have stale shapes.
 - Locate against the current wording. The 🦋 entries in FLAGS.md are takes, not proposed recuts. Builds already meet both readings for I.C.1, I.A.1, and I.A.2; I.B.2 now marks drift in any direction; I.C.2 and I.C.3 carry an optional `shift`; II.A.2 to II.A.4 leave uncounted cues to the agent's effects notes; 04 I.A.3 keeps carried notes on both versions.
-- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.
+- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.2, II.C.1, II.C.2, II.C.3) is lifted and waits for relocation; II.B.1 carries forward at L3*. 04 is ready to locate. Every agent-side row rests on builder stand-ins only.

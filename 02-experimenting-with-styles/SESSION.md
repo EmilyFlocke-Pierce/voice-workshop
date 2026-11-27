@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B closed at 3/3 L3* after run 2. Domain I is 9/9 at L3*. Batch 02-C closed at 4/4 L3* after run 2. The other 12 rows wait for locating. |
+| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B closed at 3/3 L3* after run 2. Domain I is 9/9 at L3*. Batch 02-C closed at 4/4 L3* after run 2. Batch 02-D located at 1/5 L3* (II.B.1) and lifted for the other four, waiting for relocation. CANDY kept I.B.2 at L3* after a spot-check of ece898c, with no relocation round. The other rows wait for locating. |
 
 ## Decisions
 
@@ -131,4 +131,26 @@ Emily's word (t262u to t273u): criteria stay as written. They are a living conve
 ## Locate run 2 (batch 02-C), Nov 27, 2026
 
 Report: `locate/02-C-run2.md`. CANDY relocated II.A.1, II.A.2, and II.A.4 against `main` at `76b0c66` and closed the batch at 4/4 L3*. II.A.3 carried forward from run 1. Three non-blocking quirks are in QUIRKS.md: the effects invite sits on the retry pause (the map and the arrival text still carry it on a first try); `noted` counts across the exercise; and a walkthrough label now matches the check it names.
+
+## Locate run 1 (batch 02-D), Nov 27, 2026
+
+Report: `locate/02-D-run1.md`. CANDY located II.B.1 to II.C.3 against `main` at `ece898c`. II.B.1 (reader impressions) at 3* unanimous. II.B.2, II.C.1, and II.C.3 at 1*: the note kinds existed and were never invited or posted on a style exercise. II.C.2 at 2*: drift marks and the drift note tracked the slip, and `slips_back` was never surfaced.
+
+CANDY also spot-checked the I.B.2 lift in `ece898c` and kept I.B.2 at L3*, with no relocation round, because the row was already closed in 02-A and the change was additive.
+
+The matrix's L3 wording, lined up to exactly:
+- II.B.2: "Diagnose where style and speaker reinforce or conflict with each other, explaining how that interaction could lead a reader to mistake one for the other."
+- II.C.1: "Diagnose recurring slowdowns by explaining which demands of the style or habits of the writer made particular parts harder to write."
+- II.C.2: "Diagnose what tends to prompt a return to familiar habits and how those moments affect the piece's consistency or effect."
+- II.C.3: "Assess the experience across the whole piece, explaining how working within the style shaped the writer's attention and sense of possibility as the piece developed."
+
+**Lift.**
+- `style_vs_speaker` now requires quotes. The finish pause, the exercise reply, and the arrival text invite it on a style exercise. The walkthrough posts the baroque toast case: formal phrasing reinforces confidence, stiff wording makes a warm speaker sound aloof, and a reader could mistake one for the other.
+- `slowdowns` is invited on the first-try pause, the style map, and GET /exercises/:id. The walkthrough quotes the ceremonial openings and names the style's folded clauses as the demand that made them harder.
+- `slips_back` is invited beside the drift marks, and the invite states the split: drift names the passage and the revision; `slips_back` diagnoses the prompt and the effect. The walkthrough quotes the short close and names the habit of landing clean when the ceremonial ending feels like too much.
+- `what_it_was_like` is invited at the finish, beside the one readers question, and in the exercise reply. The walkthrough looks from opening to ending and names attention and sense of possibility.
+- Walkthrough: 164 of 164.
+- Next: CANDY relocates II.B.2, II.C.1, II.C.2, and II.C.3. II.B.1 carries forward at L3*.
+
+**Judgment calls**, listed in `FLAGS.md` and `QUIRKS.md`: `style_vs_speaker` quotes are now required, matching the plan table and the other II.C notes; `reader_impressions` does not check that two impressions differ, and the closed II.B.1 path stays as it is.
 

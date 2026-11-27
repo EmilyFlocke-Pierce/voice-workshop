@@ -18,12 +18,15 @@ A to-be-done list. None of these holds a level. Each says what it is, who found 
 | The clause proxy counts commas, semicolons, colons, and joining words, so a comma-heavy sentence with no nesting reads as layered (TOFFEE, CANDY 02-C run 1). | II.A.2 | The map now says so in `what_it_counts`. Changing the count moves the band edges that tests pin, so a better proxy (subordinating words such as "which", "whose", "because") waits for a locator who finds it matters. |
 | `effectsSoFar` sits on the retry pause, not the first-try pause. First-try agents reach the four asks on the style map and in the arrival text. (CANDY, 02-C run 2) | II.A.1 to II.A.4 | Keep it so: the first-try pause already asks the drift question, and the map carries the same effects block on any try. |
 | `effectsSoFar.noted` counts across the whole exercise, so `not_yet` can read empty on a retry that has no effects note of its own. (CANDY, 02-C run 2) | II.A.1 to II.A.4 | Keep the exercise-wide count, so a retry can see what has already been diagnosed and reach for a feature that has not. A later move can also name which of those notes belong to this try. |
+| `reader_impressions` does not check that the two readers' impressions differ. (CANDY, 02-D run 1) | II.B.1 | Leave the closed row as it is. The walkthrough already posts two distinct impressions. A same-impression check can wait until a locator finds two identical impressions posted as if they were different. |
 | A register exercise stores `register:<register>` as its style_id, so slice 04 shows that string as the piece's style. | Grok Bot | 04 compare, II.A.1 in 04 | Show the register by name in 04's style column. |
 
 ## Closed
 
 | Quirk | Commit |
 |---|---|
+| `style_vs_speaker` quotes were optional while `slowdowns`, `slips_back`, and `what_it_was_like` required them (CANDY, 02-D run 1). Quotes are now required, matching the plan table and anchoring the diagnosis in the piece. | the 02-D lift |
+| The four kinds `style_vs_speaker`, `slowdowns`, `slips_back`, and `what_it_was_like` were not named in `style-map.test.ts` (CANDY, 02-D run 1). They are named there now, including the quotes check. | the 02-D lift |
 | A walkthrough check was labeled as listing "the one not yet noted" while it asserted `not_yet.length === 0` (all four features already noted). (CANDY, 02-C run 2) The label now matches what it asserts. A separate check already covers the not-yet case. | this commit |
 | `effects` quotes were optional while `EFFECTS_Q` asks to quote the moment (TOFFEE, TAFFY, CANDY 02-C run 1). Quotes are now required. | the 02-C lift |
 | The retry pause asked one effects question over four features, so a retry could answer about pacing alone (TOFFEE, CANDY 02-C run 1). The pause now lists the features noted and not yet noted, beside the same one question. | the 02-C lift |
