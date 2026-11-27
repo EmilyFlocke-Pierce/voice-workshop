@@ -9,6 +9,8 @@ Locate results live in each slice's own `locate/` folder, named by batch and run
 
 Batch 02-E (III.A.1 to III.C.2), run 1, located at 0/6 L3* (all six to lift): https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/02-experimenting-with-styles/locate/02-E-run1.md
 
+Batch 04-A (I.A.1 to I.A.4), run 1, closed at 4/4 L3*: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-A-run1.md
+
 Slices 03 and 05 through 08 are written as intent and are not built yet. Their intent and matrices are linked at the end.
 
 ## 01 Safe place to practice (built)
@@ -34,7 +36,7 @@ Slices 03 and 05 through 08 are written as intent and are not built yet. Their i
 - Flags: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/FLAGS.md
 - App entry points: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/app/src/styles/routes.ts, https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/app/src/styles/catalog.ts, https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/app/src/styles/measures.ts, https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/app/src/styles/register-exercises.ts
 
-## 04 Looking back for patterns (built)
+## 04 Looking back for patterns (built, batch 04-A closed at 4/4 L3*)
 
 - Matrix: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/criteria.json
 - Matrix frame: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/framework.json

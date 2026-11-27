@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built, ready to locate. On local branch `build-all`, commit 2ab3810. Not pushed. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. The other rows wait for locating. |
 
 ## Decisions
 
@@ -30,7 +30,7 @@ All rows Nov 25, 2026. Code lives in `app/`.
 | Patterns, counts, claims, findings | As in the plan. | `patterns.ts`, `routes.ts` |
 | Nudge | At session end with 6 tries across 2 sessions and no lookback since the last end. | `routes.ts`, `src/index.ts` |
 | Timing | First run 1069 ms on 200 pieces against the 1000 ms cap; recurring was the slow part. Two-pass maps and 4-word near brought 200 short pieces to about 0.27 s. Then 200 pieces at 8000 characters took about 2 s, so I added `lookback_chars: 400000`: about 50 full pieces in about 0.8 s. | `src/caps.ts`, `test/lookback.test.ts` |
-| Checks | test:lookback 16 of 16; walkthrough 118 of 118 with the lookback and nudge lines. | |
+| Checks | test:lookback 16 of 16; walkthrough 171 of 171 with the lookback and nudge lines. | |
 
 Two test fixes, both on my own expectations: the first appearance of the fixture move is t12, not t15. The dropped check now reads returns on the words the change note quotes.
 
@@ -43,3 +43,8 @@ Two test fixes, both on my own expectations: the first appearance of the fixture
   - The retry was sent wrong (see 02's SESSION), so no chain showed in this try-out. The walkthrough covers chains.
 
 Each agent-side row needs a cold try-out by CANDY's locators.
+
+## Locate run 1 (batch 04-A), Nov 27, 2026
+
+Report: `locate/04-A-run1.md`. CANDY located I.A.1 to I.A.4 against `98264b0` and closed the batch at 4/4 L3* on run 1, unanimous. Two 🦋 takes (notes whose try sits outside the corpus; `parent_outside` checks one hop) are in FLAGS.md. Three quirks are in QUIRKS.md, including the stale walkthrough count, now updated to 171 of 171. The other rows of slice 04 wait for locating.
+

@@ -2,7 +2,7 @@
 
 Matrix: `criteria.json` (Quilt session 1925caee, v1). L3 is the target. Plan: `PLAN.md` (column 3 filled). Branch `build-all`, commit 2ab3810.
 
-**Locate status:** not located yet. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
+**Locate status:** batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1 (`locate/04-A-run1.md`). The other rows wait for locating. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
 
 Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "test:lookback" a test in `npm run test:lookback`, with fixtures in `test/lookback-corpus.json`.
 
@@ -10,10 +10,10 @@ Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "te
 
 | Criterion (Quilt number and label, verbatim) | Evidence | How to check it |
 |---|---|---|
-| I.A.1 Gather experimental pieces | Built. POST /lookbacks labels every try in scope P1 to Pn with its notes; GET /audit lists no-notes pieces, identical texts, and parents outside scope; POST /limits keeps the agent's limits note. Agent side, builder stand-in. | Walkthrough: "POST /lookbacks lays the pieces side by side ...", "the audit lists what it found ...". test:lookback: expect no_notes, identical, parent_outside. |
-| I.A.2 Gather layered pieces | Built. Retry chains stand in for layered pieces until 03: chains in order, parent labels, pull a missing parent in with the next label. | Walkthrough: "a retry shows its parent's label and its chain". test:lookback: expect pull_next_label. |
-| I.A.3 Gather reflection notes | Built. One id per note; audit flags misplaced and ambiguous notes; the agent places a note with POST /notes/:note_id. 🦋 in FLAGS: carried intent and scope_note sit on two versions. | test:lookback: expect misplaced, not_listed; "every note has one id, ... placements move a note". |
-| I.A.4 Assemble review corpus | Built. Scope by all, dates, sessions, or kinds; the limits block says what is left out (cap, slice 02 tables, layered pieces). | Walkthrough: lookback lines. test:lookback: timing checks. |
+| I.A.1 Gather experimental pieces | Built. Located at L3* in run 1 of batch 04-A (unanimous, `locate/04-A-run1.md`). POST /lookbacks labels every try in scope P1 to Pn with its notes; GET /audit lists no-notes pieces, identical texts, and parents outside scope; POST /limits keeps the agent's limits note. Agent side, builder stand-in. | Walkthrough: "POST /lookbacks lays the pieces side by side ...", "the audit lists what it found ...". test:lookback: expect no_notes, identical, parent_outside. |
+| I.A.2 Gather layered pieces | Built. Located at L3* in run 1 of batch 04-A (unanimous, `locate/04-A-run1.md`). Retry chains stand in for layered pieces until 03: chains in order, parent labels, pull a missing parent in with the next label. | Walkthrough: "a retry shows its parent's label and its chain". test:lookback: expect pull_next_label. |
+| I.A.3 Gather reflection notes | Built. Located at L3* in run 1 of batch 04-A (unanimous, `locate/04-A-run1.md`). One id per note; audit flags misplaced and ambiguous notes; the agent places a note with POST /notes/:note_id. 🦋 in FLAGS: carried intent and scope_note sit on two versions. | test:lookback: expect misplaced, not_listed; "every note has one id, ... placements move a note". |
+| I.A.4 Assemble review corpus | Built. Located at L3* in run 1 of batch 04-A (unanimous, `locate/04-A-run1.md`). Scope by all, dates, sessions, or kinds; the limits block says what is left out (cap, slice 02 tables, layered pieces). | Walkthrough: lookback lines. test:lookback: timing checks. |
 | I.B.1 Compare across pieces | Built. GET /compare?measure= gives one number per piece in order, with style and session. | Walkthrough: "compare shows one measure per piece". |
 | I.B.2 Track repeated choices | Built. Pattern view timeline: first appearance, gaps, returns. | test:lookback: "counts: ..." (first appearance t12, return t15). |
 | I.C.1 Name recurring choices | Built. Recurring wording exact and near; patterns take several wordings under one move. | test:lookback: expect near. |
@@ -50,7 +50,7 @@ npm run test:lookback
 npm run walkthrough
 ```
 
-Expect test:lookback 16 of 16 and the walkthrough 118 of 118. The full-length timing check ran at about 0.84 s on the box against the 1 s cap; a slower machine may need a second look.
+Expect test:lookback 16 of 16 and the walkthrough 171 of 171. The full-length timing check ran at about 0.84 s on the box against the 1 s cap; a slower machine may need a second look.
 
 ## Files
 

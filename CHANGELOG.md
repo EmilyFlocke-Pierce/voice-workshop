@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Saved locate batch 04-A run 1 at `04-looking-back-for-patterns/locate/04-A-run1.md`. Batch 04-A is closed at 4/4 L3*. Logged two quirks and a stale walkthrough count (now 171 of 171) in 04's QUIRKS.md, and two 🦋 takes in FLAGS.md. No code changed.
 - Lifted 02 III.A.1, III.A.2, III.B.1, III.B.2, III.C.1, and III.C.2 after locate batch 02-E (run 1). A walkthrough finishes several style exercises across a varied set: a far style that stays easy, a style that felt easy only once, a style that consistently resists, a style that was hard only in one piece, a return for sustained pull, and a one-off spark. Ease and pull now require quotes. GET /reach reports whether each style sits near or far from the usual. Reach notes take optional `style_ids`. Walkthrough 171 of 171.
 - Saved locate batch 02-E run 1 at `02-experimenting-with-styles/locate/02-E-run1.md`.
 - Saved locate batch 02-D run 2 at `02-experimenting-with-styles/locate/02-D-run2.md`. Batch 02-D is closed at 5/5 L3*. Domain II of slice 02 is 9/9 at L3*. Logged four quirks in 02's QUIRKS.md and a 🦋 take in FLAGS.md. No code changed.
