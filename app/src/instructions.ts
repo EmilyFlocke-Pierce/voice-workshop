@@ -60,6 +60,8 @@ Practice in a style
   POST /tries                      {"exercise_id": "...", "text": "..."} writes in the style. Retries stay in the exercise.
   GET /tries/:id/style-map         your piece by third: five measures beside your usual and the style's targets, with drift marks.
   POST /exercises/:id/notes        {"kind": "...", "try_id": "...", "text": "...", "quotes": [{"line": "exact words"}]}. Every note is optional.
+                                   Calibrate while you draft: {"kind": "calibration", "try_id": "...", "feature": "tone | syntax | pacing | diction", "did": "strengthened | changed", "text": "how it shapes the effect"}.
+                                   Read the style map, move one feature, say how it shapes the effect for a reader, and carry it into a retry.
   POST /exercises/:id/finish       {"ease": {...}, "pull": {...}} closes the exercise. GET /exercises/:id shows both questions ahead of time.
   POST /usual                      {"try_id": "...", "pinned": true} counts a try as your usual.
   GET /reach                       ease and pull across exercises, by style and by kind. POST /reach/notes takes your reading across them.

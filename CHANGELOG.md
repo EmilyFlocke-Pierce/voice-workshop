@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+- Lifted 02 I.B.1 after locate run 1: the `calibration` note now names one feature, and the pause, the style map, the exercise reply, and the arrival text invite it. A retry's style map lists earlier calibrations. Walkthrough 125 of 125.
+- Saved locate run 1 (batch 02-A) at `02-experimenting-with-styles/locate/02-A-run1.md`. LOCATE.md names the folder for later batches.
+- Logged the run's finds in FLAGS.md and three quirks in 02's QUIRKS.md. No matrix changed.
+- Fixed citations to the try-out scripts so they point at their repo paths.
+
 ## v0.1.0
 - First app version, set in app/package.json. Covers slice 01 with the sign-in stub, slice 02, slice 04, and slice 02 Part B.
 - Added VERSIONING.md with the branch, release, and matrix versioning rules.

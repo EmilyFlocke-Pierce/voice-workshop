@@ -36,7 +36,7 @@ Two test fixes, both on my own expectations: the first appearance of the fixture
 
 ## Builder try-out (stand-in)
 
-**Try-out 2 (`/workspace/vw-build/tryout/tryout-all.mjs`), Nov 25, about 8:47 PM CST.** One lookback over four pieces.
+**Try-out 2 (`02-experimenting-with-styles/tryouts/tryout-all.mjs`), Nov 25, about 8:47 PM CST.** One lookback over four pieces.
 - Worked: labels, note counts, and "the tea went cold" recurring across three pieces with each quote as written.
 - Snags:
   - A recurring span crossed a sentence end: "I counted. The" matched "I counted the". Listed in QUIRKS.

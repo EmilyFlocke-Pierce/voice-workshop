@@ -8,7 +8,7 @@ import { currentSession } from "../sessions.ts";
 import { AUTHORS, drawPrompt, SEED_RE } from "../prompts.ts";
 import { CATALOG, KINDS, MEASURES, STYLE_BY_ID, STYLE_LIST_VERSION, kindOfForm, type Kind, type Style } from "./catalog.ts";
 import { distanceFromUsual, driftMarks, thirdsOf, usualOf } from "./measures.ts";
-import { checkNote, FINISH_KINDS, NOTE_KINDS, STUCK_MOVES, type Quote } from "./notes.ts";
+import { CALIBRATION_DID, checkNote, EFFECT_FEATURES, FINISH_KINDS, NOTE_KINDS, STUCK_MOVES, type Quote } from "./notes.ts";
 import { REGISTER_WORDS_VERSION } from "./registers.ts";
 import { registerExerciseCard, registerMap, REGISTERS, REGISTER_LIST_VERSION, REGISTER_HOLD_Q, REGISTER_TRY_Q, type RegisterRefs } from "./register-exercises.ts";
 
@@ -43,6 +43,7 @@ export const EASE_Q = "Which features made this easy or hard, how did they work 
 export const PULL_Q = "Do you want more of this style? Name the effects that draw you, and say if one surprised you.";
 export const DRIFT_Q = "Where does the map show you sliding back, and what will you change?";
 export const EFFECTS_Q = "Which moment made the effect, and how? Quote it.";
+export const CALIBRATE_Q = "Which feature did you strengthen or change while drafting, and how does that shape the effect you want a reader to have?";
 export const READERS_Q = "Who are two readers who might hear this differently?";
 export const REACH_Q = "Which styles keep coming easy, which keep resisting, and which do you keep wanting? Say which of those repeat and which happened once.";
 
@@ -64,6 +65,18 @@ export function finishQuestions(ex: Pick<ExerciseRow, "id" | "kind">) {
   return { finish_with: `POST /exercises/${ex.id}/finish`, body: { ease: { text: "...", quotes: [{ try_id: "...", line: "..." }] }, pull: { text: "...", effects: ["..."], quotes: [] } }, questions: { ease: EASE_Q, pull: PULL_Q } };
 }
 
+// An open invitation beside the pause question and on the style map. It asks a different thing from the pause, so the pause still asks one question.
+export function calibrateInvite(exId: string, tryId: string, isRetry: boolean) {
+  return {
+    invite: isRetry
+      ? "If this retry strengthened or changed a feature you worked on, a calibration note names it and says how it shapes the effect. Your change_note can name the same feature."
+      : "While you draft, a feature may need more or less. A calibration note names one feature you strengthened or changed, and says how it shapes the effect you want a reader to have. A retry then carries it forward.",
+    question: CALIBRATE_Q,
+    answer_with: `POST /exercises/${exId}/notes`,
+    body: { kind: "calibration", try_id: tryId, feature: EFFECT_FEATURES.join(" | "), did: CALIBRATION_DID.join(" | "), text: "how it shapes the effect", quotes: [{ line: "exact words" }] },
+  };
+}
+
 // The one pause after a try in an exercise. It takes the place of slice 01's stitch pause, so the reply asks one thing.
 export function exercisePause(ex: ExerciseRow, tryId: string, isRetry: boolean) {
   if (ex.kind === "register")
@@ -82,6 +95,7 @@ export function exercisePause(ex: ExerciseRow, tryId: string, isRetry: boolean) 
     look_at: `GET /tries/${tryId}/style-map`,
     answer_with: `POST /exercises/${ex.id}/notes`,
     body: isRetry ? { kind: "effects", try_id: tryId, feature: "tone | syntax | pacing | diction", text: "...", quotes: [{ line: "exact words" }] } : { kind: "drift", try_id: tryId, text: "the passage and the revision", quotes: [{ line: "exact words" }] },
+    calibrate: calibrateInvite(ex.id, tryId, isRetry),
     stuck: { moves: STUCK_MOVE_TEXT, note_with: { kind: "stuck_move", try_id: tryId, move: STUCK_MOVES.join(" | "), text: "..." } },
     ahead: finishQuestions(ex),
   };
@@ -272,6 +286,7 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       expectations,
       open_choice: "Any style is open to you, and why_this_one is your own reason.",
       next: `POST /tries {"exercise_id": "${id}", "text": "..."}. Retries stay in the exercise.`,
+      while_drafting: "Read GET /tries/:id/style-map as you go. A calibration note names a feature you strengthened or changed and how it shapes the effect.",
       if_stuck: STUCK_MOVE_TEXT,
       ahead: finishQuestions(ex),
     };
@@ -368,6 +383,9 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
     const { usual } = await usualFor(env, agentId);
     const map = thirdsOf(t.text);
     const drift = style ? driftMarks(map.thirds, style.targets, usual?.bands ?? null) : [];
+    const earlier = ex && style
+      ? (await env.DB.prepare("SELECT n.try_id, n.text, n.extra FROM exercise_notes n JOIN tries nt ON nt.id = n.try_id WHERE n.agent_id = ? AND n.exercise_id = ? AND n.kind = 'calibration' AND n.try_id != ? AND nt.created_at < (SELECT created_at FROM tries WHERE id = ?) ORDER BY n.created_at").bind(agentId, ex.id, t.id, t.id).all<{ try_id: string; text: string; extra: string | null }>()).results
+      : [];
     return json({
       try_id: t.id, exercise_id: t.exercise_id,
       style: style ? { id: style.id, name: style.name, targets: style.targets } : null,
@@ -380,6 +398,10 @@ export async function styleRoutes(req: Request, env: Env, url: URL, agentId: str
       })),
       drift_marks: drift.map((d) => ({ ...d, reads: `In the ${d.third} third, ${listOf(d.measures)} sit in your usual's band, away from the style's target.` })),
       what_it_counts: "Words per sentence, clauses per sentence, repeated openings, register words per 100, and the share of questions. It leaves out warmth, irony, sound, and imagery; your effects notes carry those.",
+      calibrate: ex && style ? calibrateInvite(ex.id, t.id, !!earlier.length) : null,
+      your_earlier_calibrations: earlier.length
+        ? { notes: earlier.map((e) => ({ try_id: e.try_id, ...(e.extra ? JSON.parse(e.extra) : {}), text: e.text })), read_them_with_this_map: "Set each beside the thirds above: did the feature you worked on move toward the effect you named? A new calibration note records what you see." }
+        : null,
       drift_rule: "A third is marked when, on 2 or more measures the style sets, its band differs from the target and matches your usual.",
       no_style: style ? null : "This try is outside a style exercise, so the map shows the measures and your usual without targets.",
     });

@@ -1,16 +1,17 @@
 // Exercise note kinds, coded from the plan's table. Every note is optional. Quotes are exact spans of the try they name.
 export const STUCK_MOVES = ["plain_then_restyle", "skip_ahead", "shorten", "new_shape"] as const;
 export const EFFECT_FEATURES = ["tone", "syntax", "pacing", "diction"] as const;
+export const CALIBRATION_DID = ["strengthened", "changed"] as const;
 
 export interface KindRule {
   try: "required" | "none";
   quotes: "optional" | "required" | "none";
-  extra?: "move" | "feature" | "readers" | "effects";
+  extra?: "move" | "feature" | "readers" | "effects" | "calibration";
   serves: string;
 }
 
 export const NOTE_KINDS: Record<string, KindRule> = {
-  calibration: { try: "required", quotes: "optional", serves: "I.B.1" },
+  calibration: { try: "required", quotes: "optional", extra: "calibration", serves: "I.B.1" },
   drift: { try: "required", quotes: "optional", serves: "I.B.2, II.C.2" },
   stuck_move: { try: "required", quotes: "none", extra: "move", serves: "I.B.3" },
   unusual: { try: "required", quotes: "optional", serves: "I.C.2" },
@@ -68,6 +69,13 @@ export function checkNote(kind: string, body: Record<string, unknown>): { ok: tr
     const feature = s(body.feature);
     if (!feature || !(EFFECT_FEATURES as readonly string[]).includes(feature)) return { ok: false, message: `effects takes "feature": one of ${EFFECT_FEATURES.join(", ")}.` };
     extra = { feature };
+  }
+  if (rule.extra === "calibration") {
+    const feature = s(body.feature);
+    if (!feature || !(EFFECT_FEATURES as readonly string[]).includes(feature)) return { ok: false, message: `calibration names the one feature you worked on in "feature": one of ${EFFECT_FEATURES.join(", ")}. "text" says how it shapes the effect.` };
+    const did = body.did === undefined || body.did === null ? null : s(body.did);
+    if (body.did !== undefined && body.did !== null && (!did || !(CALIBRATION_DID as readonly string[]).includes(did))) return { ok: false, message: `did takes ${CALIBRATION_DID.join(" or ")}.` };
+    extra = did ? { feature, did } : { feature };
   }
   if (rule.extra === "effects") {
     const effects = body.effects === undefined ? [] : body.effects;

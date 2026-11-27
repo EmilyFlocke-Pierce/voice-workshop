@@ -2,7 +2,7 @@
 
 Matrix: `criteria.json` (Quilt session 1925caee, v1). L3 is the target. Plan: `PLAN.md` (column 3 filled). Branch `build-all`, commit 2ab3810.
 
-**Locate status:** not located yet. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
+**Locate status:** not located yet. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
 
 Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "test:lookback" a test in `npm run test:lookback`, with fixtures in `test/lookback-corpus.json`.
 

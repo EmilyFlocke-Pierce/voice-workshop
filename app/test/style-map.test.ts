@@ -88,6 +88,10 @@ test("note kinds: the validator follows the table", () => {
   const ease = checkNote("ease", { text: "x", quotes: [{ try_id: "t", line: "y" }] });
   assert.ok(ease.ok && ease.note.try_id === null);
   assert.ok(!checkNote("nonsense", { text: "x" }).ok);
+  assert.ok(!checkNote("calibration", { try_id: "t", text: "x" }).ok, "calibration names a feature");
+  assert.ok(!checkNote("calibration", { try_id: "t", text: "x", feature: "pacing", did: "ignored" }).ok, "did takes strengthened or changed");
+  const cal = checkNote("calibration", { try_id: "t", text: "the build now runs to the end", feature: "pacing", did: "strengthened" });
+  assert.ok(cal.ok && cal.note.extra?.feature === "pacing" && cal.note.extra?.did === "strengthened");
   const hold = checkNote("register_hold", { text: "the counted cars stayed mine" });
   assert.ok(hold.ok && hold.note.try_id === null, "register_hold sits on the exercise, with try_id null");
 });
