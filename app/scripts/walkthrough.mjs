@@ -607,6 +607,11 @@ try {
   // Slice 04: look back for patterns.
   const lb = await call("POST", "/lookbacks", { key, body: { scope: "all" } });
   check("POST /lookbacks lays the pieces side by side with labels, notes, and limits", lb.status === 201 && lb.body.pieces.length >= 3 && lb.body.pieces[0].label === "P1" && lb.body.pieces.every((p, i, a) => i === 0 || p.created_at >= a[i - 1].created_at) && typeof lb.body.limits.layered === "string");
+  const allNotes = lb.body.pieces.flatMap((p) => p.notes || []);
+  check(
+    "exercise notes in a lookback carry pull effects and calibration fields",
+    allNotes.some((n) => /calibration/.test(n.kind) && n.extra && n.extra.feature) && allNotes.some((n) => /pull/.test(n.kind) && n.extra && Array.isArray(n.extra.effects) && n.extra.effects.length),
+  );
   check("a retry shows its parent's label and its chain", lb.body.pieces.some((p) => p.parent && p.parent.label && Array.isArray(p.chain)));
   const audit = await call("GET", `/lookbacks/${lb.body.id}/audit`, { key });
   check("the audit lists what it found and asks what the set leaves out", audit.status === 200 && Array.isArray(audit.body.items) && /POST \/lookbacks\/.+\/limits/.test(audit.body.pause.answer_with));
@@ -754,6 +759,99 @@ try {
       && shape.notes_beside_pieces.some((r) => r.label === "P3" && r.notes.some((n) => n.kind === "mark" && /kept the ceremonial close/.test(n.text)))
       && listNotes.some((r) => r.label === "P4" && r.notes.some((n) => n.kind === "change_note" && /dropped the list of three/.test(n.text)))
       && removed && removed.evidence === "explicit" && Array.isArray(removed.returns_in) && removed.returns_in.length === 0,
+  );
+
+  // II.C.1, II.C.2, II.C.3: a function diagnosis, a future-intent conflict where a dropped move returns, and weighed taste / mixture / unclear claims, plus a thin-claim nudge for a non-default kind.
+  const kClaim = (await call("POST", "/keys")).body.key;
+  const pack1 = "We packed bread, cheese, and apples for the road. Then the gate closed.";
+  const pack2 = "We packed bread, cheese, and apples again. Then the porch went quiet.";
+  const pack3 = "We packed food for the road. Then the porch went quiet.";
+  const pack4 = "At dawn we packed bread, cheese, and apples once more.";
+  await call("POST", "/tries", { key: kClaim, body: { text: pack1, intent: "keep the list of three; it is how I like to pack a scene", style_tag: "plain" } });
+  const tKeptList = await call("POST", "/tries", { key: kClaim, body: { text: pack2, style_tag: "plain" } });
+  await call("POST", `/tries/${tKeptList.body.id}/mark`, { key: kClaim, body: { what_tried: "kept the list of three", why_back: "it still feels like mine" } });
+  const tDropList = await call("POST", `/tries/${tKeptList.body.id}/retry`, { key: kClaim, body: { text: pack3, change_note: "I dropped the list of three; I do not want it in later pieces." } });
+  const tReturn = await call("POST", "/tries", { key: kClaim, body: { text: pack4, style_tag: "plain" } });
+  await call("POST", `/tries/${tReturn.body.id}/notes`, { key: kClaim, body: { diagnosis: "the list came back even though I said I would drop it" } });
+  const lbClaim = await call("POST", "/lookbacks", { key: kClaim, body: { scope: "all" } });
+  const dropClaim = await call("GET", `/lookbacks/${lbClaim.body.id}/dropped`, { key: kClaim });
+  const returned = dropClaim.body.items.find((it) => it.type === "move" && it.move === "list_of_three" && it.retry === "P3");
+  const patListFn = await call("POST", `/lookbacks/${lbClaim.body.id}/patterns`, { key: kClaim, body: { name: "list of three packing", inclusion_rule: "a list of three items (A, B, and C)", instances: [{ piece: "P1", quote: "bread, cheese, and apples" }, { piece: "P2", quote: "bread, cheese, and apples" }, { piece: "P4", quote: "bread, cheese, and apples" }] } });
+  const notesByClaim = patListFn.body.notes_beside_it_by_style || {};
+  const allClaimNotes = Object.values(notesByClaim).flat();
+  const intentN = allClaimNotes.find((r) => r.label === "P1")?.notes.find((n) => n.kind === "intent");
+  const changeN = allClaimNotes.find((r) => r.label === "P3")?.notes.find((n) => n.kind === "change_note");
+  const diagN = allClaimNotes.find((r) => r.label === "P4")?.notes.find((n) => n.kind === "diagnosis");
+  const markN = allClaimNotes.find((r) => r.label === "P2")?.notes.find((n) => n.kind === "mark");
+  const fnClaim = await call("POST", `/lookbacks/${lbClaim.body.id}/claims`, { key: kClaim, body: {
+    pattern_id: patListFn.body.id,
+    kind: "mixture",
+    function: "It packs a scene as a ceremonial three. When it returns after a drop, it operates as an unexamined habit as much as a chosen preference.",
+    future_intent: "I said I would drop it, but the later piece brings it back, so the drop is not a firm future choice.",
+    qualifiers: "The return after the change note weakens the drop as a commitment.",
+    evidence: [
+      { piece: "P1", quote: "bread, cheese, and apples" },
+      { piece: "P4", quote: "bread, cheese, and apples" },
+      { note_id: intentN.id, quote: "it is how I like to pack a scene" },
+      { note_id: changeN.id, quote: "I dropped the list of three" },
+      { note_id: diagN.id, quote: "the list came back even though I said I would drop it" },
+    ],
+    counterexamples: [{ piece: "P3", quote: "We packed food for the road." }],
+    rejections: [{ piece: "P3", quote: "We packed food for the road." }],
+    interpretation: "The intent names a preference, the change note names a drop, and the later piece returns the move.",
+  }});
+  check(
+    "a recurring choice's function is diagnosed from intent, effects in the pieces, and a drop that later returns",
+    patListFn.status === 201 && fnClaim.status === 201 && !fnClaim.body.asks
+      && /unexamined habit/.test(fnClaim.body.function)
+      && returned && Array.isArray(returned.returns_in) && returned.returns_in.includes("P4")
+      && Array.isArray(fnClaim.body.notes_side_by_side) && fnClaim.body.notes_side_by_side.length >= 2,
+  );
+  check(
+    "future intent is weighed where a reflection conflicts with a later revision and a dropped move returns, with qualifiers",
+    /not a firm future choice/.test(fnClaim.body.future_intent)
+      && /weakens the drop/.test(fnClaim.body.qualifiers)
+      && fnClaim.body.rejections.scope === "one instance",
+  );
+  const thinTaste = await call("POST", `/lookbacks/${lbClaim.body.id}/claims`, { key: kClaim, body: { pattern_id: patListFn.body.id, kind: "taste", evidence: [{ piece: "P1", quote: "bread, cheese, and apples" }], interpretation: "I like this list." } });
+  const tasteClaim = await call("POST", `/lookbacks/${lbClaim.body.id}/claims`, { key: kClaim, body: {
+    pattern_id: patListFn.body.id,
+    kind: "taste",
+    function: "A packing list I mean to keep when I am naming a preference.",
+    evidence: [
+      { piece: "P1", quote: "bread, cheese, and apples" },
+      { note_id: intentN.id, quote: "keep the list of three" },
+      { note_id: markN.id, quote: "kept the list of three" },
+    ],
+    counterexamples: [{ piece: "P3", quote: "We packed food for the road." }],
+    rejections: [{ note_id: changeN.id, quote: "I do not want it in later pieces." }],
+    interpretation: "The intent and the keep-mark name a preference, even though a later drop fights it.",
+  }});
+  const unclearClaim = await call("POST", `/lookbacks/${lbClaim.body.id}/claims`, { key: kClaim, body: {
+    pattern_id: patListFn.body.id,
+    kind: "unclear",
+    qualifiers: "The keep, the drop, and the return leave the record too mixed to settle.",
+    evidence: [{ note_id: diagN.id, quote: "the list came back even though I said I would drop it" }],
+    counterexamples: [{ piece: "P3", quote: "We packed food for the road." }],
+    rejections: [{ piece: "P3", quote: "We packed food for the road." }],
+    interpretation: "I cannot yet tell taste from habit.",
+  }});
+  const fndClaim = await call("GET", `/lookbacks/${lbClaim.body.id}/findings`, { key: kClaim });
+  check(
+    "weighed claims for taste, mixture, and unclear cite notes, rejections, and counterexamples, and a thin taste claim is asked to weigh the record",
+    thinTaste.status === 201 && /taste/.test(thinTaste.body.asks)
+      && tasteClaim.status === 201 && !tasteClaim.body.asks && tasteClaim.body.kind === "taste" && tasteClaim.body.kind_means && /mean to keep/.test(tasteClaim.body.kind_means)
+      && unclearClaim.status === 201 && !unclearClaim.body.asks && unclearClaim.body.kind === "unclear" && /too mixed to settle/.test(unclearClaim.body.qualifiers)
+      && fnClaim.body.kind === "mixture" && /both a deliberate preference and a habit/.test(fnClaim.body.kind_means),
+  );
+  check(
+    "findings include each claim's function and future intent",
+    typeof fndClaim.body === "string"
+      && /function: It packs a scene as a ceremonial three/.test(fndClaim.body)
+      && /future intent: I said I would drop it/.test(fndClaim.body)
+      && /claim: mixture/.test(fndClaim.body)
+      && /claim: taste/.test(fndClaim.body)
+      && /claim: unclear/.test(fndClaim.body),
   );
 
   const peekLb = await call("GET", `/lookbacks/${lb.body.id}`, { key: (await call("POST", "/keys")).body.key });

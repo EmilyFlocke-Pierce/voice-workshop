@@ -15,6 +15,8 @@ Batch 04-B (I.B.1, I.B.2, I.C.1), run 1, located at 2/3 L3* (I.B.1 to lift): htt
 
 Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4), run 1, located at 1/6 L3* (II.B.1 carries forward; five to lift): https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-C-run1.md
 
+Batch 04-D (II.C.1 to II.C.3), run 1, located at 0/3 L3* (all three to lift): https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-D-run1.md
+
 Slices 03 and 05 through 08 are written as intent and are not built yet. Their intent and matrices are linked at the end.
 
 ## 01 Safe place to practice (built)

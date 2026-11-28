@@ -185,8 +185,33 @@ How I read it: one living FLAGS file at the root is the right record, same as th
 - Recurring items gained stable ids, and shape items gained occurrence quotes.
 - Slice 04 still keeps its flags in the root FLAGS.md. The new slice-folder file is only a pointer.
 
+
+**04, slice-02 extra fields left out of the lookback.** Found by CANDY in run 1 of batch 04-D, with II.C.1 at L1*. `loadRows` selected exercise notes without `extra`, so structured `pull.effects` and calibration fields never reached slice 04.
+
+How I read II.C.1: the row asks the agent to weigh stated intent, effects in the writing, and drops or returns. Effects notes from slice 02 are part of that record. The build now selects `extra` and puts it on the note (and on `notesOn` / the corpus view), so pull effects and calibration fields sit beside the piece. The note's `text` stays as written. Why: those fields are how a pull or a calibration names the effect. Leaving them out would hide evidence the row asks the agent to weigh.
+
+**04, function and future intent left off the page.** Found by CANDY in the same run, with II.C.1 and II.C.2 at L1*. `instructions.ts` documented POST /claims without naming `function` or `future_intent`, and GET /findings omitted both.
+
+How I read those rows: they ask the agent to diagnose how a recurring choice functions, and to evaluate how strongly the record supports a future intent, including a conflict with a later revision or a drop that returns. The build already stored both fields. It now names them in the instructions, and findings print `function` and `future intent` when they are present. Why: a field the agent can send but never read back, and that the instructions never mention, will not get used. The walkthrough now posts both and checks the findings text.
+
+**04, the thin-claim ask only ran on default.** Found by CANDY in the same run, with II.C.3 at L2*. `asks` fired only when `kind === "default"`.
+
+How I read II.C.3: every kind of claim is a judgment that should weigh notes against rejections, removed moves, or a repeat that returns, and qualify the judgment where the record is unclear. The build keeps the existing default ask (notes and counterexamples). For taste, mixture, and unclear, a claim is asked to weigh the record when it has no note evidence, or when it has neither counterexamples nor rejections. Why: a thin taste or unclear claim needs the same pause as a thin default. The default wording stays, because that guard was already clean.
+
+**04, no short definitions for the four claim kinds.** Found by CANDY in the same run. Taste, default, mixture, and unclear had no short definitions that separated mixture from unclear.
+
+How I read II.C.3: the agent judges whether a choice reflects taste, default, or a mixture, and qualifies the judgment where the evidence is unclear. Mixture is when the record points both ways. Unclear is when the record is not enough to tell. The build now keeps those four short definitions as `CLAIM_KIND_MEANS`, on the claim view as `kind_means`, and in the instructions. Why: without that split, mixture and unclear collapse into each other. The definitions describe the record; they are not a verdict the code makes for the agent.
+
+**Judgment calls: the 04-D lift (II.C.1, II.C.2, II.C.3)**
+- `extra` sits on the note. The note text stays as the agent wrote it.
+- Findings print `function` and `future intent` only when they are present, so earlier claims without those fields still read as they did.
+- A default claim is still thin without notes or without counterexamples. Other kinds are thin without notes, or without both counterexamples and rejections.
+- `checkCited` for rejections now uses the same error text as it accepts: a piece or a note_id, plus a quote. It does not require both.
+- `kind_means` on a claim is the short definition for that kind. The full map is `kinds` on the POST reply.
+- Unit checks cover `claimView`, `CLAIM_KINDS`, `notes_side_by_side`, `thinClaimAsk`, `checkCited`, `findingsText`, and exercise `extra`. The walkthrough hits POST /claims and GET /findings on the worker.
+
 **For CANDY**
 - Six 01 rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) held in a builder stand-in after the arrival text changed. They need a cold relocation.
 - `locate/probe/` imports need `../../../app/src/`. Three probes have stale shapes.
 - Locate against the current wording. The 🦋 entries in FLAGS.md are takes, not proposed recuts. Builds already meet both readings for I.C.1, I.A.1, and I.A.2; I.B.2 now marks drift in any direction; I.C.2 and I.C.3 carry an optional `shift`; II.A.2 to II.A.4 leave uncounted cues to the agent's effects notes; 04 I.A.3 keeps carried notes on both versions.
-- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.1 to II.C.3) is closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. Batch 02-E (III.A.1 to III.C.2) is lifted after run 1 and waits for relocation. Batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1. Batch 04-B (I.B.1, I.B.2, I.C.1) is located at 2/3 L3* after run 1; I.B.1 is lifted and waits for relocation; I.B.2 and I.C.1 carry forward. Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4) is located at 1/6 L3* after run 1; II.B.1 carries forward at L3*; II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 are lifted and wait for relocation. The rest of slice 04 waits for locating. Every agent-side row rests on builder stand-ins only.
+- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.1 to II.C.3) is closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. Batch 02-E (III.A.1 to III.C.2) is lifted after run 1 and waits for relocation. Batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1. Batch 04-B (I.B.1, I.B.2, I.C.1) is located at 2/3 L3* after run 1; I.B.1 is lifted and waits for relocation; I.B.2 and I.C.1 carry forward. Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4) is located at 1/6 L3* after run 1; II.B.1 carries forward at L3*; II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 are lifted and wait for relocation. Batch 04-D (II.C.1 to II.C.3) is located at 0/3 L3* after run 1; all three rows are lifted and wait for relocation. The rest of slice 04 waits for locating. Every agent-side row rests on builder stand-ins only.

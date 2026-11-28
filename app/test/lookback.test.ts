@@ -2,11 +2,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { audit, buildCorpus, type Rows, type TryIn } from "../src/lookback/corpus.ts";
+import { audit, buildCorpus, notesOf, type Rows, type TryIn } from "../src/lookback/corpus.ts";
 import { recurring } from "../src/lookback/recurring.ts";
 import { dropped, removedRuns } from "../src/lookback/dropped.ts";
 import { acrossStyles, COMPARE_MEASURES, compareAlong, countPattern, measureOf, rankPatterns, timeline } from "../src/lookback/patterns.ts";
-import { claimView } from "../src/lookback/claims.ts";
+import { CLAIM_KINDS, CLAIM_KIND_MEANS, checkCited, claimFindingLines, claimView, findingsText, thinClaimAsk } from "../src/lookback/claims.ts";
 import { putChunked, CHUNK_BYTES } from "../src/lookback/store.ts";
 import { isNear } from "../src/lookback/near.ts";
 import { diffTries } from "../src/feedback/diff.ts";
@@ -286,10 +286,104 @@ test("claimView keeps note evidence beside the claim, including a single weighed
     created_at: "2026-11-01T00:00:06Z",
   });
   assert.equal(view.kind, "default");
+  assert.equal(view.kind_means, CLAIM_KIND_MEANS.default);
   assert.ok((view.evidence as Record<string, unknown>[]).some((e) => e.note_id === "try:b:diagnosis" && e.note_kind === "diagnosis"));
   assert.equal(view.notes_side_by_side, null);
   assert.ok((view.counterexamples as Record<string, unknown>[]).some((e) => e.piece === "P1"));
 });
+
+test("CLAIM_KINDS names four kinds, and mixture is distinct from unclear", () => {
+  assert.deepEqual([...CLAIM_KINDS], ["taste", "default", "mixture", "unclear"]);
+  assert.ok(/both a deliberate preference and a habit/.test(CLAIM_KIND_MEANS.mixture));
+  assert.ok(/not enough to tell/.test(CLAIM_KIND_MEANS.unclear));
+  assert.notEqual(CLAIM_KIND_MEANS.mixture, CLAIM_KIND_MEANS.unclear);
+});
+
+test("claimView sets notes_side_by_side when two notes are weighed, and names one-instance rejection scope", () => {
+  const view = claimView({
+    id: "cl2",
+    pattern_id: "pat1",
+    kind: "mixture",
+    function: "it packs a scene as a ceremonial three",
+    future_intent: "I said I would drop it, but it returned",
+    evidence: JSON.stringify([
+      { note_id: "try:a:intent", note_kind: "intent", piece: "P1", quote: "keep the list" },
+      { note_id: "try:c:change_note", note_kind: "change_note", piece: "P3", quote: "I dropped the list of three" },
+    ]),
+    interpretation: "both a preference and a habit",
+    counterexamples: JSON.stringify([{ piece: "P3", quote: "We packed food" }]),
+    rejections: JSON.stringify([{ piece: "P3", quote: "We packed food" }]),
+    qualifiers: "the return weakens the drop",
+    created_at: "2026-11-01T00:00:07Z",
+  });
+  assert.equal(view.kind, "mixture");
+  assert.equal((view.notes_side_by_side as unknown[]).length, 2);
+  assert.equal((view.rejections as { scope?: string }).scope, "one instance");
+  assert.equal((view.rejections as { recorded: string }).recorded, "1 recorded");
+  assert.equal(view.function, "it packs a scene as a ceremonial three");
+  assert.equal(view.future_intent, "I said I would drop it, but it returned");
+});
+
+test("thinClaimAsk fires for every kind when notes or a counterweight are missing, and stays silent when the record is weighed", () => {
+  const note = [{ note_id: "n1", quote: "x" }];
+  const piece = [{ piece: "P1", quote: "x" }];
+  const ce = [{ piece: "P2", quote: "y" }];
+  const rj = [{ piece: "P3", quote: "z" }];
+  assert.match(thinClaimAsk("default", piece, [], []) ?? "", /counterexamples/);
+  assert.match(thinClaimAsk("taste", piece, [], []) ?? "", /taste/);
+  assert.match(thinClaimAsk("mixture", note, [], []) ?? "", /mixture/);
+  assert.match(thinClaimAsk("unclear", [], ce, rj) ?? "", /unclear/);
+  assert.equal(thinClaimAsk("default", note, ce, []), null);
+  assert.equal(thinClaimAsk("taste", note, [], rj), null);
+  assert.equal(thinClaimAsk("mixture", note, ce, []), null);
+});
+
+test("findings text includes function and future intent, and checkCited rejections take a piece or a note_id", () => {
+  const text = findingsText(4, [{
+    name: "list of three",
+    inclusion_rule: "a list of three items",
+    reading: "in 3 of 4 pieces",
+    piece_labels: "P1, P2, P4",
+    instances: [{ piece: "P1", quote: "bread, cheese, and apples" }],
+    claims: [{ kind: "mixture", function: "a ceremonial packing list", future_intent: "I meant to drop it", interpretation: "both preference and habit", qualifiers: "the return weakens the drop" }],
+  }], "only four short pieces");
+  assert.match(text, /function: a ceremonial packing list/);
+  assert.match(text, /future intent: I meant to drop it/);
+  assert.match(text, /how sure: the return weakens the drop/);
+  assert.match(text, /claim: mixture, both preference and habit/);
+  assert.deepEqual(claimFindingLines({ kind: "taste", interpretation: "mine" }), ["  claim: taste, mine"]);
+
+  const c = habitCorpus();
+  const okNote = checkCited(c, [{ note_id: "try:b:diagnosis", quote: "I reached for a stock close" }], "rejection");
+  assert.equal(okNote.ok, true);
+  const okPiece = checkCited(c, [{ piece: "P1", quote: "Bread cooled on the board." }], "rejection");
+  assert.equal(okPiece.ok, true);
+  const bad = checkCited(c, [{ quote: "Bread cooled on the board." }], "rejection");
+  assert.equal(bad.ok, false);
+  if (!bad.ok) assert.match(String((bad.bad[0] as { why: string }).why), /piece" \(or "note_id"\)/);
+});
+
+test("exercise notes carry pull effects and calibration fields into the lookback", () => {
+  const rows = emptyRows([
+    tryRow("a", "The kettle sang. Then I poured a cup.", { intent: "land short", at: "2026-11-01T00:00:01Z" }),
+  ]);
+  rows.tries[0].exercise_id = "ex1";
+  rows.exercises = [{ id: "ex1", style_id: "hemingway-plain" }];
+  rows.xnotes = [
+    { id: "xn1", exercise_id: "ex1", try_id: "a", kind: "calibration", text: "I strengthened the short landing", quotes: "[]", extra: { feature: "pacing", did: "strengthened" } },
+    { id: "xn2", exercise_id: "ex1", try_id: null, kind: "pull", text: "the short lines keep drawing me", quotes: "[]", extra: JSON.stringify({ effects: ["plainness", "a clean stop"] }) },
+  ];
+  const c = buildCorpus(rows, ["a"]);
+  const notes = [...notesOf(rows).values()];
+  const cal = notes.find((n) => n.kind === "exercise calibration");
+  const pull = notes.find((n) => n.kind === "exercise pull");
+  assert.ok(cal && cal.extra && cal.extra.feature === "pacing" && cal.extra.did === "strengthened");
+  assert.ok(pull && pull.extra && Array.isArray(pull.extra.effects) && (pull.extra.effects as string[]).includes("plainness"));
+  const onPiece = c.pieces[0].note_ids.map((id) => c.notes.get(id)!);
+  assert.ok(onPiece.some((n) => n.extra && n.extra.feature === "pacing"));
+  assert.ok(onPiece.some((n) => n.extra && Array.isArray(n.extra.effects)));
+});
+
 
 function generated(n: number): Rows {
   const words = "river lantern window kettle harbor gate bread morning storm square road mill dog night light boats tide door hall cold".split(" ");

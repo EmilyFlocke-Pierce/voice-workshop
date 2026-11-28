@@ -88,8 +88,9 @@ Look back for patterns
   GET /lookbacks/:id/recurring     wording, openings, and shapes that repeat across your pieces. /dropped shows what retries left out and what came back.
   GET /lookbacks/:id/compare       ?measure=sentence_words | sentence_count | closing_words | opening_repeat | question_share, one number per piece, how it holds or shifts along the sequence, and the reflection notes beside each piece.
   POST /lookbacks/:id/patterns     {"name", "inclusion_rule", "instances": [{"piece": "P3", "quote": "exact words"}]}. Revise with /patterns/:pid/revise.
-  POST /lookbacks/:id/claims       {"pattern_id", "kind": "taste | default | mixture | unclear", "evidence", "interpretation", "counterexamples", "rejections", "qualifiers"}
-  GET /lookbacks/:id/findings      your named patterns, their pieces, and your claims, as plain text to take with you.
+  POST /lookbacks/:id/claims       {"pattern_id", "kind": "taste | default | mixture | unclear", "function": "how the choice works, and whether it reads as a preference or a habit", "future_intent": "whether you mean to keep, change, or drop it", "evidence", "interpretation", "counterexamples", "rejections", "qualifiers"}
+  kind: taste is a choice you mean to keep, supported by what you said and what the pieces show; default is a habit that recurs without that choice, or against it; mixture is when the record shows both a preference and a habit; unclear is when the record is not enough to tell.
+  GET /lookbacks/:id/findings      your named patterns, their pieces, and your claims (including each claim's function and future intent), as plain text to take with you.
 
 Leave
   POST /session/end                your marks and lines as plain text to take with you, and an invitation back.

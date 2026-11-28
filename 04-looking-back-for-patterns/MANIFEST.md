@@ -2,7 +2,7 @@
 
 Matrix: `criteria.json` (Quilt session 1925caee, v1). L3 is the target. Plan: `PLAN.md` (column 3 filled). Branch `build-all`, commit 2ab3810.
 
-**Locate status:** batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1 (`locate/04-A-run1.md`). Batch 04-B (I.B.1, I.B.2, I.C.1) was located in run 1 at 2/3 L3* (`locate/04-B-run1.md`); I.B.2 and I.C.1 carry forward, and I.B.1 is lifted, waiting for relocation. Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4) was located in run 1 at 1/6 L3* (`locate/04-C-run1.md`); II.B.1 carries forward at L3*, and II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 are lifted below, waiting for relocation. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
+**Locate status:** batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1 (`locate/04-A-run1.md`). Batch 04-B (I.B.1, I.B.2, I.C.1) was located in run 1 at 2/3 L3* (`locate/04-B-run1.md`); I.B.2 and I.C.1 carry forward, and I.B.1 is lifted, waiting for relocation. Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4) was located in run 1 at 1/6 L3* (`locate/04-C-run1.md`); II.B.1 carries forward at L3*, and II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 are lifted, waiting for relocation. Batch 04-D (II.C.1 to II.C.3) was located in run 1 at 0/3 L3* (`locate/04-D-run1.md`); all three rows are lifted below, waiting for relocation. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
 
 Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "test:lookback" a test in `npm run test:lookback`, with fixtures in `test/lookback-corpus.json`.
 
@@ -23,9 +23,9 @@ Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "te
 | II.B.2 flag generic transitions | Built, lifted after run 1 of batch 04-C (recorded L2*: transitions with no notes and no unit or walkthrough assertion). Recurring transition candidates now carry an id and the reflection notes beside the pieces that use them, so an agent can weigh a generic transition against what was chosen, kept, or changed. | Walkthrough: "a recurring generic transition carries the reflection notes beside the pieces that use it". test:lookback: recurring candidates. |
 | II.B.3 isolate systemic redundancies | Built, lifted after run 1 of batch 04-C (recorded L2*: recurring wording with no notes; the walkthrough only exercised the asks prompt on an unsupported default claim). Recurring wording now carries notes beside the pieces, and a default claim can cite those notes by `note_id` alongside the passages, with a counterexample, to trace a stock close to a default move. The unsupported-claim asks prompt stays. | Walkthrough: "a systemic redundancy is traced to a default writing move with both the pieces and the reflection notes". test:lookback: claimView; recurring candidates. |
 | II.B.4 detect structural autopilot | Built, lifted after run 1 of batch 04-C (recorded L2*: `removed_move` unasserted on evidence and returns_in; no note-weighed structural case). Recurring shapes now have ids, occurrence quotes, and notes beside the pieces. A walkthrough weighs a list of three against keep and drop notes, including where the pattern breaks and that the move does not return. `removed_move` now asserts evidence and `returns_in`. | Walkthrough: "a recurring structural move is weighed against change, keep, and drop notes, including where the pattern breaks". test:lookback: expect removed_move; list of three unit check. |
-| II.C.1 Explain the repeat's function | Built. Claims carry function, evidence, and counterexamples; dropped shows returns. | Walkthrough: "a default claim with no notes weighed or counterexamples gets asked for them". |
-| II.C.2 Assess future choice intent | Built. Claims carry future_intent and qualifiers; pause asks what would make the agent less sure. | Same. |
-| II.C.3 Distinguish taste from default | Built. Claim kinds taste, default, mixture, unclear; rejections recorded; a default claim is asked for notes weighed and counterexamples. | Same. |
+| II.C.1 Explain the repeat's function | Built, lifted after run 1 of batch 04-D (recorded L1*: function never posted, omitted from findings). A claim now carries `function`, citing pieces and notes, and findings print it. A walkthrough diagnoses a packing list as both a chosen preference and an unexamined habit when it returns after a drop. Exercise notes carry pull effects and calibration fields into the lookback. | Walkthrough: "a recurring choice's function is diagnosed from intent, effects in the pieces, and a drop that later returns". test:lookback: findingsText; exercise extra. |
+| II.C.2 Assess future choice intent | Built, lifted after run 1 of batch 04-D (recorded L1*: future_intent and qualifiers never posted, omitted from findings). A walkthrough posts `future_intent` and qualifiers on a case where a change note said the list was dropped and a later piece returns it. Findings print the future intent. | Walkthrough: "future intent is weighed where a reflection conflicts with a later revision and a dropped move returns, with qualifiers". test:lookback: findingsText. |
+| II.C.3 Distinguish taste from default | Built, lifted after run 1 of batch 04-D (recorded L2*: only the thin default claim ran). Short definitions separate taste, default, mixture, and unclear. A thin claim of any kind is asked to weigh notes and a counterexample or rejection. A walkthrough posts weighed taste, mixture, and unclear claims with note evidence, rejections (including one instance), and counterexamples, beside the thin-claim nudge. | Walkthrough: "weighed claims for taste, mixture, and unclear cite notes, rejections, and counterexamples, and a thin taste claim is asked to weigh the record". test:lookback: CLAIM_KINDS, claimView, thinClaimAsk. |
 | III.A.1 quote recurring wording | Built. Every occurrence quoted from the piece as written; exact and near kept apart. | test:lookback: expect near. |
 | III.A.2 cite supporting pieces | Built. Pattern instances checked word for word; a bad quote stores nothing. | Walkthrough: "a pattern quote that is not in the piece is refused, ...". |
 | III.A.3 cite reflection notes | Built. Note quotes keep note id, piece, and kind; notes that disagree show side by side, and the agent judges (in FLAGS). | Claim with evidence by note_id (walkthrough uses a piece quote). |
@@ -50,7 +50,7 @@ npm run test:lookback
 npm run walkthrough
 ```
 
-Expect test:lookback 24 of 24 and the walkthrough 179 of 179. The full-length timing check ran at about 0.84 s on the box against the 1 s cap; a slower machine may need a second look.
+Expect test:lookback 29 of 29 and the walkthrough 184 of 184. The full-length timing check ran at about 0.84 s on the box against the 1 s cap; a slower machine may need a second look.
 
 ## Files
 
@@ -60,7 +60,7 @@ Expect test:lookback 24 of 24 and the walkthrough 179 of 179. The full-length ti
 | `src/lookback/recurring.ts`, `near.ts`, `shapes.ts` | Recurring wording, openings, transitions, shapes, with ids, quotes, and notes beside the pieces. |
 | `src/lookback/dropped.ts` | Removed wording and moves, returns and echoes. |
 | `src/lookback/patterns.ts` | Counts, rates, ranks, timelines (including the friction point), compare, `acrossStyles`. |
-| `src/lookback/claims.ts` | `claimView`. |
+| `src/lookback/claims.ts` | Claim kinds and short definitions, `claimView`, `checkCited`, `thinClaimAsk`, findings text. |
 | `src/lookback/store.ts` | Results in chunks under 256 KB. |
 | `src/lookback/routes.ts` | Every slice 04 route and the session-end nudge. |
 | `migrations/0007_lookbacks.sql` | Lookback tables. |

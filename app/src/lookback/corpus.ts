@@ -22,7 +22,7 @@ export interface TryIn {
 }
 export interface MarkIn { id: string; try_id: string; what_tried: string; why_back: string | null; own_lines: string | null; less_familiar: string | null }
 export interface StitchIn { id: string; try_id: string; thread: string; deltas: string | null; quotes: string }
-export interface XNoteIn { id: string; exercise_id: string; try_id: string | null; kind: string; text: string; quotes: string }
+export interface XNoteIn { id: string; exercise_id: string; try_id: string | null; kind: string; text: string; quotes: string; extra?: string | Record<string, unknown> | null }
 export interface ExIn { id: string; style_id: string }
 export interface PlacementIn { note_id: string; belongs_to: string }
 
@@ -43,6 +43,7 @@ export interface Note {
   free_text: string | null; // the text the misplaced check reads, or null when the kind is left out of it
   carried_from_parent: boolean;
   about: "try" | "exercise";
+  extra?: Record<string, unknown> | null; // slice 02 structured fields (pull.effects, calibration, and the rest)
 }
 
 export interface Piece {
@@ -90,6 +91,20 @@ function styleOf(t: TryIn, exStyle: Map<string, string> | null) {
 }
 
 // Every note in the key's record, by note id, attached to the try it was written about.
+export function parseExtra(raw: unknown): Record<string, unknown> | null {
+  if (raw == null || raw === "") return null;
+  if (typeof raw === "object" && !Array.isArray(raw)) return raw as Record<string, unknown>;
+  if (typeof raw === "string") {
+    try {
+      const v = JSON.parse(raw);
+      return v && typeof v === "object" && !Array.isArray(v) ? v as Record<string, unknown> : null;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 export function notesOf(rows: Rows): Map<string, Note> {
   const byTry = new Map(rows.tries.map((t) => [t.id, t]));
   const notes = new Map<string, Note>();
@@ -115,18 +130,19 @@ export function notesOf(rows: Rows): Map<string, Note> {
     for (const x of rows.xnotes) {
       const tryId = x.try_id ?? lastTryOfEx.get(x.exercise_id);
       if (!tryId) continue;
-      notes.set(`xnote:${x.id}`, { id: `xnote:${x.id}`, kind: `exercise ${x.kind}`, try_id: tryId, text: x.text, free_text: x.try_id ? x.text : null, carried_from_parent: false, about: x.try_id ? "try" : "exercise" });
+      const extra = parseExtra(x.extra);
+      notes.set(`xnote:${x.id}`, { id: `xnote:${x.id}`, kind: `exercise ${x.kind}`, try_id: tryId, text: x.text, free_text: x.try_id ? x.text : null, carried_from_parent: false, about: x.try_id ? "try" : "exercise", ...(extra ? { extra } : {}) });
     }
   }
   return notes;
 }
 
-export type NoteRef = { id: string; kind: string; text: string; about: Note["about"]; carried_from_parent?: true };
+export type NoteRef = { id: string; kind: string; text: string; about: Note["about"]; carried_from_parent?: true; extra?: Record<string, unknown> };
 
 export function notesOn(c: Corpus, p: Piece): NoteRef[] {
   return p.note_ids.map((id) => {
     const note = c.notes.get(id)!;
-    return { id, kind: note.kind, text: note.text, about: note.about, ...(note.carried_from_parent ? { carried_from_parent: true as const } : {}) };
+    return { id, kind: note.kind, text: note.text, about: note.about, ...(note.carried_from_parent ? { carried_from_parent: true as const } : {}), ...(note.extra ? { extra: note.extra } : {}) };
   });
 }
 

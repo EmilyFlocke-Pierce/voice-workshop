@@ -9,14 +9,12 @@ import { audit, buildCorpus, type Corpus, type Rows, type TryIn } from "./corpus
 import { recurring } from "./recurring.ts";
 import { dropped } from "./dropped.ts";
 import { acrossStyles, checkInstances, COMPARE_MEASURES, compareAlong, countPattern, denominatorLabels, rankPatterns, timeline, type CompareMeasure, type Denominator, type Instance } from "./patterns.ts";
-import { claimView } from "./claims.ts";
+import { CLAIM_KINDS, CLAIM_KIND_MEANS, checkCited, claimView, findingsText, isClaimKind, thinClaimAsk } from "./claims.ts";
 import { putChunked } from "./store.ts";
 
 export const CORPUS_Q = "What is missing from this set, and what does that limit?";
 export const PATTERN_Q = "What counts as one?";
 export const CLAIM_Q = "What would make you less sure?";
-const CLAIM_KINDS = ["taste", "default", "mixture", "unclear"];
-
 interface LookbackRow { id: string; agent_id: string; scope: string; piece_count: number; capped: number; limits_note: string | null; created_at: string }
 
 async function hasExercises(env: Env): Promise<boolean> {
@@ -27,7 +25,7 @@ async function loadRows(env: Env, agentId: string, lookbackId: string | null, wi
   const tries = (await env.DB.prepare(`SELECT id, parent_id, session_id, text, intent, scope_note, change_note, diagnosis, rough_edges, landed, style_tag, prompt_form, prompt_style, prompt_author, ${withEx ? "exercise_id" : "NULL AS exercise_id"}, created_at FROM tries WHERE agent_id = ? ORDER BY created_at, rowid`).bind(agentId).all<TryIn>()).results;
   const marks = (await env.DB.prepare("SELECT id, try_id, what_tried, why_back, own_lines, less_familiar FROM marks WHERE agent_id = ? ORDER BY created_at").bind(agentId).all<Rows["marks"][number]>()).results;
   const stitches = (await env.DB.prepare("SELECT id, try_id, thread, deltas, quotes FROM stitches WHERE agent_id = ? ORDER BY created_at").bind(agentId).all<Rows["stitches"][number]>()).results;
-  const xnotes = withEx ? (await env.DB.prepare("SELECT id, exercise_id, try_id, kind, text, quotes FROM exercise_notes WHERE agent_id = ? ORDER BY created_at").bind(agentId).all<NonNullable<Rows["xnotes"]>[number]>()).results : null;
+  const xnotes = withEx ? (await env.DB.prepare("SELECT id, exercise_id, try_id, kind, text, quotes, extra FROM exercise_notes WHERE agent_id = ? ORDER BY created_at").bind(agentId).all<NonNullable<Rows["xnotes"]>[number]>()).results : null;
   const exercises = withEx ? (await env.DB.prepare("SELECT id, style_id FROM exercises WHERE agent_id = ?").bind(agentId).all<NonNullable<Rows["exercises"]>[number]>()).results : null;
   const placements = lookbackId ? (await env.DB.prepare("SELECT note_id, belongs_to FROM lookback_placements WHERE lookback_id = ?").bind(lookbackId).all<Rows["placements"][number]>()).results : [];
   return { tries, marks, stitches, xnotes, exercises, placements };
@@ -125,7 +123,7 @@ async function resultsOf(env: Env, lookbackId: string, section: string) {
 
 function noteView(c: Corpus, id: string, placed: Map<string, string>) {
   const n = c.notes.get(id)!;
-  return { id, kind: n.kind, text: n.text, about: n.about, ...(n.carried_from_parent ? { carried_from_parent: true } : {}), ...(placed.has(id) ? { placed_by_you: placed.get(id) } : {}) };
+  return { id, kind: n.kind, text: n.text, about: n.about, ...(n.carried_from_parent ? { carried_from_parent: true } : {}), ...(n.extra ? { extra: n.extra } : {}), ...(placed.has(id) ? { placed_by_you: placed.get(id) } : {}) };
 }
 
 function corpusView(c: Corpus, lb: LookbackRow, rows: Rows, withEx: boolean) {
@@ -187,35 +185,6 @@ async function patternView(env: Env, c: Corpus, lbId: string, p: Record<string, 
     claims,
     pause: { question: PATTERN_Q, revise_with: `POST /lookbacks/${lbId}/patterns/${p.id}/revise`, claim_with: `POST /lookbacks/${lbId}/claims` },
   };
-}
-
-function checkCited(c: Corpus, list: unknown, needs: "piece" | "piece_or_note" | "rejection"): { ok: true; value: Record<string, unknown>[] } | { ok: false; bad: unknown[]; message?: string } {
-  if (list === undefined || list === null) return { ok: true, value: [] };
-  if (!Array.isArray(list)) return { ok: false, bad: [], message: "Send a list." };
-  const value: Record<string, unknown>[] = [];
-  const bad: unknown[] = [];
-  for (const raw of list) {
-    const e = (raw ?? {}) as Record<string, unknown>;
-    const quote = typeof e.quote === "string" && e.quote.trim() ? e.quote : null;
-    const pieceL = str(e.piece);
-    const noteId = str(e.note_id);
-    if (!quote || (needs === "piece" && !pieceL) || (needs !== "piece" && !pieceL && !noteId)) {
-      bad.push({ entry: e, why: needs === "rejection" ? 'each entry takes "piece", "note_id", and "quote"' : 'each entry takes "piece" (or "note_id") and an exact "quote"' });
-      continue;
-    }
-    if (noteId) {
-      const n = c.notes.get(noteId);
-      if (!n) bad.push({ entry: e, why: "no note with that id in this lookback" });
-      else if (!n.text.includes(quote)) bad.push({ entry: e, why: "these words are not in that note as written" });
-      else value.push({ note_id: noteId, note_kind: n.kind, piece: c.pieces.find((p) => p.note_ids.includes(noteId))?.label ?? null, quote });
-      continue;
-    }
-    const p = c.pieces.find((x) => x.label === pieceL);
-    if (!p) bad.push({ entry: e, why: "no piece with that label in this lookback" });
-    else if (!c.byTry.get(p.try_id)!.text.includes(quote)) bad.push({ entry: e, why: "these words are not in that piece as written" });
-    else value.push({ piece: pieceL, quote });
-  }
-  return bad.length ? { ok: false, bad } : { ok: true, value };
 }
 
 function parseDenominator(v: unknown): Denominator | null {
@@ -305,18 +274,19 @@ export async function lookbackRoutes(req: Request, env: Env, url: URL, agentId: 
     }
     if (section === "findings") {
       const pats = (await env.DB.prepare("SELECT * FROM patterns WHERE lookback_id = ? ORDER BY created_at").bind(lb.id).all<Record<string, string>>()).results;
-      const lines = [`Findings from Voice Workshop, lookback over ${corpus.pieces.length} pieces`, ""];
+      const patterns = [];
       for (const p of pats) {
         const c = countPattern(corpus, JSON.parse(p.instances), JSON.parse(p.denominator));
-        lines.push(`- ${p.name}`, `  what counts: ${p.inclusion_rule}`, `  ${c.reading}`, `  pieces: ${Object.keys(c.per_piece).join(", ") || "(none)"}`);
-        for (const i of JSON.parse(p.instances) as Instance[]) lines.push(`  ${i.piece}: "${i.quote}"`);
         const cl = (await env.DB.prepare("SELECT * FROM claims WHERE pattern_id = ? ORDER BY created_at").bind(p.id).all<Record<string, string>>()).results;
-        for (const x of cl) lines.push(`  claim: ${x.kind}${x.interpretation ? `, ${x.interpretation}` : ""}`, ...(x.qualifiers ? [`  how sure: ${x.qualifiers}`] : []));
+        patterns.push({
+          name: p.name, inclusion_rule: p.inclusion_rule, reading: c.reading, piece_labels: Object.keys(c.per_piece).join(", "),
+          instances: JSON.parse(p.instances) as Instance[],
+          claims: cl.map((x) => ({ kind: x.kind, function: x.function, future_intent: x.future_intent, interpretation: x.interpretation, qualifiers: x.qualifiers })),
+        });
       }
-      if (lb.limits_note) lines.push("", `Limits: ${lb.limits_note}`);
-      if (!pats.length) lines.push("(no patterns named yet)");
-      return new Response(lines.join("\n") + "\n", { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(findingsText(corpus.pieces.length, patterns, lb.limits_note), { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
+
     return json({ message: "No such lookback view." }, 404);
   }
 
@@ -408,7 +378,7 @@ export async function lookbackRoutes(req: Request, env: Env, url: URL, agentId: 
     const p = patternId ? await env.DB.prepare("SELECT id FROM patterns WHERE id = ? AND lookback_id = ?").bind(patternId, lb.id).first() : null;
     if (!p) return json({ message: "pattern_id names a pattern in this lookback." }, 400);
     const kind = str(b.body.kind);
-    if (!kind || !CLAIM_KINDS.includes(kind)) return json({ message: `kind takes ${CLAIM_KINDS.join(", ")}.` }, 400);
+    if (!kind || !isClaimKind(kind)) return json({ message: `kind takes ${CLAIM_KINDS.join(", ")}.`, kind_means: CLAIM_KIND_MEANS }, 400);
     const ev = checkCited(corpus, b.body.evidence, "piece_or_note");
     const ce = checkCited(corpus, b.body.counterexamples, "piece_or_note");
     const rj = checkCited(corpus, b.body.rejections, "rejection");
@@ -423,10 +393,9 @@ export async function lookbackRoutes(req: Request, env: Env, url: URL, agentId: 
       logWrite(env, agentId),
     ]);
     const row = (await env.DB.prepare("SELECT * FROM claims WHERE id = ?").bind(id).first<Record<string, string>>())!;
-    const out: Record<string, unknown> = { ...claimView(row), pause: { question: CLAIM_Q } };
-    const notesWeighed = ev.value.filter((e) => e.note_id).length;
-    if (kind === "default" && (!notesWeighed || !ce.value.length))
-      out.asks = "A default claim weighs the record: which reflection notes did you weigh (evidence with note_id), and where does the pattern break (counterexamples)?";
+    const out: Record<string, unknown> = { ...claimView(row), kinds: CLAIM_KIND_MEANS, pause: { question: CLAIM_Q } };
+    const asks = thinClaimAsk(kind, ev.value, ce.value, rj.value);
+    if (asks) out.asks = asks;
     return json(out, 201);
   }
 

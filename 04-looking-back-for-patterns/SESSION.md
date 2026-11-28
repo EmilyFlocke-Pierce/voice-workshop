@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B located at 2/3 L3* (I.B.2, I.C.1) and I.B.1 lifted, waiting for relocation. Batch 04-C located at 1/6 L3* (II.B.1) and II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 lifted, waiting for relocation. The other rows wait for locating. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B located at 2/3 L3* (I.B.2, I.C.1) and I.B.1 lifted, waiting for relocation. Batch 04-C located at 1/6 L3* (II.B.1) and II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 lifted, waiting for relocation. Batch 04-D located at 0/3 L3* and II.C.1 to II.C.3 lifted, waiting for relocation. The other rows wait for locating. |
 
 ## Decisions
 
@@ -30,7 +30,7 @@ All rows Nov 25, 2026. Code lives in `app/`.
 | Patterns, counts, claims, findings | As in the plan. | `patterns.ts`, `routes.ts` |
 | Nudge | At session end with 6 tries across 2 sessions and no lookback since the last end. | `routes.ts`, `src/index.ts` |
 | Timing | First run 1069 ms on 200 pieces against the 1000 ms cap; recurring was the slow part. Two-pass maps and 4-word near brought 200 short pieces to about 0.27 s. Then 200 pieces at 8000 characters took about 2 s, so I added `lookback_chars: 400000`: about 50 full pieces in about 0.8 s. | `src/caps.ts`, `test/lookback.test.ts` |
-| Checks | test:lookback 24 of 24; walkthrough 179 of 179 with the lookback and nudge lines. | |
+| Checks | test:lookback 29 of 29; walkthrough 184 of 184 with the lookback and nudge lines. | |
 
 Two test fixes, both on my own expectations: the first appearance of the fixture move is t12, not t15. The dropped check now reads returns on the words the change note quotes.
 
@@ -56,3 +56,7 @@ Report: `locate/04-B-run1.md`. CANDY located I.B.1, I.B.2, and I.C.1 against `98
 ## Locate run 1 and lift (batch 04-C), Nov 27, 2026
 
 Report: `locate/04-C-run1.md`. CANDY located II.A.1, II.A.2, and II.B.1 to II.B.4 against `98264b0` at 1/6 L3* (II.B.1 unanimous; the other five at L2*). The lift puts reflection notes of every kind beside recurring candidates and beside the pieces on the pattern view, with ids and occurrence quotes. The timeline connects the friction point, the style shift there, and the note there. `across_styles` surfaces a cross-style view of an intended choice (wording that holds or changes with the style, notes and passages beside the pieces). A walkthrough weighs a generic transition and a stock close against notes, traces a default claim with `note_id` evidence, and weighs a list of three against keep and drop notes, including where it breaks. Four 🦋 takes are in FLAGS.md. Waiting for relocation of the five lifted rows; II.B.1 carries forward at L3*.
+
+## Locate run 1 and lift (batch 04-D), Nov 27, 2026
+
+Report: `locate/04-D-run1.md`. CANDY located II.C.1, II.C.2, and II.C.3 against `98264b0` at 0/3 L3* (II.C.1 and II.C.2 at L1*; II.C.3 at L2*). The lift posts `function` and `future_intent` on claims and prints both in findings. A walkthrough diagnoses a packing list that is dropped and then returns, weighs future intent against that conflict, and posts taste, mixture, and unclear claims with notes, rejections, and counterexamples, beside the thin-claim nudge (now for every kind). Exercise notes carry pull effects and calibration fields into the lookback. Four 🦋 takes are in FLAGS.md. Waiting for relocation of II.C.1 to II.C.3.

@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Lifted 04 II.C.1, II.C.2, and II.C.3 after locate batch 04-D (run 1). Claims take function and future_intent, and GET /findings prints both. A thin claim of any kind is asked to weigh notes and a counterexample or rejection. Short definitions separate taste, default, mixture, and unclear. Exercise notes carry pull.effects and calibration fields into the lookback. Walkthrough 184 of 184. test:lookback 29 of 29.
+- Saved locate batch 04-D run 1 at `04-looking-back-for-patterns/locate/04-D-run1.md`.
 - Lifted 04 II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 after locate batch 04-C (run 1; II.B.1 at L3*). Recurring candidates and the pattern view now carry reflection notes of every kind beside the pieces, with ids and occurrence quotes. The timeline connects the friction point, the style shift there, and the note there. `across_styles` distinguishes wording that holds from wording that changes with the style. Walkthrough 179 of 179. test:lookback 24 of 24.
 - Saved locate batch 04-C run 1 at `04-looking-back-for-patterns/locate/04-C-run1.md`.
 - Lifted 04 I.B.1 after locate batch 04-B (run 1; I.B.2 and I.C.1 at L3*). GET /compare now carries every reflection-note kind that belongs to a piece, and names how the measure holds, rises, or falls along the sequence. Walkthrough 174 of 174. test:lookback 19 of 19.
