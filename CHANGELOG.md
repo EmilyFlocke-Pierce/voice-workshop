@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Lifted 04 II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 after locate batch 04-C (run 1; II.B.1 at L3*). Recurring candidates and the pattern view now carry reflection notes of every kind beside the pieces, with ids and occurrence quotes. The timeline connects the friction point, the style shift there, and the note there. `across_styles` distinguishes wording that holds from wording that changes with the style. Walkthrough 179 of 179. test:lookback 24 of 24.
+- Saved locate batch 04-C run 1 at `04-looking-back-for-patterns/locate/04-C-run1.md`.
 - Lifted 04 I.B.1 after locate batch 04-B (run 1; I.B.2 and I.C.1 at L3*). GET /compare now carries every reflection-note kind that belongs to a piece, and names how the measure holds, rises, or falls along the sequence. Walkthrough 174 of 174. test:lookback 19 of 19.
 - Saved locate batch 04-B run 1 at `04-looking-back-for-patterns/locate/04-B-run1.md`.
 - Saved locate batch 04-A run 1 at `04-looking-back-for-patterns/locate/04-A-run1.md`. Batch 04-A is closed at 4/4 L3*. Logged two quirks and a stale walkthrough count (now 171 of 171) in 04's QUIRKS.md, and two 🦋 takes in FLAGS.md. No code changed.

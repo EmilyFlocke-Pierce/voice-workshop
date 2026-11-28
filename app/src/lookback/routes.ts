@@ -8,7 +8,8 @@ import { KINDS, STYLE_BY_ID, kindOfForm } from "../styles/catalog.ts";
 import { audit, buildCorpus, type Corpus, type Rows, type TryIn } from "./corpus.ts";
 import { recurring } from "./recurring.ts";
 import { dropped } from "./dropped.ts";
-import { checkInstances, COMPARE_MEASURES, compareAlong, countPattern, denominatorLabels, rankPatterns, timeline, type CompareMeasure, type Denominator, type Instance } from "./patterns.ts";
+import { acrossStyles, checkInstances, COMPARE_MEASURES, compareAlong, countPattern, denominatorLabels, rankPatterns, timeline, type CompareMeasure, type Denominator, type Instance } from "./patterns.ts";
+import { claimView } from "./claims.ts";
 import { putChunked } from "./store.ts";
 
 export const CORPUS_Q = "What is missing from this set, and what does that limit?";
@@ -173,32 +174,21 @@ async function patternView(env: Env, c: Corpus, lbId: string, p: Record<string, 
     const style = piece.style.value ?? "(no style)";
     (intentBeside[style] ??= []).push({ label: piece.label, has_it: !!counts.per_piece[piece.label], intent: c.byTry.get(piece.try_id)!.intent });
   }
+  const beside = acrossStyles(c, instances, counts.per_piece);
   const claims = (await env.DB.prepare("SELECT * FROM claims WHERE pattern_id = ? ORDER BY created_at").bind(p.id).all<Record<string, string>>()).results.map(claimView);
   return {
     id: p.id, name: p.name, inclusion_rule: p.inclusion_rule, rule_version: p.rule_version, instances,
     counts, rank: ranks.find((r) => r.id === p.id), all_ranks: ranks,
     timeline: timeline(c, counts.per_piece, counts.denominator.pieces),
     intent_notes_beside_it_by_style: intentBeside,
+    notes_beside_it_by_style: beside.notes_beside_it_by_style,
+    across_styles: beside.across_styles,
     revisions: revisions.map((r) => ({ ...r, denominator: JSON.parse(r.denominator), counts: JSON.parse(r.counts) })),
     claims,
     pause: { question: PATTERN_Q, revise_with: `POST /lookbacks/${lbId}/patterns/${p.id}/revise`, claim_with: `POST /lookbacks/${lbId}/claims` },
   };
 }
 
-function claimView(r: Record<string, string>) {
-  const rejections = JSON.parse(r.rejections) as unknown[];
-  const evidence = JSON.parse(r.evidence) as Record<string, unknown>[];
-  const notes = evidence.filter((e) => e.note_id);
-  return {
-    id: r.id, pattern_id: r.pattern_id, kind: r.kind, function: r.function, future_intent: r.future_intent,
-    evidence, interpretation: r.interpretation, counterexamples: JSON.parse(r.counterexamples), qualifiers: r.qualifiers,
-    rejections: { recorded: rejections.length === 1 ? "1 recorded" : `${rejections.length} recorded`, entries: rejections, ...(rejections.length === 1 ? { scope: "one instance" } : {}) },
-    notes_side_by_side: notes.length > 1 ? notes : null,
-    created_at: r.created_at,
-  };
-}
-
-// Checks a list of {piece, quote} or {note_id, quote} entries word for word.
 function checkCited(c: Corpus, list: unknown, needs: "piece" | "piece_or_note" | "rejection"): { ok: true; value: Record<string, unknown>[] } | { ok: false; bad: unknown[]; message?: string } {
   if (list === undefined || list === null) return { ok: true, value: [] };
   if (!Array.isArray(list)) return { ok: false, bad: [], message: "Send a list." };

@@ -667,6 +667,95 @@ try {
     patCmp.status === 201 && Array.isArray(plain) && plain.some((r) => r.label === "P1" && /keep the lines short/.test(r.intent)) && plain.some((r) => r.label === "P4" && /stay with the long build/.test(r.intent)),
   );
 
+  // II.A.1, II.A.2, II.B.2, II.B.3, II.B.4: notes beside recurring pieces, a cross-style intended choice, a friction point, a redundancy weighed against notes, and a structural move that breaks.
+  const kHabit = (await call("POST", "/keys")).body.key;
+  const habitP1 = "The kettle sang. Then I poured a cup. Bread cooled on the board.";
+  const habitP2 = "Friends gathered here. Then bread, cheese, and apples sat on the table, and the room went still.";
+  const habitP3 = "Beloved friends crossed the water. Then bread, cheese, and apples waited, and the room went still.";
+  const habitP4 = "Beloved friends crossed the water. Then the food waited, and the room went still.";
+  const habitP5 = "The lantern burned. Then I took a seat, and the room went still.";
+  await call("POST", "/tries", { key: kHabit, body: { text: habitP1, intent: "open on a concrete object and land short", style_tag: "plain" } });
+  const tBar = await call("POST", "/tries", { key: kHabit, body: { text: habitP2, intent: "open on a concrete gathering, now in a long ceremonial build", style_tag: "baroque" } });
+  await call("POST", `/tries/${tBar.body.id}/notes`, { key: kHabit, body: { diagnosis: "the ceremonial style pulled me from short landings; I reached for a stock close and a list of three" } });
+  const tKept = await call("POST", "/tries", { key: kHabit, body: { text: habitP3, style_tag: "baroque" } });
+  await call("POST", `/tries/${tKept.body.id}/mark`, { key: kHabit, body: { what_tried: "kept the ceremonial close and the list of three", why_back: "the still room still works" } });
+  await call("POST", `/tries/${tKept.body.id}/retry`, { key: kHabit, body: { text: habitP4, change_note: "I dropped the list of three and kept \"and the room went still\"." } });
+  await call("POST", "/tries", { key: kHabit, body: { text: habitP5, intent: "back to a short landing, still opening on a concrete object", style_tag: "plain" } });
+  const lbHabit = await call("POST", "/lookbacks", { key: kHabit, body: { scope: "all" } });
+  const recHabit = await call("GET", `/lookbacks/${lbHabit.body.id}/recurring`, { key: kHabit });
+  const trans = recHabit.body.items.find((it) => it.type === "transition" && it.words === "then");
+  check(
+    "a recurring generic transition carries the reflection notes beside the pieces that use it",
+    recHabit.status === 200 && trans && trans.id === "transition:then"
+      && trans.notes_beside_pieces.some((r) => r.label === "P1" && r.notes.some((n) => n.kind === "intent" && /land short/.test(n.text)))
+      && trans.notes_beside_pieces.some((r) => r.label === "P2" && r.notes.some((n) => n.kind === "diagnosis" && /ceremonial style/.test(n.text)))
+      && trans.notes_beside_pieces.some((r) => r.label === "P4" && r.notes.some((n) => n.kind === "change_note" && /dropped the list of three/.test(n.text))),
+  );
+  const wording = recHabit.body.items.find((it) => it.type === "wording" && String(it.words).includes("and the room went still"));
+  const shape = recHabit.body.items.find((it) => it.type === "shape" && it.shape === "list_of_three");
+  const patOpen = await call("POST", `/lookbacks/${lbHabit.body.id}/patterns`, { key: kHabit, body: { name: "open on a concrete object", inclusion_rule: "the piece opens on a concrete object or gathering", instances: [{ piece: "P1", quote: "The kettle sang" }, { piece: "P2", quote: "Friends gathered here" }, { piece: "P5", quote: "The lantern burned" }] } });
+  const across = patOpen.body.across_styles;
+  const notesBy = patOpen.body.notes_beside_it_by_style;
+  check(
+    "an intended choice is traced across styles, with notes and passages beside the pieces, and what stays consistent is distinguished from what changes with the style",
+    patOpen.status === 201
+      && across && across.styles.includes("plain") && across.styles.includes("baroque")
+      && /wording changes with the style/.test(across.reads)
+      && across.wordings_by_style.plain.includes("The kettle sang") && across.wordings_by_style.plain.includes("The lantern burned")
+      && across.wordings_by_style.baroque.includes("Friends gathered here")
+      && notesBy.plain.some((r) => r.label === "P1" && r.has_it && r.notes.some((n) => n.kind === "intent" && /open on a concrete object/.test(n.text)))
+      && notesBy.baroque.some((r) => r.label === "P2" && r.has_it && r.notes.some((n) => n.kind === "intent" && /open on a concrete gathering/.test(n.text)))
+      && patOpen.body.intent_notes_beside_it_by_style.plain.some((r) => r.label === "P1" && /open on a concrete object/.test(r.intent)),
+  );
+  const patClose = await call("POST", `/lookbacks/${lbHabit.body.id}/patterns`, { key: kHabit, body: { name: "the stock still-room close", inclusion_rule: "the words \"and the room went still\"", instances: [{ piece: "P2", quote: "and the room went still" }, { piece: "P3", quote: "and the room went still" }, { piece: "P4", quote: "and the room went still" }, { piece: "P5", quote: "and the room went still" }] } });
+  const fr = patClose.body.timeline.friction_point;
+  const shift = fr && fr.style_shift;
+  check(
+    "the timeline connects the friction point where a repeat began, the style shift there, and the reflection note there",
+    patClose.status === 201
+      && patClose.body.timeline.first_appearance === "P2"
+      && fr && fr.label === "P2" && fr.style === "baroque"
+      && shift && shift.previous_label === "P1" && shift.previous_style === "plain" && shift.style === "baroque"
+      && /after P1 in plain/.test(shift.reads)
+      && fr.notes.some((n) => n.kind === "diagnosis" && /ceremonial style pulled me from short landings/.test(n.text))
+      && patClose.body.timeline.pieces.some((r) => r.label === "P2" && r.notes.some((n) => n.id && n.kind === "diagnosis")),
+  );
+  const diag = notesBy.baroque.find((r) => r.label === "P2").notes.find((n) => n.kind === "diagnosis")
+    || patClose.body.notes_beside_it_by_style.baroque.find((r) => r.label === "P2").notes.find((n) => n.kind === "diagnosis");
+  const clBacked = await call("POST", `/lookbacks/${lbHabit.body.id}/claims`, { key: kHabit, body: {
+    pattern_id: patClose.body.id,
+    kind: "default",
+    evidence: [
+      { piece: "P2", quote: "and the room went still" },
+      { piece: "P3", quote: "and the room went still" },
+      { note_id: diag.id, quote: "I reached for a stock close and a list of three" },
+    ],
+    counterexamples: [{ piece: "P1", quote: "Bread cooled on the board." }],
+    interpretation: "The still-room close is a default ceremonial move: the diagnosis at the first ceremonial piece names it as a stock close I reached for, and it then recurs in P3, P4, and P5.",
+  }});
+  check(
+    "a systemic redundancy is traced to a default writing move with both the pieces and the reflection notes",
+    clBacked.status === 201 && !clBacked.body.asks
+      && clBacked.body.evidence.some((e) => e.note_id === diag.id && e.note_kind === "diagnosis")
+      && clBacked.body.counterexamples.some((e) => e.piece === "P1")
+      && wording && wording.id && wording.notes_beside_pieces.some((r) => r.label === "P2" && r.notes.some((n) => n.kind === "diagnosis")),
+  );
+  const patList = await call("POST", `/lookbacks/${lbHabit.body.id}/patterns`, { key: kHabit, body: { name: "list of three", inclusion_rule: "a list of three items (A, B, and C)", instances: [{ piece: "P2", quote: "bread, cheese, and apples" }, { piece: "P3", quote: "bread, cheese, and apples" }] } });
+  const dropHabit = await call("GET", `/lookbacks/${lbHabit.body.id}/dropped`, { key: kHabit });
+  const removed = dropHabit.body.items.find((it) => it.type === "move" && it.move === "list_of_three");
+  const listNotes = Object.values(patList.body.notes_beside_it_by_style || {}).flat();
+  check(
+    "a recurring structural move is weighed against change, keep, and drop notes, including where the pattern breaks",
+    patList.status === 201
+      && patList.body.timeline.first_appearance === "P2"
+      && patList.body.timeline.breaks_after_first.includes("P4") && patList.body.timeline.breaks_after_first.includes("P5")
+      && patList.body.timeline.friction_point.notes.some((n) => n.kind === "diagnosis")
+      && shape && shape.id === "shape:list_of_three" && Array.isArray(shape.occurrences) && shape.occurrences.some((o) => o.label === "P2" && /bread, cheese, and apples/.test(o.quote))
+      && shape.notes_beside_pieces.some((r) => r.label === "P3" && r.notes.some((n) => n.kind === "mark" && /kept the ceremonial close/.test(n.text)))
+      && listNotes.some((r) => r.label === "P4" && r.notes.some((n) => n.kind === "change_note" && /dropped the list of three/.test(n.text)))
+      && removed && removed.evidence === "explicit" && Array.isArray(removed.returns_in) && removed.returns_in.length === 0,
+  );
+
   const peekLb = await call("GET", `/lookbacks/${lb.body.id}`, { key: (await call("POST", "/keys")).body.key });
   check("another key reads none of this lookback", peekLb.status === 404);
   const nk = (await call("POST", "/keys")).body.key;

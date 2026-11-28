@@ -5,7 +5,8 @@ import { readFileSync } from "node:fs";
 import { audit, buildCorpus, type Rows, type TryIn } from "../src/lookback/corpus.ts";
 import { recurring } from "../src/lookback/recurring.ts";
 import { dropped, removedRuns } from "../src/lookback/dropped.ts";
-import { COMPARE_MEASURES, compareAlong, countPattern, measureOf, rankPatterns, timeline } from "../src/lookback/patterns.ts";
+import { acrossStyles, COMPARE_MEASURES, compareAlong, countPattern, measureOf, rankPatterns, timeline } from "../src/lookback/patterns.ts";
+import { claimView } from "../src/lookback/claims.ts";
 import { putChunked, CHUNK_BYTES } from "../src/lookback/store.ts";
 import { isNear } from "../src/lookback/near.ts";
 import { diffTries } from "../src/feedback/diff.ts";
@@ -51,7 +52,10 @@ for (const e of seed.expect) {
       assert.ok((hit.returns_in as string[]).includes(label(full, e.returns_in as string)));
     } else if (e.type === "removed_move") {
       const d = dropped(full, diffsOf(full));
-      assert.ok(d.some((x) => x.type === "move" && x.move === e.move && x.retry === label(full, e.retry as string)));
+      const hit = d.find((x) => x.type === "move" && x.move === e.move && x.retry === label(full, e.retry as string));
+      assert.ok(hit, JSON.stringify(d.filter((x) => x.type === "move")));
+      assert.equal(hit.evidence, "indirect");
+      assert.deepEqual(hit.returns_in, []);
     } else if (e.type === "near") {
       const r = recurring(full);
       const words = e.words as string[];
@@ -160,10 +164,132 @@ test("timeline names the pieces that break after the first appearance", () => {
   assert.ok(!tl.breaks_after_first.includes("P1"), "a piece before the first appearance is not a break after first");
 });
 
-function tryRow(id: string, text: string, notes: { intent?: string | null; scope_note?: string | null; change_note?: string | null; diagnosis?: string | null }): TryIn {
-  const seq = "abcde".indexOf(id);
-  return { id, parent_id: null, session_id: "s1", text, intent: notes.intent ?? null, scope_note: notes.scope_note ?? null, change_note: notes.change_note ?? null, diagnosis: notes.diagnosis ?? null, rough_edges: null, landed: null, style_tag: "plain", prompt_form: null, prompt_style: null, prompt_author: null, exercise_id: null, created_at: `2026-11-01T00:00:0${seq}Z` };
+function tryRow(id: string, text: string, notes: { intent?: string | null; scope_note?: string | null; change_note?: string | null; diagnosis?: string | null; style_tag?: string | null; parent_id?: string | null; at?: string } = {}): TryIn {
+  const seq = "abcdefghij".indexOf(id);
+  return { id, parent_id: notes.parent_id ?? null, session_id: "s1", text, intent: notes.intent ?? null, scope_note: notes.scope_note ?? null, change_note: notes.change_note ?? null, diagnosis: notes.diagnosis ?? null, rough_edges: null, landed: null, style_tag: notes.style_tag ?? "plain", prompt_form: null, prompt_style: null, prompt_author: null, exercise_id: null, created_at: notes.at ?? `2026-11-01T00:00:0${seq >= 0 ? seq : 0}Z` };
 }
+
+
+function emptyRows(tries: TryIn[], marks: Rows["marks"] = []): Rows {
+  return { tries, marks, stitches: [], xnotes: null, exercises: null, placements: [] };
+}
+
+function habitCorpus() {
+  const p1 = "The kettle sang. Then I poured a cup. Bread cooled on the board.";
+  const p2 = "Friends gathered here. Then bread, cheese, and apples sat on the table, and the room went still.";
+  const p3 = "Beloved friends crossed the water. Then bread, cheese, and apples waited, and the room went still.";
+  const p4 = "Beloved friends crossed the water. Then the food waited, and the room went still.";
+  const p5 = "The lantern burned. Then I took a seat, and the room went still.";
+  const rows = emptyRows([
+    tryRow("a", p1, { intent: "open on a concrete object and land short", style_tag: "plain", at: "2026-11-01T00:00:01Z" }),
+    tryRow("b", p2, { intent: "open on a concrete gathering, now in a long ceremonial build", diagnosis: "the ceremonial style pulled me from short landings; I reached for a stock close and a list of three", style_tag: "baroque", at: "2026-11-01T00:00:02Z" }),
+    tryRow("c", p3, { style_tag: "baroque", at: "2026-11-01T00:00:03Z" }),
+    tryRow("d", p4, { parent_id: "c", change_note: 'I dropped the list of three and kept "and the room went still".', style_tag: "baroque", at: "2026-11-01T00:00:04Z" }),
+    tryRow("e", p5, { intent: "back to a short landing, still opening on a concrete object", style_tag: "plain", at: "2026-11-01T00:00:05Z" }),
+  ], [{ id: "m1", try_id: "c", what_tried: "kept the ceremonial close and the list of three", why_back: "the still room still works", own_lines: null, less_familiar: null }]);
+  return buildCorpus(rows, ["a", "b", "c", "d", "e"]);
+}
+
+test("recurring candidates carry an id, occurrence quotes, and the reflection notes beside the pieces", () => {
+  const c = habitCorpus();
+  const items = recurring(c);
+  assert.ok(items.every((x) => typeof x.id === "string" && (x.id as string).length > 0));
+  const trans = items.find((x) => x.type === "transition" && x.words === "then");
+  assert.ok(trans, JSON.stringify(items.filter((x) => x.type === "transition")));
+  const transNotes = trans.notes_beside_pieces as { label: string; notes: { kind: string; text: string }[] }[];
+  assert.ok(transNotes.some((r) => r.label === "P1" && r.notes.some((n) => n.kind === "intent" && /land short/.test(n.text))));
+  assert.ok(transNotes.some((r) => r.label === "P2" && r.notes.some((n) => n.kind === "diagnosis" && /ceremonial style/.test(n.text))));
+  assert.ok(transNotes.some((r) => r.label === "P4" && r.notes.some((n) => n.kind === "change_note" && /dropped the list of three/.test(n.text))));
+  const wording = items.find((x) => x.type === "wording" && String(x.words).includes("and the room went still"));
+  assert.ok(wording && wording.id === "wording:exact:and the room went still");
+  const wordingNotes = wording.notes_beside_pieces as { label: string; notes: { kind: string; id: string }[] }[];
+  assert.ok(wordingNotes.some((r) => r.label === "P2" && r.notes.some((n) => n.kind === "diagnosis" && n.id)));
+  const shape = items.find((x) => x.type === "shape" && x.shape === "list_of_three");
+  assert.ok(shape && shape.id === "shape:list_of_three");
+  const occ = shape.occurrences as { label: string; quote: string | null }[];
+  assert.ok(occ.some((o) => o.label === "P2" && /bread, cheese, and apples/.test(o.quote ?? "")));
+  const shapeNotes = shape.notes_beside_pieces as { label: string; notes: { kind: string; text: string }[] }[];
+  assert.ok(shapeNotes.some((r) => r.label === "P3" && r.notes.some((n) => n.kind === "mark" && /kept the ceremonial close/.test(n.text))));
+});
+
+test("timeline connects the friction point, the style shift there, and the note there", () => {
+  const c = habitCorpus();
+  const inst = [
+    { piece: "P2", quote: "and the room went still" },
+    { piece: "P3", quote: "and the room went still" },
+    { piece: "P4", quote: "and the room went still" },
+    { piece: "P5", quote: "and the room went still" },
+  ];
+  const counts = countPattern(c, inst, "every");
+  const tl = timeline(c, counts.per_piece, counts.denominator.pieces);
+  assert.equal(tl.first_appearance, "P2");
+  assert.ok(tl.friction_point && tl.friction_point.label === "P2" && tl.friction_point.style === "baroque");
+  const shift = tl.friction_point.style_shift;
+  assert.ok(shift && shift.previous_label === "P1" && shift.previous_style === "plain" && shift.style === "baroque");
+  assert.ok(/after P1 in plain/.test(shift.reads));
+  assert.ok(tl.friction_point.notes.some((n) => n.kind === "diagnosis" && /ceremonial style pulled me from short landings/.test(n.text)));
+  assert.ok(tl.pieces.some((r) => r.label === "P2" && r.notes.some((n) => n.kind === "diagnosis" && n.id)));
+});
+
+test("acrossStyles lines up notes and passages by style and says whether the wording changes with the style", () => {
+  const c = habitCorpus();
+  const inst = [
+    { piece: "P1", quote: "The kettle sang" },
+    { piece: "P2", quote: "Friends gathered here" },
+    { piece: "P5", quote: "The lantern burned" },
+  ];
+  const counts = countPattern(c, inst, "every");
+  const beside = acrossStyles(c, inst, counts.per_piece);
+  const { styles, wordings_by_style, reads } = beside.across_styles;
+  assert.ok(styles.includes("plain") && styles.includes("baroque"));
+  assert.ok(/wording changes with the style/.test(reads));
+  assert.ok(wordings_by_style.plain.includes("The kettle sang") && wordings_by_style.plain.includes("The lantern burned"));
+  assert.ok(wordings_by_style.baroque.includes("Friends gathered here"));
+  const plain = beside.notes_beside_it_by_style.plain;
+  const baroque = beside.notes_beside_it_by_style.baroque;
+  assert.ok(plain.some((r) => r.label === "P1" && r.has_it && r.passages.includes("The kettle sang") && r.notes.some((n) => n.kind === "intent" && /open on a concrete object/.test(n.text))));
+  assert.ok(baroque.some((r) => r.label === "P2" && r.has_it && r.passages.includes("Friends gathered here") && r.notes.some((n) => n.kind === "intent" && /open on a concrete gathering/.test(n.text))));
+  const sameInst = [{ piece: "P2", quote: "and the room went still" }, { piece: "P5", quote: "and the room went still" }];
+  const same = acrossStyles(c, sameInst, countPattern(c, sameInst, "every").per_piece);
+  assert.ok(/with the same wording/.test(same.across_styles.reads));
+});
+
+test("a list of three that a retry drops is weighed against the change note, including where it breaks and that it does not return", () => {
+  const c = habitCorpus();
+  const inst = [{ piece: "P2", quote: "bread, cheese, and apples" }, { piece: "P3", quote: "bread, cheese, and apples" }];
+  const counted = countPattern(c, inst, "default");
+  const tl = timeline(c, counted.per_piece, counted.denominator.pieces);
+  assert.equal(tl.first_appearance, "P2");
+  assert.ok(tl.breaks_after_first.includes("P4") && tl.breaks_after_first.includes("P5"));
+  const d = dropped(c, diffsOf(c));
+  const hit = d.find((x) => x.type === "move" && x.move === "list_of_three" && x.retry === "P4");
+  assert.ok(hit, JSON.stringify(d.filter((x) => x.type === "move")));
+  assert.equal(hit.evidence, "explicit");
+  assert.deepEqual(hit.returns_in, []);
+});
+
+test("claimView keeps note evidence beside the claim, including a single weighed note", () => {
+  const view = claimView({
+    id: "cl1",
+    pattern_id: "pat1",
+    kind: "default",
+    function: "",
+    future_intent: "",
+    evidence: JSON.stringify([
+      { piece: "P2", quote: "and the room went still" },
+      { note_id: "try:b:diagnosis", note_kind: "diagnosis", piece: "P2", quote: "I reached for a stock close and a list of three" },
+    ]),
+    interpretation: "a default ceremonial close",
+    counterexamples: JSON.stringify([{ piece: "P1", quote: "Bread cooled on the board." }]),
+    rejections: "[]",
+    qualifiers: "",
+    created_at: "2026-11-01T00:00:06Z",
+  });
+  assert.equal(view.kind, "default");
+  assert.ok((view.evidence as Record<string, unknown>[]).some((e) => e.note_id === "try:b:diagnosis" && e.note_kind === "diagnosis"));
+  assert.equal(view.notes_side_by_side, null);
+  assert.ok((view.counterexamples as Record<string, unknown>[]).some((e) => e.piece === "P1"));
+});
 
 function generated(n: number): Rows {
   const words = "river lantern window kettle harbor gate bread morning storm square road mill dog night light boats tide door hall cold".split(" ");

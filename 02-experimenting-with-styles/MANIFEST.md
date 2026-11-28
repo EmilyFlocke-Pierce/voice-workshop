@@ -49,7 +49,7 @@ npm run test:styles
 npm run walkthrough
 ```
 
-Expect test:styles 10 of 10 and the walkthrough 174 of 174. Part B lines start at "GET /styles offers register exercises".
+Expect test:styles 10 of 10 and the walkthrough 179 of 179. Part B lines start at "GET /styles offers register exercises".
 
 ## Files
 

@@ -121,6 +121,22 @@ export function notesOf(rows: Rows): Map<string, Note> {
   return notes;
 }
 
+export type NoteRef = { id: string; kind: string; text: string; about: Note["about"]; carried_from_parent?: true };
+
+export function notesOn(c: Corpus, p: Piece): NoteRef[] {
+  return p.note_ids.map((id) => {
+    const note = c.notes.get(id)!;
+    return { id, kind: note.kind, text: note.text, about: note.about, ...(note.carried_from_parent ? { carried_from_parent: true as const } : {}) };
+  });
+}
+
+export function notesBesidePieces(c: Corpus, labels: string[]): { label: string; style: string | null; notes: NoteRef[] }[] {
+  return labels.map((label) => {
+    const piece = c.pieces.find((x) => x.label === label);
+    return { label, style: piece?.style.value ?? null, notes: piece ? notesOn(c, piece) : [] };
+  });
+}
+
 // inScope: try ids in created order. pulled: try ids the agent pulled in, in pull order, labeled after the rest.
 // Past maxPieces or maxChars, it takes the newest tries in scope that fit, and says so.
 export function buildCorpus(rows: Rows, inScope: string[], pulled: string[] = [], maxPieces = 200, maxChars = Number.MAX_SAFE_INTEGER): Corpus {

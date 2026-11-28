@@ -1,6 +1,6 @@
 // Counting a named pattern the same way every time. The agent sets the rule and the denominator; the code counts.
 import { sentencesOf, wordsOf } from "../feedback/text.ts";
-import { latestVersions, type Corpus } from "./corpus.ts";
+import { latestVersions, notesOn, type Corpus, type NoteRef } from "./corpus.ts";
 
 export interface Instance { piece: string; quote: string }
 export type Denominator = "default" | "every" | string[];
@@ -53,7 +53,7 @@ export function rankPatterns(rows: { id: string; name: string; rate: number; siz
 
 // The pattern across pieces in order: first appearance, gaps, returns, and the pieces where it breaks.
 export function timeline(c: Corpus, per: Record<string, number>, denom: string[]) {
-  const rows = c.pieces.map((p) => ({ label: p.label, style: p.style.value, has_it: !!per[p.label], in_denominator: denom.includes(p.label) }));
+  const rows = c.pieces.map((p) => ({ label: p.label, style: p.style.value, has_it: !!per[p.label], in_denominator: denom.includes(p.label), notes: notesOn(c, p) }));
   const first = rows.find((r) => r.has_it)?.label ?? null;
   const gaps: string[][] = [];
   const returns: string[] = [];
@@ -70,7 +70,42 @@ export function timeline(c: Corpus, per: Record<string, number>, denom: string[]
     } else if (seen) gap.push(r.label);
   }
   const breaks = seen ? rows.filter((r) => r.in_denominator && !r.has_it && first && c.pieces.findIndex((p) => p.label === r.label) > c.pieces.findIndex((p) => p.label === first)).map((r) => r.label) : [];
-  return { pieces: rows, first_appearance: first, gaps, returns, breaks_after_first: breaks };
+  const firstPiece = first ? c.pieces.find((p) => p.label === first) : undefined;
+  const firstIdx = firstPiece ? c.pieces.findIndex((p) => p.label === first) : -1;
+  const prevPiece = firstIdx > 0 ? c.pieces[firstIdx - 1] : undefined;
+  const style_shift = firstPiece ? {
+    at: first,
+    style: firstPiece.style.value,
+    previous_label: prevPiece?.label ?? null,
+    previous_style: prevPiece?.style.value ?? null,
+    reads: !prevPiece
+      ? `The repeat begins at ${first}${firstPiece.style.value ? `, in ${firstPiece.style.value}` : ""}, the first piece in this lookback.`
+      : firstPiece.style.value && prevPiece.style.value && firstPiece.style.value !== prevPiece.style.value
+        ? `The repeat begins at ${first}, in ${firstPiece.style.value}, after ${prevPiece.label} in ${prevPiece.style.value}.`
+        : `The repeat begins at ${first}${firstPiece.style.value ? `, in ${firstPiece.style.value}` : ""}, after ${prevPiece.label}${prevPiece.style.value ? `, also in ${prevPiece.style.value}` : ""}.`,
+  } : null;
+  const friction_point = firstPiece ? { label: first, style: firstPiece.style.value, style_shift, notes: notesOn(c, firstPiece) } : null;
+  return { pieces: rows, first_appearance: first, friction_point, gaps, returns, breaks_after_first: breaks };
+}
+
+// Passages and notes beside each piece, grouped by style, plus a short read of whether the wording holds or changes with the style.
+export function acrossStyles(c: Corpus, instances: Instance[], per: Record<string, number>) {
+  const notes_beside_it_by_style: Record<string, { label: string; has_it: boolean; passages: string[]; notes: NoteRef[] }[]> = {};
+  for (const piece of c.pieces) {
+    const style = piece.style.value ?? "(no style)";
+    const passages = instances.filter((i) => i.piece === piece.label).map((i) => i.quote);
+    (notes_beside_it_by_style[style] ??= []).push({ label: piece.label, has_it: !!per[piece.label], passages, notes: notesOn(c, piece) });
+  }
+  const styles = Object.entries(notes_beside_it_by_style).filter(([, rows]) => rows.some((r) => r.has_it)).map(([s]) => s);
+  const wordings_by_style = Object.fromEntries(styles.map((s) => [s, [...new Set(notes_beside_it_by_style[s].flatMap((r) => r.passages))]]));
+  const wordingKeys = styles.map((s) => [...wordings_by_style[s]].sort().join("|"));
+  const sameWording = wordingKeys.length > 1 && wordingKeys.every((w) => w === wordingKeys[0]);
+  const reads = styles.length <= 1
+    ? (styles.length === 1 ? `This move appears in one style (${styles[0]}).` : "This move does not appear in a named style.")
+    : sameWording
+      ? `This move appears in ${styles.length} styles (${styles.join(", ")}), with the same wording.`
+      : `This move appears in ${styles.length} styles (${styles.join(", ")}). The wording changes with the style.`;
+  return { notes_beside_it_by_style, across_styles: { styles, wordings_by_style, reads } };
 }
 
 // One number for every piece in order. A zero shows as 0.
@@ -106,11 +141,7 @@ export interface ComparePiece {
 // One measure across every piece in order, with how the value holds or shifts, and the reflection notes that belong to each piece.
 export function compareAlong(c: Corpus, measure: CompareMeasure): { measure: CompareMeasure; pieces: ComparePiece[]; along_the_sequence: string } {
   const rows = c.pieces.map((p) => {
-    const n = c.notes;
-    const notes = p.note_ids.map((id) => {
-      const note = n.get(id)!;
-      return { id, kind: note.kind, text: note.text, about: note.about, ...(note.carried_from_parent ? { carried_from_parent: true as const } : {}) };
-    });
+    const notes = notesOn(c, p);
     return {
       label: p.label,
       value: measureOf(c.byTry.get(p.try_id)!.text, measure),

@@ -2,11 +2,16 @@
 // Candidates describe what repeats. They come only from these pieces, never from a fixed list.
 import { sentencesOf } from "../feedback/text.ts";
 import { stem, tokens } from "./near.ts";
-import { SHAPE_NAMES } from "./shapes.ts";
-import type { Corpus, Ref } from "./corpus.ts";
+import { SHAPE_NAMES, shapeSentence } from "./shapes.ts";
+import { notesBesidePieces, type Corpus, type Ref } from "./corpus.ts";
 
 const MAX_ITEMS = 300;
 const MAX_OCC = 50;
+
+function withBeside(c: Corpus, id: string, item: Record<string, unknown>) {
+  return { id, ...item, notes_beside_pieces: notesBesidePieces(c, item.pieces as string[]) };
+}
+
 
 export function recurring(c: Corpus) {
   const items: Record<string, unknown>[] = [];
@@ -51,7 +56,7 @@ export function recurring(c: Corpus) {
   }
   const keep = multi.filter(([k, refs]) => !covered.has(`${k}|${pieceSet(refs)}`));
   keep.sort((a, b) => new Set(b[1].map((r) => r.label)).size - new Set(a[1].map((r) => r.label)).size || b[0].split(" ").length - a[0].split(" ").length);
-  for (const [k, refs] of keep.slice(0, MAX_ITEMS)) items.push({ type: "wording", match: "exact", words: k, pieces: [...new Set(refs.map((r) => r.label))], occurrences: refs });
+  for (const [k, refs] of keep.slice(0, MAX_ITEMS)) items.push(withBeside(c, `wording:exact:${k}`, { type: "wording", match: "exact", words: k, pieces: [...new Set(refs.map((r) => r.label))], occurrences: refs }));
 
   // Near wording, 4 words: same length, one word apart after the suffix rule, and not an exact repeat.
   // Near runs on 4-word spans only, to stay inside lookback_cpu_ms; a longer near repeat shows as its 4-word parts.
@@ -102,7 +107,7 @@ export function recurring(c: Corpus) {
     if (seenNear.has(key)) continue;
     seenNear.add(key);
     if (items.length >= MAX_ITEMS * 2) break;
-    items.push({ type: "wording", match: "near", words: [...raws], pieces: [...new Set(group.map((g) => g.ref.label))], occurrences: group.map((g) => ({ ...g.ref, words: g.raw })) });
+    items.push(withBeside(c, `wording:near:${key}`, { type: "wording", match: "near", words: [...raws], pieces: [...new Set(group.map((g) => g.ref.label))], occurrences: group.map((g) => ({ ...g.ref, words: g.raw })) }));
   }
 
   // Openings: the first two words of each piece. Transitions: the first word of later sentences, in 2 or more pieces.
@@ -126,14 +131,20 @@ export function recurring(c: Corpus) {
       }
     });
   }
-  for (const [k, refs] of openings) if (new Set(refs.map((r) => r.label)).size >= 2) items.push({ type: "opening", words: k, pieces: [...new Set(refs.map((r) => r.label))], occurrences: refs });
+  for (const [k, refs] of openings) if (new Set(refs.map((r) => r.label)).size >= 2) items.push(withBeside(c, `opening:${k}`, { type: "opening", words: k, pieces: [...new Set(refs.map((r) => r.label))], occurrences: refs }));
   const trans = [...transitions].filter(([, refs]) => new Set(refs.map((r) => r.label)).size >= 2).sort((a, b) => new Set(b[1].map((r) => r.label)).size - new Set(a[1].map((r) => r.label)).size);
-  for (const [k, refs] of trans.slice(0, 50)) items.push({ type: "transition", words: k, pieces: [...new Set(refs.map((r) => r.label))], count: refs.length, occurrences: refs.slice(0, 40) });
+  for (const [k, refs] of trans.slice(0, 50)) items.push(withBeside(c, `transition:${k}`, { type: "transition", words: k, pieces: [...new Set(refs.map((r) => r.label))], count: refs.length, occurrences: refs.slice(0, 40) }));
 
   // Shapes across pieces.
   for (const s of SHAPE_NAMES) {
     const with_ = c.pieces.filter((p) => p.shapes[s]).map((p) => p.label);
-    if (with_.length >= 2) items.push({ type: "shape", shape: s, pieces: with_, of: c.pieces.length });
+    if (with_.length >= 2) {
+      const occurrences = with_.map((label) => {
+        const piece = c.pieces.find((x) => x.label === label)!;
+        return { label, try_id: piece.try_id, quote: shapeSentence(c.byTry.get(piece.try_id)!.text, s) };
+      });
+      items.push(withBeside(c, `shape:${s}`, { type: "shape", shape: s, pieces: with_, of: c.pieces.length, occurrences }));
+    }
   }
   return items;
 }

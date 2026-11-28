@@ -2,7 +2,7 @@
 
 Matrix: `criteria.json` (Quilt session 1925caee, v1). L3 is the target. Plan: `PLAN.md` (column 3 filled). Branch `build-all`, commit 2ab3810.
 
-**Locate status:** batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1 (`locate/04-A-run1.md`). Batch 04-B (I.B.1, I.B.2, I.C.1) was located in run 1 at 2/3 L3* (`locate/04-B-run1.md`); I.B.2 and I.C.1 carry forward, and I.B.1 is lifted below, waiting for relocation. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
+**Locate status:** batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1 (`locate/04-A-run1.md`). Batch 04-B (I.B.1, I.B.2, I.C.1) was located in run 1 at 2/3 L3* (`locate/04-B-run1.md`); I.B.2 and I.C.1 carry forward, and I.B.1 is lifted, waiting for relocation. Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4) was located in run 1 at 1/6 L3* (`locate/04-C-run1.md`); II.B.1 carries forward at L3*, and II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 are lifted below, waiting for relocation. Locating belongs to CANDY. Agent-side rows rest only on the builder stand-in try-out (`02-experimenting-with-styles/tryouts/tryout-all.mjs`, see SESSION) and need a cold try-out and a recheck with real outside agents.
 
 Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "test:lookback" a test in `npm run test:lookback`, with fixtures in `test/lookback-corpus.json`.
 
@@ -17,12 +17,12 @@ Paths are under `app/`. "Walkthrough" names a line in `npm run walkthrough`; "te
 | I.B.1 Compare across pieces | Built, lifted after run 1 of batch 04-B (recorded L2*: values and style tags, no reflection notes). GET /compare?measure= now gives one number per piece in order, names how the value holds, rises, or falls along the sequence, and carries every reflection-note kind that belongs to the piece (not only intent). | Walkthrough: "compare shows how a feature holds or shifts across the sequence, with reflection notes beside the pieces". test:lookback: compareAlong. |
 | I.B.2 Track repeated choices | Built. Located at L3* in run 1 of batch 04-B (unanimous, `locate/04-B-run1.md`). Pattern view timeline: first appearance, gaps, returns, and breaks after the first appearance. | test:lookback: "counts: ..." (first appearance t12, return t15), "timeline names the pieces that break after the first appearance". |
 | I.C.1 Name recurring choices | Built. Located at L3* in run 1 of batch 04-B (unanimous, `locate/04-B-run1.md`). Recurring wording exact and near; patterns take several wordings under one move, with word-for-word quote checking and versioned revisions. | Walkthrough: "a named pattern counts against the latest version of each chain by default". test:lookback: expect near. |
-| II.A.1 cross-reference intent notes | Built. Pattern view lines up intent notes against where the pattern appears, grouped by style. | Walkthrough: pattern lines. |
-| II.A.2 find the friction point where a repeat began | Built. Timeline first appearance with the piece's style and notes beside it. | test:lookback: "counts: ...". |
-| II.B.1 identify baseline phrases | Built. Recurring wording, 3 to 6 words, exact and near. | Walkthrough: "recurring and dropped answer with candidates, not verdicts". |
-| II.B.2 flag generic transitions | Built. Recurring openings and transitions, notes beside them. | Same. |
-| II.B.3 isolate systemic redundancies | Built. Recurring wording across pieces with the notes beside each piece. | Same. |
-| II.B.4 detect structural autopilot | Built. Per-piece shapes (list of three and others) in recurring. | test:lookback: expect removed_move. |
+| II.A.1 cross-reference intent notes | Built, lifted after run 1 of batch 04-C (recorded L2*: intent notes by style, no executed cross-style case with notes beside passages). The pattern view still lines up intent notes by style, and now also puts every reflection-note kind and the cited passages beside the pieces, grouped by style. `across_styles` names the styles the move appears in, the wording in each, and whether that wording holds or changes with the style. | Walkthrough: "an intended choice is traced across styles, with notes and passages beside the pieces, and what stays consistent is distinguished from what changes with the style". test:lookback: acrossStyles. |
+| II.A.2 find the friction point where a repeat began | Built, lifted after run 1 of batch 04-C (recorded L2*: first appearance and returns, no note references, no style shift). `timeline()` now has a `friction_point`: the starting piece, the style shift against the previous piece, and the reflection notes on that piece. Each timeline row also carries its notes. | Walkthrough: "the timeline connects the friction point where a repeat began, the style shift there, and the reflection note there". test:lookback: same. |
+| II.B.1 identify baseline phrases | Built. Located at L3* in run 1 of batch 04-C (unanimous, `locate/04-C-run1.md`). Recurring wording, 3 to 6 words exact and 4-word stemmed near, with several wordings grouped under one pattern. | Walkthrough: "recurring and dropped answer with candidates, not verdicts". test:lookback: expect near. |
+| II.B.2 flag generic transitions | Built, lifted after run 1 of batch 04-C (recorded L2*: transitions with no notes and no unit or walkthrough assertion). Recurring transition candidates now carry an id and the reflection notes beside the pieces that use them, so an agent can weigh a generic transition against what was chosen, kept, or changed. | Walkthrough: "a recurring generic transition carries the reflection notes beside the pieces that use it". test:lookback: recurring candidates. |
+| II.B.3 isolate systemic redundancies | Built, lifted after run 1 of batch 04-C (recorded L2*: recurring wording with no notes; the walkthrough only exercised the asks prompt on an unsupported default claim). Recurring wording now carries notes beside the pieces, and a default claim can cite those notes by `note_id` alongside the passages, with a counterexample, to trace a stock close to a default move. The unsupported-claim asks prompt stays. | Walkthrough: "a systemic redundancy is traced to a default writing move with both the pieces and the reflection notes". test:lookback: claimView; recurring candidates. |
+| II.B.4 detect structural autopilot | Built, lifted after run 1 of batch 04-C (recorded L2*: `removed_move` unasserted on evidence and returns_in; no note-weighed structural case). Recurring shapes now have ids, occurrence quotes, and notes beside the pieces. A walkthrough weighs a list of three against keep and drop notes, including where the pattern breaks and that the move does not return. `removed_move` now asserts evidence and `returns_in`. | Walkthrough: "a recurring structural move is weighed against change, keep, and drop notes, including where the pattern breaks". test:lookback: expect removed_move; list of three unit check. |
 | II.C.1 Explain the repeat's function | Built. Claims carry function, evidence, and counterexamples; dropped shows returns. | Walkthrough: "a default claim with no notes weighed or counterexamples gets asked for them". |
 | II.C.2 Assess future choice intent | Built. Claims carry future_intent and qualifiers; pause asks what would make the agent less sure. | Same. |
 | II.C.3 Distinguish taste from default | Built. Claim kinds taste, default, mixture, unclear; rejections recorded; a default claim is asked for notes weighed and counterexamples. | Same. |
@@ -50,16 +50,17 @@ npm run test:lookback
 npm run walkthrough
 ```
 
-Expect test:lookback 19 of 19 and the walkthrough 174 of 174. The full-length timing check ran at about 0.84 s on the box against the 1 s cap; a slower machine may need a second look.
+Expect test:lookback 24 of 24 and the walkthrough 179 of 179. The full-length timing check ran at about 0.84 s on the box against the 1 s cap; a slower machine may need a second look.
 
 ## Files
 
 | Path | What it holds |
 |---|---|
-| `src/lookback/corpus.ts` | Notes, the corpus, the audit. |
-| `src/lookback/recurring.ts`, `near.ts`, `shapes.ts` | Recurring wording, openings, transitions, shapes. |
+| `src/lookback/corpus.ts` | Notes, the corpus, the audit, `notesOn` / `notesBesidePieces`. |
+| `src/lookback/recurring.ts`, `near.ts`, `shapes.ts` | Recurring wording, openings, transitions, shapes, with ids, quotes, and notes beside the pieces. |
 | `src/lookback/dropped.ts` | Removed wording and moves, returns and echoes. |
-| `src/lookback/patterns.ts` | Counts, rates, ranks, timelines, compare. |
+| `src/lookback/patterns.ts` | Counts, rates, ranks, timelines (including the friction point), compare, `acrossStyles`. |
+| `src/lookback/claims.ts` | `claimView`. |
 | `src/lookback/store.ts` | Results in chunks under 256 KB. |
 | `src/lookback/routes.ts` | Every slice 04 route and the session-end nudge. |
 | `migrations/0007_lookbacks.sql` | Lookback tables. |

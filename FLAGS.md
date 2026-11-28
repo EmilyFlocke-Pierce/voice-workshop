@@ -159,8 +159,34 @@ How I read it: I.C.1 asks the agent to name the underlying move and cite example
 - `compareAlong` is a pure function, so the unit check can hit values, shifts, and notes without D1.
 - `measureOf` and `breaks_after_first` now have unit checks. The overlap of `COMPARE_MEASURES` and `SHAPE_NAMES` on closing length stays a logged quirk.
 
+
+**04, only intent notes beside a pattern.** Found by CANDY in run 1 of batch 04-C, with II.A.1, II.B.2, and II.B.4 at L2*. Only intent notes sat beside a pattern (`intent_notes_beside_it_by_style`), while II.B.2 and II.B.4 ask for keep, change, and drop reflection notes as well.
+
+How I read those rows: they ask the agent to weigh a recurring transition or structural move against notes about what was chosen, kept, changed, or dropped, citing pieces and notes. The build keeps `intent_notes_beside_it_by_style` and now also puts every reflection-note kind beside the pieces on the pattern view (`notes_beside_it_by_style`) and on recurring candidates (`notes_beside_pieces`), with ids. Why: relevant notes are not only intent. A change_note or a mark can tell keep versus drop as much as an intent can. The intent block stays so the earlier II.A.1 view is still there.
+
+**04, no structured field for consistent versus style-dependent.** Found by CANDY in the same run, with II.A.1 at L2*. The consistent-versus-style-dependent split has no structured field.
+
+How I read II.A.1: the row asks the agent to trace an intended choice across pieces in different styles, cite notes and passages, and distinguish what remains consistent from what changes with the style. The build surfaces passages and notes by style, plus a short `across_styles.reads` line that says whether the wording holds or changes with the style. There is no verdict field that grades consistent versus style-dependent. Why: that distinction is the agent's, from the notes and the passages. A structured verdict would only help if agents leave it out of their reading. A field can wait until a locator finds a case where the evidence is visible and the agent still cannot tell.
+
+**04, notes on recurring candidates before a name.** Found by CANDY in the same run, with II.B.2 and II.B.3 at L2*. Notes only attached after the agent named a pattern (I.C.1).
+
+How I read those rows: they ask the agent to check a recurring transition or a systemic redundancy against reflection notes, citing pieces and notes. The build now puts notes on recurring candidates, so the agent can weigh a candidate before naming it. The pattern view still carries notes after a name, with a timeline and a claim that can cite `note_id`. Why: a generic transition or a stock close can be weighed as a candidate; naming is still what makes it one pattern to claim about.
+
+**04, no FLAGS.md in the slice folder.** Found by CANDY in the same run. `04-looking-back-for-patterns/FLAGS.md` does not exist at `98264b0`; slice 04 flags live in the root FLAGS.md.
+
+How I read it: one living FLAGS file at the root is the right record, same as the other slices. The build adds a short pointer at `04-looking-back-for-patterns/FLAGS.md` that sends a locator to the root file. Why: a locator who looks in the slice folder should find the flags, without splitting the log into two files.
+
+**Judgment calls: the 04-C lift (II.A.1, II.A.2, II.B.2, II.B.3, II.B.4)**
+- Recurring candidates and the pattern view carry every reflection-note kind, not only intent. `intent_notes_beside_it_by_style` is kept.
+- `across_styles.reads` states whether the wording holds or changes with the style. There is no verdict field for consistent versus style-dependent.
+- `timeline().friction_point` connects the first appearance, the style shift against the previous piece, and the notes on that piece. Each timeline row also carries its notes.
+- A default claim with `note_id` evidence and a counterexample no longer gets the asks prompt. The existing unsupported-claim check stays.
+- `removed_move` now asserts `evidence` and `returns_in` (the fixture move is indirect and does not return). `breaks_after_first` is asserted in the structural case.
+- Recurring items gained stable ids, and shape items gained occurrence quotes.
+- Slice 04 still keeps its flags in the root FLAGS.md. The new slice-folder file is only a pointer.
+
 **For CANDY**
 - Six 01 rows (I.A.1, I.A.2, I.B.1, I.B.2, I.C.1, III.B.2) held in a builder stand-in after the arrival text changed. They need a cold relocation.
 - `locate/probe/` imports need `../../../app/src/`. Three probes have stale shapes.
 - Locate against the current wording. The 🦋 entries in FLAGS.md are takes, not proposed recuts. Builds already meet both readings for I.C.1, I.A.1, and I.A.2; I.B.2 now marks drift in any direction; I.C.2 and I.C.3 carry an optional `shift`; II.A.2 to II.A.4 leave uncounted cues to the agent's effects notes; 04 I.A.3 keeps carried notes on both versions.
-- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.1 to II.C.3) is closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. Batch 02-E (III.A.1 to III.C.2) is lifted after run 1 and waits for relocation. Batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1. Batch 04-B (I.B.1, I.B.2, I.C.1) is located at 2/3 L3* after run 1; I.B.1 is lifted and waits for relocation; I.B.2 and I.C.1 carry forward. The rest of slice 04 waits for locating. Every agent-side row rests on builder stand-ins only.
+- Batches 02-B (I.C.1 to I.C.3) and 02-C (II.A.1 to II.A.4) are closed at 3/3 and 4/4 L3* after their run 2 relocations. CANDY kept I.B.2 at L3* after a spot-check of `ece898c`, with no relocation round. Batch 02-D (II.B.1 to II.C.3) is closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. Batch 02-E (III.A.1 to III.C.2) is lifted after run 1 and waits for relocation. Batch 04-A (I.A.1 to I.A.4) is closed at 4/4 L3* after run 1. Batch 04-B (I.B.1, I.B.2, I.C.1) is located at 2/3 L3* after run 1; I.B.1 is lifted and waits for relocation; I.B.2 and I.C.1 carry forward. Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4) is located at 1/6 L3* after run 1; II.B.1 carries forward at L3*; II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 are lifted and wait for relocation. The rest of slice 04 waits for locating. Every agent-side row rests on builder stand-ins only.
