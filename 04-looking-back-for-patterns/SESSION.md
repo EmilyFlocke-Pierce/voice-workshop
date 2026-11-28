@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D closed at 3/3 L3* after run 2. Domain II of slice 04 is at L3* across Threads A, B, and C. Batch 04-E closed at 4/4 L3* after run 1 (III.A.2 and III.A.4 chair-recorded from a 2-2 split). Batch 04-F closed at 3/3 L3* after run 1. Domain III Thread C still waits for locating. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D closed at 3/3 L3* after run 2. Domain II of slice 04 is at L3* across Threads A, B, and C. Batch 04-E closed at 4/4 L3* after run 1 (III.A.2 and III.A.4 chair-recorded from a 2-2 split). Batch 04-F closed at 3/3 L3* after run 1. Batch 04-G first locate: III.C.2 at L3*; III.C.1, III.C.3, and III.C.4 lifted, awaiting relocation. |
 
 ## Decisions
 
@@ -80,3 +80,7 @@ Report: `locate/04-E-run1.md`. CANDY located III.A.1 to III.A.4 against `1c12e28
 ## Locate run 1 close (batch 04-F), Nov 28, 2026
 
 Report: `locate/04-F-run1.md`. CANDY located III.B.1, III.B.2, and III.B.3 against `1c12e28` at L3*. Both locators agreed on every row. Batch 04-F is closed at 3/3 L3*. Two 🦋 takes are in FLAGS.md (cited instances versus found occurrences, and ranking across differing denominators). One locator noted that the patOpen pattern (three surface forms under one rule) matches the III.B.1 L4 sentence in shape. L4 stays Emily's call. This close makes no L4 claim. Logged seven open quirks. No code changed. Domain III Thread C still waits for locating.
+
+## Locate run 1 and lift (batch 04-G), Nov 28, 2026
+
+Report: `locate/04-G-run1.md`. CANDY located III.C.2 against `1c12e28` at L3*, and III.C.1, III.C.3, and III.C.4 at L2*. Locators split 3 of 4; the chair checked the walkthrough, the lookback tests, and the fixture, and recorded the lower level on those three. This run used links only, no chair excerpts. The lift walks one dropped wording whose later piece holds a three-word run of it but not all of it (`echoes_in`), beside a different drop with an exact `returns_in`, plus a wording drop the notes never name (indirect). A claim with rejections from two records reads "2 recorded" and is weighed against a counterexample. The same dropped output holds the exact return and the three-word echo in separate fields. Explicit dropped items now carry the note's own words as `note_words`. Three 🦋 takes are in FLAGS.md (a move return by shape versus an exact wording return, the note's words on explicit items, and piece quotes and note quotes under the same rejections scope). Logged seven new open quirks, and marked the dropped-item id quirk as carried. Waiting for relocation of III.C.1, III.C.3, and III.C.4. Walkthrough 187 of 187. test:lookback 31 of 31.

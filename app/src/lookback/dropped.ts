@@ -85,11 +85,14 @@ export function dropped(c: Corpus, diffs: Map<string, { changes: DiffChange[] } 
       const windows = ws.slice(0, -2).map((_, i) => ws.slice(i, i + 3).join(" "));
       return laterTexts.filter((q) => !q.text.includes(words.toLowerCase()) && windows.some((w) => q.text.includes(w))).map((q) => q.label);
     };
+    const noteWords = [t.change_note, t.diagnosis].filter((s): s is string => !!s && s.trim().length > 0).join("\n");
+    const withNote = (row: Record<string, unknown>, explicit: boolean) => (explicit && noteWords ? { ...row, note_words: noteWords } : row);
     for (const words of removed) {
       if (!words.trim()) continue;
       for (const named of quoted.filter((qq) => words.toLowerCase().includes(qq.toLowerCase()) && qq.toLowerCase() !== words.toLowerCase()))
-        items.push({ type: "wording", parent: parent.label, retry: r.label, words: named, named_by_you: true, inside_removed: words, evidence: "explicit", returns_in: returnsOf(named), echoes_in: echoesOf(named) });
-      items.push({ type: "wording", parent: parent.label, retry: r.label, words, evidence: namedIn(words, notes) ? "explicit" : "indirect", returns_in: returnsOf(words), echoes_in: echoesOf(words) });
+        items.push(withNote({ type: "wording", parent: parent.label, retry: r.label, words: named, named_by_you: true, inside_removed: words, evidence: "explicit", returns_in: returnsOf(named), echoes_in: echoesOf(named) }, true));
+      const ev = namedIn(words, notes) ? "explicit" : "indirect";
+      items.push(withNote({ type: "wording", parent: parent.label, retry: r.label, words, evidence: ev, returns_in: returnsOf(words), echoes_in: echoesOf(words) }, ev === "explicit"));
     }
     const pText = c.byTry.get(parent.try_id)!.text;
     for (const s of SHAPE_NAMES) {
@@ -99,7 +102,8 @@ export function dropped(c: Corpus, diffs: Map<string, { changes: DiffChange[] } 
       const diffTouched = (diff?.changes ?? []).some((ch) => ch.before && sentence && (ch.before.includes(sentence) || sentence.includes(ch.before)));
       const explicit = SHAPE_WORDS[s].some((w) => notes.includes(w)) || namedIn(sentence, notes);
       const returns = later(r).filter((q) => q.shapes[s]).map((q) => q.label);
-      items.push({ type: "move", move: s, parent: parent.label, retry: r.label, parent_sentence: sentence, evidence: explicit ? "explicit" : diffTouched ? "indirect" : "absence", returns_in: returns });
+      const ev = explicit ? "explicit" : diffTouched ? "indirect" : "absence";
+      items.push(withNote({ type: "move", move: s, parent: parent.label, retry: r.label, parent_sentence: sentence, evidence: ev, returns_in: returns }, ev === "explicit"));
     }
   }
   return items;

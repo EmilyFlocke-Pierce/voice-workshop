@@ -268,6 +268,64 @@ test("a list of three that a retry drops is weighed against the change note, inc
   assert.deepEqual(hit.returns_in, []);
 });
 
+function dropCorpus() {
+  const p1 = "The garden held a bright linen tablecloth across the grass all afternoon.";
+  const p2 = "The garden held the grass all afternoon.";
+  const p3 = "By evening a bright linen tablecloth lay on the lawn again.";
+  const p4 = "She wrote that the silver kettle sang at dawn. Later I noticed the cold slate sill.";
+  const p5 = "She wrote that a stove was quiet. Later I sat down.";
+  const p6 = "The silver kettle sat on the shelf.";
+  return buildCorpus(emptyRows([
+    tryRow("a", p1, { at: "2026-11-01T00:00:01Z" }),
+    tryRow("b", p2, { parent_id: "a", change_note: 'I dropped "bright linen tablecloth" from the garden scene.', at: "2026-11-01T00:00:02Z" }),
+    tryRow("c", p3, { at: "2026-11-01T00:00:03Z" }),
+    tryRow("d", p4, { at: "2026-11-01T00:00:04Z" }),
+    tryRow("e", p5, { parent_id: "d", change_note: 'I dropped "the silver kettle sang at dawn".', at: "2026-11-01T00:00:05Z" }),
+    tryRow("f", p6, { at: "2026-11-01T00:00:06Z" }),
+  ]), ["a", "b", "c", "d", "e", "f"]);
+}
+
+test("dropped wording keeps an exact return beside a three-word echo, and an unnamed drop stays indirect", () => {
+  const c = dropCorpus();
+  const d = dropped(c, diffsOf(c));
+  const returned = d.find((x) => x.type === "wording" && String(x.words).toLowerCase().includes("bright linen tablecloth") && x.retry === "P2");
+  assert.ok(returned, JSON.stringify(d.filter((x) => x.retry === "P2")));
+  assert.equal(returned.evidence, "explicit");
+  assert.ok((returned.returns_in as string[]).includes("P3"));
+  assert.ok(typeof returned.note_words === "string" && /bright linen tablecloth/.test(returned.note_words as string));
+  const echoed = d.find((x) => x.type === "wording" && String(x.words).toLowerCase().includes("silver kettle sang at dawn") && x.retry === "P5");
+  assert.ok(echoed, JSON.stringify(d.filter((x) => x.retry === "P5")));
+  assert.equal(echoed.evidence, "explicit");
+  assert.ok((echoed.echoes_in as string[]).includes("P6"));
+  assert.ok(!(echoed.returns_in as string[]).includes("P6"));
+  const unnamed = d.find((x) => x.type === "wording" && x.retry === "P5" && String(x.words).toLowerCase().includes("cold slate sill") && x.evidence === "indirect");
+  assert.ok(unnamed, JSON.stringify(d.filter((x) => x.retry === "P5")));
+  assert.ok(!unnamed.note_words);
+});
+
+test("claimView names 2 recorded when rejections come from two records, with no one-instance scope", () => {
+  const view = claimView({
+    id: "cl2",
+    pattern_id: "pat1",
+    kind: "default",
+    function: "",
+    future_intent: "",
+    evidence: JSON.stringify([{ note_id: "try:b:change_note", quote: "I dropped the list of three" }]),
+    interpretation: "Two records name a drop, and a later piece brings it back.",
+    counterexamples: JSON.stringify([{ piece: "P4", quote: "At dawn we packed bread, cheese, and apples once more." }]),
+    rejections: JSON.stringify([
+      { piece: "P3", quote: "We packed food for the road." },
+      { note_id: "try:b:change_note", quote: "I do not want it in later pieces." },
+    ]),
+    qualifiers: "",
+    created_at: "2026-11-01T00:00:10Z",
+  });
+  const rj = view.rejections as { recorded: string; scope?: string };
+  assert.equal(rj.recorded, "2 recorded");
+  assert.equal(rj.scope, undefined);
+  assert.equal((view.counterexamples as unknown[]).length, 1);
+});
+
 test("claimView keeps note evidence beside the claim, including a single weighed note", () => {
   const view = claimView({
     id: "cl1",

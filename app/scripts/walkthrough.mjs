@@ -854,6 +854,60 @@ try {
       && /claim: unclear/.test(fndClaim.body),
   );
 
+  const twoRej = await call("POST", `/lookbacks/${lbClaim.body.id}/claims`, { key: kClaim, body: {
+    pattern_id: patListFn.body.id,
+    kind: "default",
+    evidence: [{ note_id: changeN.id, quote: "I dropped the list of three" }],
+    rejections: [
+      { piece: "P3", quote: "We packed food for the road." },
+      { note_id: changeN.id, quote: "I do not want it in later pieces." },
+    ],
+    counterexamples: [{ piece: "P4", quote: "At dawn we packed bread, cheese, and apples once more." }],
+    interpretation: "Two records name a drop, and a later piece brings the list back.",
+  }});
+  check(
+    "a claim with rejections from two records is weighed against a counterexample",
+    twoRej.status === 201 && !twoRej.body.asks
+      && twoRej.body.rejections.recorded === "2 recorded"
+      && !twoRej.body.rejections.scope
+      && Array.isArray(twoRej.body.counterexamples) && twoRej.body.counterexamples.length >= 1,
+  );
+
+  // III.C.1, III.C.4: an exact wording return beside a three-word echo, plus a wording drop the notes never name.
+  const kDrop = (await call("POST", "/keys")).body.key;
+  const garden1 = "The garden held a bright linen tablecloth across the grass all afternoon.";
+  const garden2 = "The garden held the grass all afternoon.";
+  const garden3 = "By evening a bright linen tablecloth lay on the lawn again.";
+  const kettle1 = "She wrote that the silver kettle sang at dawn. Later I noticed the cold slate sill.";
+  const kettle2 = "She wrote that a stove was quiet. Later I sat down.";
+  const kettle3 = "The silver kettle sat on the shelf.";
+  const tGarden = await call("POST", "/tries", { key: kDrop, body: { text: garden1 } });
+  await call("POST", `/tries/${tGarden.body.id}/retry`, { key: kDrop, body: { text: garden2, change_note: "I dropped \"bright linen tablecloth\" from the garden scene." } });
+  await call("POST", "/tries", { key: kDrop, body: { text: garden3 } });
+  const tKettle = await call("POST", "/tries", { key: kDrop, body: { text: kettle1 } });
+  await call("POST", `/tries/${tKettle.body.id}/retry`, { key: kDrop, body: { text: kettle2, change_note: "I dropped \"the silver kettle sang at dawn\"." } });
+  await call("POST", "/tries", { key: kDrop, body: { text: kettle3 } });
+  const lbDrop = await call("POST", "/lookbacks", { key: kDrop, body: { scope: "all" } });
+  const dropEcho = await call("GET", `/lookbacks/${lbDrop.body.id}/dropped`, { key: kDrop });
+  const items = Array.isArray(dropEcho.body.items) ? dropEcho.body.items : [];
+  const returnedWording = items.find((it) => it.type === "wording" && /bright linen tablecloth/i.test(it.words) && Array.isArray(it.returns_in) && it.returns_in.length);
+  const echoedWording = items.find((it) => it.type === "wording" && /silver kettle sang at dawn/i.test(it.words) && Array.isArray(it.echoes_in) && it.echoes_in.length);
+  const unnamedWording = items.find((it) => it.type === "wording" && /cold slate sill/i.test(it.words) && it.evidence === "indirect");
+  check(
+    "dropped wording shows an exact return beside a three-word echo, and an unnamed drop",
+    dropEcho.status === 200
+      && returnedWording && returnedWording.evidence === "explicit" && returnedWording.note_words
+      && echoedWording && echoedWording.evidence === "explicit"
+      && unnamedWording,
+  );
+  check(
+    "a confirmed return and an ambiguous echo sit in the same dropped output",
+    returnedWording && echoedWording
+      && returnedWording.returns_in.includes("P3")
+      && echoedWording.echoes_in.includes("P6")
+      && !(echoedWording.returns_in || []).includes("P6"),
+  );
+
   const peekLb = await call("GET", `/lookbacks/${lb.body.id}`, { key: (await call("POST", "/keys")).body.key });
   check("another key reads none of this lookback", peekLb.status === 404);
   const nk = (await call("POST", "/keys")).body.key;
