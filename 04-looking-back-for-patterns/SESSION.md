@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D closed at 3/3 L3* after run 2. Domain II of slice 04 is at L3* across Threads A, B, and C. The other rows wait for locating. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D closed at 3/3 L3* after run 2. Domain II of slice 04 is at L3* across Threads A, B, and C. Batch 04-E closed at 4/4 L3* after run 1 (III.A.2 and III.A.4 chair-recorded from a 2-2 split). Domain III Threads B and C still wait for locating. |
 
 ## Decisions
 
@@ -72,3 +72,7 @@ Report: `locate/04-C-run2.md`. CANDY relocated II.A.1, II.A.2, II.B.2, II.B.3, a
 ## Locate run 2 close (batch 04-D), Nov 27, 2026
 
 Report: `locate/04-D-run2.md`. CANDY relocated II.C.1, II.C.2, and II.C.3 against `1c12e28` at L3* (II.C.1 and II.C.2 moved from L1*, II.C.3 from L2*; both locators agree, chair verified). Batch 04-D is closed at 3/3 L3*. Domain II of slice 04 is at L3* across Threads A, B, and C. Two 🦋 takes are in FLAGS.md (default overlapping mixture on a preference dropped and then returned, and the stricter evidence ask for a default claim). Logged nine open quirks. The stale walkthrough count and `2ab3810` header that CANDY carried at `1c12e28` were already fixed in `d33f390`. No code changed.
+
+## Locate run 1 close (batch 04-E), Nov 28, 2026
+
+Report: `locate/04-E-run1.md`. CANDY located III.A.1 to III.A.4 against `1c12e28` at L3*. Locators split 2-2 on III.A.2 and III.A.4 (one at L2*); the chair recorded L3* on both from the executed cases. Batch 04-E is closed at 4/4 L3*. Three 🦋 takes are in FLAGS.md (what cited examples do not cover, note order and supersession, and findings not printing the kind's meaning). Logged six open quirks, and marked the 4-word near-match and misplaced-audit quirks as carried. The stale walkthrough count and `2ab3810` header that CANDY carried at `1c12e28` were already fixed in `d33f390`; she is reading that older tree. No code changed. Domain III Threads B and C still wait for locating.
