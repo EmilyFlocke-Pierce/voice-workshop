@@ -15,7 +15,9 @@ Batch 04-B (I.B.1, I.B.2, I.C.1), run 1, located at 2/3 L3* (I.B.1 later lifted)
 
 Batch 04-B (I.B.1, I.B.2, I.C.1), run 2, closed at 3/3 L3*: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-B-run2.md
 
-Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4), run 1, located at 1/6 L3* (II.B.1 carries forward; five to lift): https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-C-run1.md
+Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4), run 1, located at 1/6 L3* (II.B.1 carried forward; five later lifted): https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-C-run1.md
+
+Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4), run 2, closed at 6/6 L3*: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-C-run2.md
 
 Batch 04-D (II.C.1 to II.C.3), run 1, located at 0/3 L3* (all three to lift): https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-D-run1.md
 

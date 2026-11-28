@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C located at 1/6 L3* (II.B.1) and II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 lifted, waiting for relocation at `1c12e28`. Batch 04-D located at 0/3 L3* and II.C.1 to II.C.3 lifted, waiting for relocation at `1c12e28`. The other rows wait for locating. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D located at 0/3 L3* and II.C.1 to II.C.3 lifted, waiting for relocation at `1c12e28`. The other rows wait for locating. |
 
 ## Decisions
 
@@ -64,3 +64,7 @@ Report: `locate/04-D-run1.md`. CANDY located II.C.1, II.C.2, and II.C.3 against 
 ## Locate run 2 close (batch 04-B), Nov 27, 2026
 
 Report: `locate/04-B-run2.md`. CANDY relocated I.B.1 against `1725848` at L3* (moved from L2*, both locators agree). Batch 04-B is closed at 3/3 L3*. I.B.2 and I.C.1 carry forward at L3*. Two 🦋 takes are in FLAGS.md (the previous-piece baseline for a shift, and relevance left unowned because every note on the piece is attached). Logged two open quirks, and fixed the stale walkthrough count and the 04 MANIFEST header to 184 of 184 at `1c12e28`. No code changed. Batches 04-C and 04-D remain lifted, waiting for relocation at `1c12e28`.
+
+## Locate run 2 close (batch 04-C), Nov 27, 2026
+
+Report: `locate/04-C-run2.md`. CANDY relocated II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 against `1c12e28` at L3* (moved from L2*, both locators agree, chair verified). With II.B.1 carried forward at L3*, batch 04-C is closed at 6/6 L3*. Two 🦋 takes are in FLAGS.md (the previous-piece baseline for the friction point, and `across_styles` leaving out styles where the move never appears). Logged six open quirks. The stale walkthrough count and `2ab3810` header that CANDY saw at `1c12e28` were already fixed in `d33f390`, after that locate commit. No code changed. Batch 04-D remains lifted, waiting for relocation at `1c12e28`.
