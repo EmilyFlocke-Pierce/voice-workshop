@@ -19,7 +19,9 @@ Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4), run 1, located at 1/6 L3* (II.B.1
 
 Batch 04-C (II.A.1, II.A.2, II.B.1 to II.B.4), run 2, closed at 6/6 L3*: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-C-run2.md
 
-Batch 04-D (II.C.1 to II.C.3), run 1, located at 0/3 L3* (all three to lift): https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-D-run1.md
+Batch 04-D (II.C.1 to II.C.3), run 1, located at 0/3 L3* (all three later lifted): https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-D-run1.md
+
+Batch 04-D (II.C.1 to II.C.3), run 2, closed at 3/3 L3*: https://raw.githubusercontent.com/EmilyFlocke-Pierce/voice-workshop/main/04-looking-back-for-patterns/locate/04-D-run2.md
 
 Slices 03 and 05 through 08 are written as intent and are not built yet. Their intent and matrices are linked at the end.
 

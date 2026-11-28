@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D located at 0/3 L3* and II.C.1 to II.C.3 lifted, waiting for relocation at `1c12e28`. The other rows wait for locating. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D closed at 3/3 L3* after run 2. Domain II of slice 04 is at L3* across Threads A, B, and C. The other rows wait for locating. |
 
 ## Decisions
 
@@ -68,3 +68,7 @@ Report: `locate/04-B-run2.md`. CANDY relocated I.B.1 against `1725848` at L3* (m
 ## Locate run 2 close (batch 04-C), Nov 27, 2026
 
 Report: `locate/04-C-run2.md`. CANDY relocated II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 against `1c12e28` at L3* (moved from L2*, both locators agree, chair verified). With II.B.1 carried forward at L3*, batch 04-C is closed at 6/6 L3*. Two 🦋 takes are in FLAGS.md (the previous-piece baseline for the friction point, and `across_styles` leaving out styles where the move never appears). Logged six open quirks. The stale walkthrough count and `2ab3810` header that CANDY saw at `1c12e28` were already fixed in `d33f390`, after that locate commit. No code changed. Batch 04-D remains lifted, waiting for relocation at `1c12e28`.
+
+## Locate run 2 close (batch 04-D), Nov 27, 2026
+
+Report: `locate/04-D-run2.md`. CANDY relocated II.C.1, II.C.2, and II.C.3 against `1c12e28` at L3* (II.C.1 and II.C.2 moved from L1*, II.C.3 from L2*; both locators agree, chair verified). Batch 04-D is closed at 3/3 L3*. Domain II of slice 04 is at L3* across Threads A, B, and C. Two 🦋 takes are in FLAGS.md (default overlapping mixture on a preference dropped and then returned, and the stricter evidence ask for a default claim). Logged nine open quirks. The stale walkthrough count and `2ab3810` header that CANDY carried at `1c12e28` were already fixed in `d33f390`. No code changed.
