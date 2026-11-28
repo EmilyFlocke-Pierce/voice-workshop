@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B closed at 3/3 L3* after run 2. Domain I is 9/9 at L3*. Batch 02-C closed at 4/4 L3* after run 2. Batch 02-D closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. CANDY kept I.B.2 at L3* after a spot-check of ece898c, with no relocation round. Batch 02-E located at 0/6 L3* and lifted, waiting for relocation. Slice 04 waits for locating. |
+| status | built. Merged to `main`, public at v0.1.0. Batch 02-A closed at 6/6 L3* after run 2. Batch 02-B closed at 3/3 L3* after run 2. Domain I is 9/9 at L3*. Batch 02-C closed at 4/4 L3* after run 2. Batch 02-D closed at 5/5 L3* after run 2. Domain II is 9/9 at L3*. CANDY kept I.B.2 at L3* after a spot-check of ece898c, with no relocation round. Batch 02-E closed at 6/6 L3* after run 2. Domain III is 6/6 at L3*. Slice 02 is fully closed at L3*. Slice 04 Domains I and II are at L3*; Domain III of slice 04 still waits for locating. |
 
 ## Decisions
 
@@ -162,3 +162,7 @@ Report: `locate/02-D-run2.md`. CANDY relocated II.B.2, II.C.1, II.C.2, and II.C.
 
 Report: `locate/02-E-run1.md`. CANDY located III.A.1 to III.C.2 against `98264b0` at 0/6 L3* (machinery already built; the main gap was a walkthrough with only one finished style exercise). The lift adds a multi-style walkthrough on a fresh key: a far style that stays easy across two pieces, a near style that felt easy only once, a style that consistently resists, a style that was hard only in one piece, a return for sustained pull, and a one-off spark. Ease and pull now require quotes. GET /reach reports whether each style sits near or far from the usual. Reach notes take optional `style_ids`. Four quirks and two 🦋 takes are in QUIRKS.md and FLAGS.md. Waiting for relocation.
 
+
+## Locate run 2 close (batch 02-E), Nov 28, 2026
+
+Report: `locate/02-E-run2.md`. CANDY relocated III.A.1 to III.C.2 against `1c12e28` at L3* (III.A.1 and III.C.2 moved from L1*; III.A.2, III.B.1, III.B.2, and III.C.1 moved from L2*; both locators agree, chair verified). Batch 02-E is closed at 6/6 L3*. Domain III of slice 02 is 6/6 at L3*. Slice 02 is fully closed at L3*. A 🦋 take is in FLAGS.md (ease versus distance from the usual, on the placard). Logged three open quirks, marked two run 1 quirks as carried, and added a pointer at `02-experimenting-with-styles/FLAGS.md` so the slice-folder flags link no longer 404s. No code changed.
