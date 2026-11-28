@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B located at 2/3 L3* (I.B.2, I.C.1) and I.B.1 lifted, waiting for relocation. Batch 04-C located at 1/6 L3* (II.B.1) and II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 lifted, waiting for relocation. Batch 04-D located at 0/3 L3* and II.C.1 to II.C.3 lifted, waiting for relocation. The other rows wait for locating. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C located at 1/6 L3* (II.B.1) and II.A.1, II.A.2, II.B.2, II.B.3, and II.B.4 lifted, waiting for relocation at `1c12e28`. Batch 04-D located at 0/3 L3* and II.C.1 to II.C.3 lifted, waiting for relocation at `1c12e28`. The other rows wait for locating. |
 
 ## Decisions
 
@@ -60,3 +60,7 @@ Report: `locate/04-C-run1.md`. CANDY located II.A.1, II.A.2, and II.B.1 to II.B.
 ## Locate run 1 and lift (batch 04-D), Nov 27, 2026
 
 Report: `locate/04-D-run1.md`. CANDY located II.C.1, II.C.2, and II.C.3 against `98264b0` at 0/3 L3* (II.C.1 and II.C.2 at L1*; II.C.3 at L2*). The lift posts `function` and `future_intent` on claims and prints both in findings. A walkthrough diagnoses a packing list that is dropped and then returns, weighs future intent against that conflict, and posts taste, mixture, and unclear claims with notes, rejections, and counterexamples, beside the thin-claim nudge (now for every kind). Exercise notes carry pull effects and calibration fields into the lookback. Four 🦋 takes are in FLAGS.md. Waiting for relocation of II.C.1 to II.C.3.
+
+## Locate run 2 close (batch 04-B), Nov 27, 2026
+
+Report: `locate/04-B-run2.md`. CANDY relocated I.B.1 against `1725848` at L3* (moved from L2*, both locators agree). Batch 04-B is closed at 3/3 L3*. I.B.2 and I.C.1 carry forward at L3*. Two 🦋 takes are in FLAGS.md (the previous-piece baseline for a shift, and relevance left unowned because every note on the piece is attached). Logged two open quirks, and fixed the stale walkthrough count and the 04 MANIFEST header to 184 of 184 at `1c12e28`. No code changed. Batches 04-C and 04-D remain lifted, waiting for relocation at `1c12e28`.

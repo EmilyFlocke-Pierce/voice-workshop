@@ -15,6 +15,8 @@ A to-be-done list. None of these holds a level.
 | A mark note's assembled `text` adds field prefixes (`why back:`, `less familiar:`). (CANDY, 04-A run 1) | I.A.3 | Leave the prefixes so the assembled line still names which field each part came from when it is shown as one note. The audit uses `what_tried` as `free_text`, without those prefixes. A later move can drop the prefixes if they get in the way of reading. |
 | `COMPARE_MEASURES` and `SHAPE_NAMES` overlap only on closing length (`closing_words` / `short_landing`). (CANDY, 04-B run 1) | I.B.1, II.B.4 | Leave both. One is a word count on /compare; the other is a shape flag (a last sentence of 6 words or fewer) on /recurring. They answer different questions. A later move can point from one to the other if a locator wants them side by side. |
 | `lookback.test.ts` tests pure modules only; the D1 wrappers in `routes.ts` have no isolated HTTP unit tests. (CANDY, 04-C and 04-D) | II.A.1, II.C.1, II.C.3 | Leave the unit file on pure modules. `claimView`, `CLAIM_KINDS`, `thinClaimAsk`, `checkCited`, and `findingsText` now have unit checks, and the walkthrough hits POST /claims and GET /findings on the worker. A later move can add a D1 route harness if a locator wants a check that does not start wrangler. |
+| `falls` is never exercised in the compare sequence; a zero-note piece, and `rough_edges`, stitch, or exercise notes in compare rows, are unasserted; style and the `style_order` fallback are unasserted. (CANDY, 04-B run 2) | I.B.1 | Leave the checks as they are. The walked sequence holds, then rises, then holds, with intent, scope_note, diagnosis, and a mark. A later move can add a falling step, a piece with no notes, and the other note kinds if a locator wants those paths pinned. |
+| `compareAlong` is not in the timing tests and is not chunked, so the 256 KB cap does not cover a compare response. (CANDY, 04-B run 2) | I.B.1 | Leave it. /compare is computed on the request, not stored as lookback results. A later move can time it and chunk it if a long sequence comes close to the cap. |
 
 ## Closed
 
@@ -22,12 +24,13 @@ A to-be-done list. None of these holds a level.
 |---|---|
 | `measureOf` / `COMPARE_MEASURES` were not unit-tested in `lookback.test.ts` (CANDY, 04-B run 1). They have a unit check now, on a known piece. | the 04-B lift |
 | `breaks_after_first` in `timeline()` was computed and never asserted (CANDY, 04-B run 1). A unit check now names the pieces that break after the first appearance. | the 04-B lift |
-| `04/MANIFEST.md` (and SESSION) still said "walkthrough 118 of 118" after the walkthrough had grown (CANDY, 04-A run 1). The count is now 171 of 171, matching the current walkthrough. | the 04-A close |
+| `04/MANIFEST.md` (and SESSION) still said "walkthrough 118 of 118" after the walkthrough had grown (CANDY, 04-A run 1). The count was updated in the 04-A close, and later to 184 of 184 at `1c12e28`. | the 04-A close; refreshed in the 04-B run 2 close |
 | Recurring items carried no `id` (CANDY, 04-C run 1). Each candidate now has a stable id (`wording:exact:...`, `transition:...`, `shape:...`, and so on). | the 04-C lift |
 | Recurring shape items carried no occurrence quotes (CANDY, 04-C run 1). Shape candidates now quote the sentence that carries the shape, as `shapeSentence` already did for dropped moves. | the 04-C lift |
 | POST /claims, `claimView`, `CLAIM_KINDS`, `notes_side_by_side`, and GET /findings had no unit tests (CANDY, 04-D run 1). Those shapes now have unit checks, and the walkthrough posts function, future_intent, each kind, and reads findings. | the 04-D lift |
 | `checkCited` for rejections accepted a piece or a note_id, while its error text asked for both (CANDY, 04-D run 1). The error text now matches what it accepts. | the 04-D lift |
 | `rejections.scope: "one instance"` never executed (CANDY, 04-D run 1). A walkthrough and a unit check now post a single rejection and assert the scope. | the 04-D lift |
+| The QUIRKS closed row still said "171 of 171" while the 04 MANIFEST said "174 of 174", and the 04 MANIFEST header still named `build-all` / `2ab3810` (CANDY, 04-B run 2). The header is now branch `main`, commit `1c12e28`, and both counts read 184 of 184. | the 04-B run 2 close |
 
 ## Ideas
 
