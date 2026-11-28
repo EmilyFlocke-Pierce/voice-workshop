@@ -8,7 +8,7 @@
 | builder | Grok Bot |
 | decider | Emily |
 | locating manager | CANDY |
-| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D closed at 3/3 L3* after run 2. Domain II of slice 04 is at L3* across Threads A, B, and C. Batch 04-E closed at 4/4 L3* after run 1 (III.A.2 and III.A.4 chair-recorded from a 2-2 split). Domain III Threads B and C still wait for locating. |
+| status | built. Batch 04-A closed at 4/4 L3* after run 1. Batch 04-B closed at 3/3 L3* after run 2. Batch 04-C closed at 6/6 L3* after run 2. Batch 04-D closed at 3/3 L3* after run 2. Domain II of slice 04 is at L3* across Threads A, B, and C. Batch 04-E closed at 4/4 L3* after run 1 (III.A.2 and III.A.4 chair-recorded from a 2-2 split). Batch 04-F closed at 3/3 L3* after run 1. Domain III Thread C still waits for locating. |
 
 ## Decisions
 
@@ -76,3 +76,7 @@ Report: `locate/04-D-run2.md`. CANDY relocated II.C.1, II.C.2, and II.C.3 agains
 ## Locate run 1 close (batch 04-E), Nov 28, 2026
 
 Report: `locate/04-E-run1.md`. CANDY located III.A.1 to III.A.4 against `1c12e28` at L3*. Locators split 2-2 on III.A.2 and III.A.4 (one at L2*); the chair recorded L3* on both from the executed cases. Batch 04-E is closed at 4/4 L3*. Three 🦋 takes are in FLAGS.md (what cited examples do not cover, note order and supersession, and findings not printing the kind's meaning). Logged six open quirks, and marked the 4-word near-match and misplaced-audit quirks as carried. The stale walkthrough count and `2ab3810` header that CANDY carried at `1c12e28` were already fixed in `d33f390`; she is reading that older tree. No code changed. Domain III Threads B and C still wait for locating.
+
+## Locate run 1 close (batch 04-F), Nov 28, 2026
+
+Report: `locate/04-F-run1.md`. CANDY located III.B.1, III.B.2, and III.B.3 against `1c12e28` at L3*. Both locators agreed on every row. Batch 04-F is closed at 3/3 L3*. Two 🦋 takes are in FLAGS.md (cited instances versus found occurrences, and ranking across differing denominators). One locator noted that the patOpen pattern (three surface forms under one rule) matches the III.B.1 L4 sentence in shape. L4 stays Emily's call. This close makes no L4 claim. Logged seven open quirks. No code changed. Domain III Thread C still waits for locating.
